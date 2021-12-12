@@ -344,7 +344,7 @@ public class QuestKillMobs extends QuestBase implements Quest
 		{
 			KillMob km = ToroQuestConfiguration.mobs.get(custom);
 			
-			if ( km.minRepRequired <= PlayerCivilizationCapabilityImpl.get(player).getReputation(province.civilization) && ( km.provinceAllowed.equals("x") || km.provinceAllowed.equals(CivilizationType.biomeName(province.toString())) ) )
+			if ( km.minRepRequired <= PlayerCivilizationCapabilityImpl.get(player).getReputation(province.civilization) && ( km.provinceAllowed.equals("x") || km.provinceAllowed.equals(CivilizationType.tradeName(province.getCiv())) ) )
 			{
 				roll = km.minKills+rand.nextInt(1+km.maxKills-km.minKills);
 				if ( roll % 2 == 1 && roll != km.maxKills && roll != km.minKills )
@@ -364,7 +364,7 @@ public class QuestKillMobs extends QuestBase implements Quest
 								
 				for ( KillMob c : list )
 				{
-					if ( c.minRepRequired <= PlayerCivilizationCapabilityImpl.get(player).getReputation(province.civilization) && ( c.provinceAllowed.equals("x") || c.provinceAllowed.equals(CivilizationType.biomeName(province.toString())) ) )
+					if ( c.minRepRequired <= PlayerCivilizationCapabilityImpl.get(player).getReputation(province.civilization) && ( c.provinceAllowed.equals("x") || c.provinceAllowed.equals(CivilizationType.tradeName(province.getCiv())) ) )
 					{
 						roll = c.minKills+rand.nextInt(1+c.maxKills-c.minKills);
 						if ( roll % 2 == 1 && roll != c.maxKills && roll != c.minKills )

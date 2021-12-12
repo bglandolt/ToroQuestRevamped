@@ -16,66 +16,28 @@ import net.minecraft.world.World;
 
 public class AIAttackWithSword extends EntityAIBase
 {
-    World world;
+	protected World world;
     protected EntityCreature attacker;
-    /** An amount of decrementing ticks that allows the entity to attack once the tick reaches 0. */
     protected int attackTick = 0;
-    /** The speed with which the mob will approach the target */
-    double speedTowardsTarget;
-    /** When true, the mob will continue chasing its target, even if it can't find a path to them right now. */
-    boolean longMemory = true;
-    /** The PathEntity of our entity. */
-    Path path;
-    //private int delayCounter = 2;
-//    private double targetX;
-//    private double targetY;
-//    private double targetZ;
-//    protected final int attackInterval = 22;
-//    private int failedPathFindingPenalty = 0;
-//    private boolean canPenalize = false;
+    protected double speedTowardsTarget;
+    protected Path path;
     protected boolean offhandAttack = false;
-    
-	protected float range = 3.25F;
+	protected double range = 3.275D;
+	protected Random rand = new Random();
 
     public AIAttackWithSword(EntityCreature creature, double speedIn)
     {
         this.attacker = creature;
         this.world = creature.world;
         this.speedTowardsTarget = speedIn;
-        //this.longMemory = true;
         this.setMutexBits(3);
     }
-
-    /**
-     * Returns whether the EntityAIBase should begin execution.
-     */
+    
     public boolean shouldExecute()
     {
-    	ItemStack iStack = this.attacker.getHeldItemMainhand();
-    	
-		if ( iStack.getItem() instanceof ItemBow )
+    	if ( this.attacker.getHeldItemMainhand().getItem() instanceof ItemBow )
 		{
     		return false;
-    	}
-        		
-        if ( iStack != null )
-    	{
-        	String s = iStack.getItem().getRegistryName().toString();
-        		 if ( s.contains("pike_") ) 		{range = 6.5F;}
-        	else if ( s.contains("spear_") )  	 	{range = 4.5F;}
-        	else if ( s.contains("glaive_") ) 		{range = 4.5F;}
-        	else if ( s.contains("halberd_") ) 		{range = 4.5F;}
-        	else if ( s.contains("greatsword_") ) 	{range = 4.5F;}
-        	else if ( s.contains("lance_") ) 		{range = 4.5F;}
-        	
-        	//else if ( s.contains("staff") ) 		{range = 4.5F;}
-
-//        		 if ( s.contains("lance") ) 		{range = 6.0F;}
-//        	else if ( s.contains("pike") )  	 	{range = 6.0F;}
-//        	else if ( s.contains("glaive") ) 		{range = 4.5F;}
-//        	else if ( s.contains("halberd") ) 		{range = 4.5F;}
-//        	else if ( s.contains("greatsword") ) 	{range = 4.0F;}
-//        	else if ( s.contains("spear") ) 		{range = 4.0F;}
     	}
 		        
         if ( !shouldContinueExecuting() )
@@ -103,10 +65,8 @@ public class AIAttackWithSword extends EntityAIBase
      * Returns whether an in-progress EntityAIBase should continue executing
      */
     public boolean shouldContinueExecuting()
-    {
-    	ItemStack iStack = this.attacker.getHeldItemMainhand();
-    	
-		if ( iStack != null && iStack.getItem() instanceof ItemBow )
+    {    	
+		if ( this.attacker.getHeldItemMainhand().getItem() instanceof ItemBow )
 		{
     		return false;
     	}
@@ -121,40 +81,35 @@ public class AIAttackWithSword extends EntityAIBase
             return false;
         }
 
-        return true; // !(this.attacker.getAttackTarget() instanceof EntityPlayer) || !((EntityPlayer)this.attacker.getAttackTarget()).isSpectator() && !((EntityPlayer)this.attacker.getAttackTarget()).isCreative();
+        return true;
     }
-
-    /**
-     * Execute a one shot task or start executing a continuous task
-     */
+    
     public void startExecuting()
     {
-//    	ItemStack iStack = this.attacker.getHeldItemMainhand();
-//    	
-//		if ( iStack == null || iStack.getItem() instanceof ItemBow )
-//		{
-//    		return;
-//    	}
+    	ItemStack iStack = this.attacker.getHeldItemMainhand();
+
+        if ( iStack != null && !iStack.isEmpty() )
+    	{
+        	String s = iStack.getItem().getRegistryName().toString();
+        	
+        		 if ( s.contains("pike_") ) 		{this.range = 4.525D;}
+        	else if ( s.contains("spear_") )  	 	{this.range = 3.85D;}
+        	else if ( s.contains("glaive_") ) 		{this.range = 3.85D;}
+        	else if ( s.contains("halberd_") ) 		{this.range = 3.85D;}
+        	else if ( s.contains("greatsword_") ) 	{this.range = 3.85D;}
+        	else if ( s.contains("lance_") ) 		{this.range = 3.85D;}
+        	else if ( s.contains("staff") ) 		{this.range = 3.85D;}
+    	}
 
 		this.attacker.getNavigator().setPath( this.path, this.speedTowardsTarget );
-
-        //this.delayCounter = 2;
     }
 
-    /**
-     * Reset the task's internal state. Called when this task is interrupted by another one
-     */
     @Override
     public void resetTask()
     {
-        //if ( this.attacker.getAttackTarget() != null && ( this.attacker.getAttackTarget().isDead || this.attacker.getAttackTarget().getHealth() <= 0 ) ) this.attacker.setAttackTarget(null);
-        //this.attacker.getNavigator().clearPath();
     	this.attacker.setSprinting(false);
     }
 
-    /**
-     * Keep ticking a continuous task that has already been started
-     */
     public void updateTask()
     {
     	if ( !shouldContinueExecuting() )
@@ -271,22 +226,13 @@ public class AIAttackWithSword extends EntityAIBase
         }
     }
     
-//    private int getOffHandAttackTimer()
-//    {
-//    	
-//    }
-    
-    Random rand = new Random();
-    
     protected double getAttackReachSqr(EntityLivingBase attackTarget)
     {
-        return (this.attacker.width * range * this.attacker.width * range + attackTarget.width + (rand.nextDouble()/8.0D));
+        return (this.attacker.width * this.range * this.attacker.width * this.range + attackTarget.width + (this.rand.nextDouble()/8.0D));
     }
 
 	public static boolean canReach(EntityCreature creature)
 	{
 		return !creature.getNavigator().noPath();
 	}
-	
-	
 }

@@ -29,31 +29,31 @@ public enum CivilizationType
 		return TextComponentHelper.createComponentTranslation(player, this.getUnlocalizedName(), new Object[0]).getFormattedText();//I18n.format(getUnlocalizedName());
 	}
 	
-	public static String biomeName(String s)
+	public static String tradeName(CivilizationType s)
 	{
 		switch ( s )
 		{
-			case "EARTH":
-			{
-				return "GREEN";
-			}
-			case "WIND":
-			{
-				return "BROWN";
-			}
-			case "FIRE":
+			case FIRE:
 			{
 				return "RED";
 			}
-			case "WATER":
+			case EARTH:
+			{
+				return "GREEN";
+			}
+			case WIND:
+			{
+				return "BROWN";
+			}
+			case WATER:
 			{
 				return "BLUE";
 			}
-			case "SUN":
+			case SUN:
 			{
 				return "YELLOW";
 			}
-			case "MOON":
+			case MOON:
 			{
 				return "BLACK";
 			}

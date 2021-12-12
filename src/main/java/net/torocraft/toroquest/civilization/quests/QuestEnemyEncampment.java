@@ -2,11 +2,8 @@ package net.torocraft.toroquest.civilization.quests;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
-
-import javax.annotation.Nullable;
 
 import com.google.common.base.Predicate;
 
@@ -18,7 +15,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityXPOrb;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -35,8 +31,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.village.Village;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapData;
 import net.minecraft.world.storage.MapDecoration;
@@ -48,7 +42,6 @@ import net.minecraftforge.server.command.TextComponentHelper;
 import net.torocraft.toroquest.block.BlockToroSpawner;
 import net.torocraft.toroquest.block.TileEntityToroSpawner;
 import net.torocraft.toroquest.civilization.CivilizationHandlers;
-import net.torocraft.toroquest.civilization.CivilizationUtil;
 import net.torocraft.toroquest.civilization.Province;
 import net.torocraft.toroquest.civilization.player.PlayerCivilizationCapabilityImpl;
 import net.torocraft.toroquest.civilization.quests.util.ItemMapCentered;
@@ -56,7 +49,6 @@ import net.torocraft.toroquest.civilization.quests.util.Quest;
 import net.torocraft.toroquest.civilization.quests.util.QuestData;
 import net.torocraft.toroquest.civilization.quests.util.Quests;
 import net.torocraft.toroquest.entities.EntitySentry;
-import net.torocraft.toroquest.entities.EntityToroMob;
 
 public class QuestEnemyEncampment extends QuestBase implements Quest {
 	public static int ID;

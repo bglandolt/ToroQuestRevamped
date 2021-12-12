@@ -3,7 +3,6 @@ package net.torocraft.toroquest.civilization;
 import java.util.UUID;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.torocraft.toroquest.entities.EntityVillageLord;
 
 public class Province
 {

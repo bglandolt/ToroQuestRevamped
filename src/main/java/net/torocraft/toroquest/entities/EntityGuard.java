@@ -133,14 +133,9 @@ public class EntityGuard extends EntityToroNpc implements IRangedAttackMob, Toro
 	        return true;
 	    }
 	};
-
-	@Override
-	public EnumCreatureAttribute getCreatureAttribute()
-	{
-	    return EnumCreatureAttribute.ILLAGER;
-	}
 	
 	public static String NAME = "guard";
+	
 	static
 	{
 		if (ToroQuestConfiguration.specificEntityNames)
@@ -148,6 +143,7 @@ public class EntityGuard extends EntityToroNpc implements IRangedAttackMob, Toro
 			NAME = ToroQuestEntities.ENTITY_PREFIX + NAME;
 		}
 	}
+	
 	public static void init(int entityId)
 	{
 		EntityRegistry.registerModEntity(new ResourceLocation(ToroQuest.MODID, NAME), EntityGuard.class, NAME, entityId, ToroQuest.INSTANCE, 80, 1, true, 0x503526, 0xe0d6b9);
@@ -224,21 +220,23 @@ public class EntityGuard extends EntityToroNpc implements IRangedAttackMob, Toro
 	@Override
 	public void writeEntityToNBT(NBTTagCompound compound)
 	{
+		super.writeEntityToNBT(compound);
+
 		if ( this.isPlayerGuard() )
 		{
 			compound.setString("playerGuard", this.playerGuard);
 		}
-		super.writeEntityToNBT(compound);
 	}
 	
 	@Override
 	public void readEntityFromNBT(NBTTagCompound compound)
 	{
+	    super.readEntityFromNBT(compound);
+
 	    if ( compound.hasKey("playerGuard") )
 	    {
 	    	this.playerGuard = compound.getString("playerGuard");
 	    }
-	    super.readEntityFromNBT(compound);
 	}
 	
 	//==================================================== Attributes ===========================================================
@@ -438,7 +436,7 @@ public class EntityGuard extends EntityToroNpc implements IRangedAttackMob, Toro
     					this.stance = 0;
     			    	this.getMoveHelper().strafe( 0.0F, 0.0F );
     			    	this.getNavigator().clearPath();
-    					this.returnToPost = returnToPost();
+    					this.returnToPost = this.returnToPost();
     			    	this.isAnnoyedTimer = 0;
     					this.setAttackTarget(null);
     				}
@@ -1411,7 +1409,7 @@ public class EntityGuard extends EntityToroNpc implements IRangedAttackMob, Toro
 	@Override
 	public void onPledge( Province prov )
 	{
-		/* retire from guarding player */
+		/* retire from guarding player, and give them reputation */
 		if ( this.isPlayerGuard() )
 		{
 			for ( EntityPlayer player : this.world.playerEntities )
@@ -1428,7 +1426,9 @@ public class EntityGuard extends EntityToroNpc implements IRangedAttackMob, Toro
 					
 				}
 			}
+			this.setRaidLocation(prov.getCenterX()+this.rand.nextInt(80)-40, prov.getCenterZ()+this.rand.nextInt(80)-40);
 		}
+		/* all nearby players gain reputation for recruiting this guard if it is not already recruited */
 		else if ( this.ticksExisted > 202 )
 		{
 			List<EntityPlayer> players = this.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(this.getPosition()).grow(32, 16, 32), new Predicate<EntityPlayer>()
@@ -1452,8 +1452,10 @@ public class EntityGuard extends EntityToroNpc implements IRangedAttackMob, Toro
 			}
 			this.setRaidLocation(prov.getCenterX()+this.rand.nextInt(80)-40, prov.getCenterZ()+this.rand.nextInt(80)-40);
 		}
-		
-		this.setRaidLocation(this.getPosition().getX(), this.getPosition().getZ());
+		else
+		{
+			this.setRaidLocation(this.getPosition().getX(), this.getPosition().getZ());
+		}
 		
 		this.setPlayerGuard(null);
 		this.setMeleeWeapon();
@@ -1468,6 +1470,31 @@ public class EntityGuard extends EntityToroNpc implements IRangedAttackMob, Toro
 			
 		}
 	}
+	
+	//====================================================================
+	
+	public void recruitGuard( EntityPlayer player, Province prov, String chat)
+	{
+		if ( player != null && prov != null )
+		{
+			CivilizationHandlers.adjustPlayerRep(player, prov.getCiv(), ToroQuestConfiguration.recruitGuardRepGain);
+			try
+			{
+				QuestRecruit.INSTANCE.onRecruit(player);
+			}
+			catch ( Exception e )
+			{
+				
+			}
+			this.playTameEffect(false);
+			this.world.setEntityState(this, (byte)6);
+			this.chat(player, chat, prov.getCiv().getDisplayName(player));
+			player.sendStatusMessage( new TextComponentString("Guard Recruited!"), true);
+	    	this.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
+	    	this.pledgeAllegianceIfUnaffiliated(false);
+		}
+	}
+	
 	// ===================================================================
 	
 	// =========================== PLAYER GUARD ==========================
@@ -1492,26 +1519,6 @@ public class EntityGuard extends EntityToroNpc implements IRangedAttackMob, Toro
 			this.playerGuard = b;
 		}
 		this.writeEntityToNBT(new NBTTagCompound());
-	}
-	//====================================================================
-	
-	public void recruitGuard( EntityPlayer player, Province prov, String chat)
-	{
-		CivilizationHandlers.adjustPlayerRep(player, prov.getCiv(), ToroQuestConfiguration.recruitGuardRepGain);
-		try
-		{
-			QuestRecruit.INSTANCE.onRecruit(player);
-		}
-		catch ( Exception e )
-		{
-			
-		}
-		this.playTameEffect(false);
-		this.world.setEntityState(this, (byte)6);
-		this.chat(player, chat, prov.getCiv().getDisplayName(player));
-		player.sendStatusMessage( new TextComponentString("Guard Recruited!"), true);
-    	this.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
-    	this.pledgeAllegiance(prov);
 	}
 		
 	//==================================================== Initial Spawn ===========================================================
@@ -1777,7 +1784,7 @@ public class EntityGuard extends EntityToroNpc implements IRangedAttackMob, Toro
 				            	QuestCaptureFugitives.INSTANCE.onReturn(player);
 				            	this.chat(player, "fugitive", null);
 				    	        this.playSound( SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F );
-				    	        this.playSound( SoundEvents.BLOCK_ANVIL_LAND, 0.8F, 0.8F );
+				    	        this.playSound( SoundEvents.BLOCK_ANVIL_LAND, 0.5F, 0.8F );
 				    	        this.playSound( SoundEvents.ENTITY_VILLAGER_NO, 0.8F, 0.8F );
 				    	        v.setDead();
 				    			v.setHealth(0);
@@ -1825,7 +1832,7 @@ public class EntityGuard extends EntityToroNpc implements IRangedAttackMob, Toro
 					            		this.chat(player, "returnsheep", null);
 										v.setDead();
 										v.setHealth(0);
-										this.playSound( SoundEvents.BLOCK_ANVIL_LAND, 0.8F, 0.8F );
+										this.playSound( SoundEvents.BLOCK_ANVIL_LAND, 0.5F, 0.8F );
 								        this.playSound( SoundEvents.ENTITY_SHEEP_AMBIENT, 0.8F, 0.8F );
 							            CivilizationHandlers.adjustPlayerRep(player, (int)(player.posX / 16), (int)(player.posZ / 16), ToroQuestConfiguration.returnFugitiveRepGain);
 							            this.actionTimer = 5;

@@ -157,7 +157,7 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 	{
 		if (!world.isRemote && isRunTick() && withinRange())
 		{
-			triggerSpawner();
+			this.triggerSpawner();
 		}
 	}
 

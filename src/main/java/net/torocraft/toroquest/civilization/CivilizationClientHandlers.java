@@ -11,13 +11,16 @@ public class CivilizationClientHandlers {
 	private CivilizationOverlayHandler hud;
 
 	@SubscribeEvent
-	public void onPostRenderOverlay(RenderGameOverlayEvent.Pre event) {
-		if (event.getType() != ElementType.HOTBAR) {
+	public void onPostRenderOverlay(RenderGameOverlayEvent.Pre event)
+	{
+		if (event.getType() != ElementType.HOTBAR)
+		{
 			return;
 		}
 		ScaledResolution resolution = event.getResolution();
 
-		if (hud == null) {
+		if (hud == null)
+		{
 			hud = new CivilizationOverlayHandler(Minecraft.getMinecraft());
 		}
 

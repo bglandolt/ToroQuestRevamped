@@ -76,8 +76,7 @@ public class EntityToroVillager extends EntityVillager implements INpc, IMerchan
 	public ItemStack treasureMap = null;
 	// public Integer maxTrades = null;
 	public Integer varient = null;
-	public Integer job = null;
-	public String jobName = null;
+	public int job = 0;
 	// -------------------------------------------------------------------
 	
 	@Override
@@ -224,7 +223,6 @@ public class EntityToroVillager extends EntityVillager implements INpc, IMerchan
 		return super.getDisplayName();
     }
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public String getName()
     {
@@ -272,13 +270,11 @@ public class EntityToroVillager extends EntityVillager implements INpc, IMerchan
 			return true;
 		}
 		
-		// Cheeky way of saving NBT data, career types will not work without this code block!
 		if ( this.job == 0 )
 		{
 			super.getRecipes(player);
 	        this.setCustomer(null);
-			NBTTagCompound compound = new NBTTagCompound();
-	        this.writeEntityToNBT(compound);
+	        this.writeEntityToNBT(new NBTTagCompound());
 		}
 		
 		ItemStack itemstack = player.getHeldItem(hand);
@@ -301,7 +297,7 @@ public class EntityToroVillager extends EntityVillager implements INpc, IMerchan
     		{
 	        	playSound(SoundEvents.ENTITY_ILLAGER_CAST_SPELL, 1.2F, 1.2F);
 	        	playSound(SoundEvents.ITEM_ARMOR_EQUIP_CHAIN, 1.0F, 1.0F);
-	        	playSound(SoundEvents.BLOCK_ANVIL_USE, 0.6F, 0.8F);
+	        	playSound(SoundEvents.BLOCK_ANVIL_USE, 0.5F, 0.8F);
 	        	
 	        	player.setHeldItem(hand, new ItemStack(item, itemstack.getCount()-1 ));
 	        	
@@ -541,10 +537,7 @@ public class EntityToroVillager extends EntityVillager implements INpc, IMerchan
 			return new MerchantRecipeList();
 		}
 		
-        // this.getProfessionForge().getCareer(this.careerId).getName()
-		// System.out.println( "job name: " + this.jobName + " " + this.varient + " " + this.maxTrades);
-		
-		return ToroVillagerTrades.trades(this, player, repData.rep, repData.civ, this.jobName, ""+this.varient );
+		return ToroVillagerTrades.trades(this, player, repData.rep, repData.civ, this.getProfessionForge().getCareer(this.job-1).getName(), ""+this.varient );
 	}
 	
 	@Override
@@ -564,52 +557,52 @@ public class EntityToroVillager extends EntityVillager implements INpc, IMerchan
 	
 	public EntityToroVillager(World worldIn)
 	{
-		super(worldIn);
-		this.stepHeight = 1.05F;
-//        NBTTagCompound compound = new NBTTagCompound();
-//        this.writeEntityToNBT(compound);
+		super(worldIn, 0);
 	}
 	
 	public EntityToroVillager(World worldIn, int professionId )
 	{
 		super(worldIn, professionId);
 		this.stepHeight = 1.05F;
-//        NBTTagCompound compound = new NBTTagCompound();
-//        this.writeEntityToNBT(compound);
+    	this.varient = this.rand.nextInt(ToroQuestConfiguration.villagerUniqueShopInventoryVarients+1);
+    	this.writeEntityToNBT(new NBTTagCompound());
 	}
     
     @Override
     public void readEntityFromNBT(NBTTagCompound compound)
     {
     	super.readEntityFromNBT(compound);
-		//this.maxTrades = compound.getInteger("MaxTrades");
-        this.varient = compound.getInteger("Varient");
-        this.job = compound.getInteger("Career");
-        this.jobName = compound.getString("JobName");
+
+    	if ( compound.hasKey("Varient") )
+    	{
+    		this.varient = compound.getInteger("Varient");
+    	}
+    	else
+    	{
+        	this.varient = this.rand.nextInt(ToroQuestConfiguration.villagerUniqueShopInventoryVarients+1);
+    	}
+    	
+    	if ( compound.hasKey("Career") )
+    	{
+    		this.job = compound.getInteger("Career");
+    	}
     }
     
     @Override
     public void writeEntityToNBT(NBTTagCompound compound)
     {
+    	super.writeEntityToNBT(compound);
+
     	if ( this.varient == null )
-        {
-        	this.varient = rand.nextInt(ToroQuestConfiguration.villagerUniqueShopInventoryVarients+1);
-        }
+    	{
+    		this.varient = this.rand.nextInt(ToroQuestConfiguration.villagerUniqueShopInventoryVarients+1);
+    	}
         compound.setInteger("Varient", this.varient);
         
-//      if ( this.maxTrades == null )
-//      {
-//          this.maxTrades = 0;
-//      }
-//      compound.setInteger("MaxTrades", this.maxTrades);
-        
-        this.job = compound.getInteger("Career");
-        {
-        	this.jobName = this.getProfessionForge().getCareer(this.job-1).getName();
-        }
-        compound.setString("JobName", this.jobName);
-        
-    	super.writeEntityToNBT(compound);
+        if ( compound.hasKey("Career") )
+    	{
+    		this.job = compound.getInteger("Career");
+    	}
     }
     
 	// =========================== REPUTATION ============================
@@ -629,7 +622,7 @@ public class EntityToroVillager extends EntityVillager implements INpc, IMerchan
 		
 		RepData repData = new RepData();
 		
-		Province province = CivilizationUtil.getProvinceAt( player.world, player.chunkCoordX, player.chunkCoordZ);
+		Province province = CivilizationUtil.getProvinceAt( player.world, player.chunkCoordX, player.chunkCoordZ );
 
 		if ( province == null || province.getCiv() == null )
 		{
@@ -828,7 +821,6 @@ public class EntityToroVillager extends EntityVillager implements INpc, IMerchan
         }
     }
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public EntityVillager createChild(EntityAgeable ageable)
     {

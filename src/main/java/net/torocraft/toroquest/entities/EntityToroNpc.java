@@ -10,6 +10,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -86,6 +87,8 @@ public class EntityToroNpc extends EntityCreature
 	@Override
 	public void readEntityFromNBT(NBTTagCompound compound)
 	{
+		super.readEntityFromNBT(compound);
+
 	    if ( compound.hasKey("raidX") && compound.hasKey("raidZ") )
 	    {
 	    	this.raidX = compound.getInteger("raidX");
@@ -95,8 +98,6 @@ public class EntityToroNpc extends EntityCreature
 		this.setCivilization( enumCiv(compound.getString("civilization")) );
 		this.setProvince( (compound.getString("province")).toString() );
 		this.setUUID( enumUUID(compound.getString("provinceUUID")) );
-		
-		super.readEntityFromNBT(compound);
 	}
 	
 	
@@ -199,13 +200,13 @@ public class EntityToroNpc extends EntityCreature
 	/* returns true if the province is not null */
 	protected boolean pledgeAllegiance( Province prov )
 	{
-		if ( prov != null && prov.getCiv() != null && prov.getUUID() != null )
+		if ( prov != null && prov.getName() != null && prov.getCiv() != null && prov.getUUID() != null )
 		{
 			this.setProvince(prov.getName());
 			this.setCivilization(prov.getCiv());
 			this.setUUID(prov.getUUID());
 			
-			this.onPledge(prov);
+			onPledge(prov);
 			
 			return true;
 		}
@@ -220,7 +221,7 @@ public class EntityToroNpc extends EntityCreature
 	
 	protected void onPledge( Province prov )
 	{
-		
+		if ( this.ticksExisted < 202 ) this.setRaidLocation(this.getPosition().getX(), this.getPosition().getZ());
 	}
 	// ===================================================================
 	
@@ -629,7 +630,7 @@ public class EntityToroNpc extends EntityCreature
 	
 	public void setRaidLocation(Integer x, Integer z)
 	{
-		if ( this.posY != 0 && this.raidX != null && this.raidZ != null )
+		if ( this.posY != 0 && x != null && z != null )
 		{
 			this.raidX = x;
 			this.raidZ = z;
@@ -637,4 +638,11 @@ public class EntityToroNpc extends EntityCreature
 		}
 	}
 	// ===================================================================
+	
+	@Override
+	public EnumCreatureAttribute getCreatureAttribute()
+	{
+	    return EnumCreatureAttribute.ILLAGER;
+	}
+	
 }

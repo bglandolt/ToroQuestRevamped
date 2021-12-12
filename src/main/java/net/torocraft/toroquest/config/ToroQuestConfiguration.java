@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import javax.annotation.Nullable;
 
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -717,7 +716,7 @@ public class ToroQuestConfiguration
 					"Set true to torovillager enable map trade.");
 			
 			villagerUniqueShopInventoryVarients = config.getInt("villagerUniqueShopInventoryVarients", CATEGORY, 4, 0 , 256,
-					"The number of unique inventory of trades that villagers can offer. If set to 4 - then for each profession there are 4 different inventories of trades that profession can offer. For example: a varient 0 and 1 blacksmith could sell iron swords, a varient 3 blacksmith could buy iron ingots, and a varient 4 blacksmith could sell shields. YOU MUST MANUALLY CONFIGURE TORO VILLAGER TRADES IF YOU PLAN ON CHANGING THIS SETTING!");
+					"The unique inventory of trades that villagers can offer. If set to 4 (meaning the varients are: 0, 1, 2, 3, 4) then for each profession there are 5 different inventories of trades that profession can offer. For example: a varient 0 and 1 blacksmith could sell iron swords, a varient 3 blacksmith could buy iron ingots, and a varient 4 blacksmith could sell shields. YOU MUST MANUALLY CONFIGURE TORO VILLAGER TRADES IF YOU PLAN ON CHANGING THIS SETTING!");
 			
 			tradeList = config.getStringList("tradeList", CATEGORY_TRADES,
 					
@@ -762,7 +761,7 @@ public class ToroQuestConfiguration
 		    	"minecraft:apple,6,x,minecraft:emerald,1,x,x,farmer,4",
 		    	
 		    	"minecraft:sapling,12,x,minecraft:emerald,1,x,100,farmer,4",
-		    	"minecraft:emerald,1,x,minecraft:emerald,12,x,100,farmer,4",
+		    	"minecraft:emerald,1,x,minecraft:sapling,12,x,100,farmer,4",
 		    	
 		    	// "minecraft:charcoal,14,x,minecraft:emerald,1,x,50,farmer,x",
 		    	// "minecraft:dye:15,36,x,minecraft:emerald,1,x,100,farmer,x",
@@ -960,14 +959,7 @@ public class ToroQuestConfiguration
 		    	"minecraft:emerald,16,x,minecraft:enchanted_book,2,YELLOW,500,armor,1,minecraft:blast_protection~2",
 		    	"minecraft:emerald,24,x,minecraft:enchanted_book,2,YELLOW,1000,armor,1,minecraft:blast_protection~3",
 		    	"minecraft:emerald,32,x,minecraft:enchanted_book,2,YELLOW,2000,armor,1,minecraft:blast_protection~4",
-		    	
 		    	"minecraft:emerald,128,x,minecraft:enchanted_book,2,YELLOW,3000,armor,1,minecraft:blast_protection~5",
-//		    	water - resp - frost walk
-//		    	sun - blast / fire
-//		    	mount - prot - unbrea
-//		    	thorn - thorn
-//		    	leaf
-//		    	swamp/skull
 		    	
 		    	"minecraft:emerald,24,x,minecraft:enchanted_book,1,BROWN,250,armor,1,minecraft:protection~1",
 		    	"minecraft:emerald,48,x,minecraft:enchanted_book,1,BROWN,500,armor,1,minecraft:protection~2",
@@ -983,12 +975,6 @@ public class ToroQuestConfiguration
 		    	
 		    	"minecraft:emerald,1,x,minecraft:shield,1,x,x,armor,x",
 		    	
-		    	"minecraft:emerald,8,x,minecraft:enchanted_book,1,YELLOW,250,weapon,1,minecraft:smite~1",
-		    	"minecraft:emerald,16,x,minecraft:enchanted_book,1,YELLOW,500,weapon,1,minecraft:smite~2",
-		    	"minecraft:emerald,24,x,minecraft:enchanted_book,1,YELLOW,1000,weapon,1,minecraft:smite~3",
-		    	"minecraft:emerald,48,x,minecraft:enchanted_book,1,YELLOW,2000,weapon,1,minecraft:smite~4",
-		    	"minecraft:emerald,96,x,minecraft:enchanted_book,1,YELLOW,2000,weapon,1,minecraft:smite~5",
-		    	
 		    	"minecraft:emerald,24,x,minecraft:enchanted_book,2,YELLOW,250,weapon,1,minecraft:fire_aspect~1",
 		    	"minecraft:emerald,48,x,minecraft:enchanted_book,2,YELLOW,1000,weapon,1,minecraft:fire_aspect~2",
 		    	"minecraft:emerald,128,x,minecraft:enchanted_book,2,YELLOW,3000,weapon,1,minecraft:fire_aspect~3",
@@ -997,7 +983,7 @@ public class ToroQuestConfiguration
 		    	"minecraft:emerald,16,x,minecraft:enchanted_book,3,YELLOW,250,weapon,1,minecraft:smite~2",
 		    	"minecraft:emerald,24,x,minecraft:enchanted_book,3,YELLOW,500,weapon,1,minecraft:smite~3",
 		    	"minecraft:emerald,36,x,minecraft:enchanted_book,3,YELLOW,1000,weapon,1,minecraft:smite~4",
-		    	"minecraft:emerald,48,x,minecraft:enchanted_book,3,YELLOW,2000,weapon,1,minecraft:smite~5",
+		    	"minecraft:emerald,64,x,minecraft:enchanted_book,3,YELLOW,2000,weapon,1,minecraft:smite~5",
 		    	"minecraft:emerald,128,x,minecraft:enchanted_book,3,YELLOW,3000,weapon,1,minecraft:smite~6",
 
 		    	"minecraft:emerald,12,x,minecraft:enchanted_book,1,BROWN,250,weapon,1,minecraft:unbreaking~1",
@@ -1042,8 +1028,8 @@ public class ToroQuestConfiguration
 
 		    	"minecraft:emerald,1,x,minecraft:iron_pickaxe,1,x,x,tool,2",
 		    	
-		    	"minecraft:emerald,1,x,minecraft:stone_bricks,32,x,x,tool,2",
-		    	"minecraft:stone_bricks,32,x,minecraft:emerald,1,x,x,tool,2",
+		    	"minecraft:emerald,1,x,minecraft:stonebrick,32,x,x,tool,2",
+		    	"minecraft:stonebrick,32,x,minecraft:emerald,1,x,x,tool,2",
 		    	
 		    	// 3 wood
 		    	"minecraft:iron_axe,1,x,minecraft:emerald,1,x,x,tool,3",

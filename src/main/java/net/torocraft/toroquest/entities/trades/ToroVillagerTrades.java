@@ -33,7 +33,6 @@ public class ToroVillagerTrades
 	@SuppressWarnings("deprecation")
 	public static MerchantRecipeList trades( EntityToroVillager villager, EntityPlayer player, int rep, CivilizationType civ, String jobName, String varient )
 	{
-		
 		// could limit trades by per villager, replace 999999
 		
 		MerchantRecipeList recipeList = new MerchantRecipeList();
@@ -42,7 +41,7 @@ public class ToroVillagerTrades
 		{
 			try
 			{
-				if ( (trade.varient.equals(varient) || trade.varient.equals("x")) && (jobName.equals(trade.job) || trade.job.equals("x")) && (trade.province.equals("x") || trade.province.equals(CivilizationType.biomeName(civ.toString()))) && ( trade.minimunRepRequired.equals("x") || rep >= Integer.parseInt(trade.minimunRepRequired) ) )
+				if ( (trade.varient.equals(varient) || trade.varient.equals("x")) &&  (jobName.equals(trade.job) || trade.job.equals("x"))  &&  (trade.province.equals("x") || trade.province.equals(CivilizationType.tradeName(civ)))  &&  (trade.minimunRepRequired.equals("x") || rep >= Integer.parseInt(trade.minimunRepRequired)) )
 				{
 					int sell = Integer.parseInt(trade.sellAmount);
 					int buy  = Integer.parseInt(trade.buyAmount);
@@ -152,7 +151,16 @@ public class ToroVillagerTrades
 								catch ( Exception e )
 								{
 									player.sendMessage( new TextComponentString( "ERROR GENERATING TRADE: " + trade.sellName + " & " + trade.buyName ));
-									System.err.println( new TextComponentString( "ERROR GENERATING TRADE: " + trade.sellName + " & " + trade.buyName + "." ));
+									System.err.println( new TextComponentString( "ERROR GENERATING TRADE:   sellName: "+ trade.sellName
+											+ "   buyName: " + trade.buyName
+											+ "   sellAmount: " + trade.sellAmount
+											+ "   buyAmount: " + trade.buyAmount
+											+ "   minimunRepRequired: " + trade.minimunRepRequired
+											+ "   province: " + trade.province
+											+ "   job: " + trade.job
+											+ "   sellOptional: " + trade.sellOptional
+											+ "   varient: " + trade.varient
+											+ "   varient: " + trade.enchantment ));
 									continue;
 								}
 							}
@@ -182,7 +190,16 @@ public class ToroVillagerTrades
 			catch ( Exception e )
 			{
 				player.sendMessage( new TextComponentString( "ERROR GENERATING TRADE: " + trade.sellName + " & " + trade.buyName ));
-				System.err.println( new TextComponentString( "ERROR GENERATING TRADE: " + trade.sellName + " & " + trade.buyName + "." ));
+				System.err.println( new TextComponentString( "ERROR GENERATING TRADE:   sellName: "+ trade.sellName
+						+ "   buyName: " + trade.buyName
+						+ "   sellAmount: " + trade.sellAmount
+						+ "   buyAmount: " + trade.buyAmount
+						+ "   minimunRepRequired: " + trade.minimunRepRequired
+						+ "   province: " + trade.province
+						+ "   job: " + trade.job
+						+ "   sellOptional: " + trade.sellOptional
+						+ "   varient: " + trade.varient
+						+ "   varient: " + trade.enchantment ));
 				continue;
 			}
 		}
@@ -309,11 +326,11 @@ public class ToroVillagerTrades
 
 		if ( province == null || province.getCiv() == null )
 		{
-			villager.treasureMap.setStackDisplayName("Map to Village");
+			itemstack.setStackDisplayName("Map to Village");
 		}
 		else
 		{
-			villager.treasureMap.setStackDisplayName("Map to " + province.getCiv().getDisplayName(player) );
+			itemstack.setStackDisplayName("Map to " + province.getCiv().getDisplayName(player) );
 		}
 		
         villager.treasureMap = itemstack;

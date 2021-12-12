@@ -212,12 +212,6 @@ public class EntityVillageLord extends EntityToroNpc implements IInventoryChange
 		return false;
 	}
 	
-	@Override
-	public void onPledge( Province prov )
-	{
-		
-	}
-	
 	public boolean returnToPost()
 	{
 		if ( this.raidX == null || this.raidZ == null || ( this.raidX == 0 && this.raidZ == 0 ) )
