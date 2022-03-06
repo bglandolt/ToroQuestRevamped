@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -17,11 +16,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIPanic;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
-import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -35,7 +34,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.datafix.DataFixer;
@@ -44,21 +42,17 @@ import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.server.command.TextComponentHelper;
 import net.torocraft.toroquest.ToroQuest;
 import net.torocraft.toroquest.civilization.CivilizationDataAccessor;
 import net.torocraft.toroquest.civilization.CivilizationHandlers;
 import net.torocraft.toroquest.civilization.CivilizationType;
-import net.torocraft.toroquest.civilization.CivilizationUtil;
 import net.torocraft.toroquest.civilization.CivilizationsWorldSaveData;
 import net.torocraft.toroquest.civilization.Province;
 import net.torocraft.toroquest.civilization.player.PlayerCivilizationCapabilityImpl;
@@ -93,6 +87,37 @@ public class EntityVillageLord extends EntityToroNpc implements IInventoryChange
 			NAME = ToroQuestEntities.ENTITY_PREFIX + NAME;
 		}
 	}
+	
+	public EntityVillageLord( World world, Province p )
+	{
+		super(world, null);
+		this.initInventories();
+		this.pledgeAllegianceTo(p);
+	}
+	
+		public EntityVillageLord(World world, int x, int y, int z)
+		{
+			this(world, null);
+			this.setRaidLocation(x, y, z);
+		}
+		
+		public EntityVillageLord(World world)
+		{
+			this(world, null);
+		}
+	
+	@Override
+    protected void applyEntityAttributes()
+    {
+    	super.applyEntityAttributes();
+    	this.setLeftHanded(false);
+		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(ToroQuestConfiguration.guardBaseHealth*2.0D);
+		this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(ToroQuestConfiguration.guardArmor);
+		this.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(ToroQuestConfiguration.guardArmorToughness);
+		this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(20.0D);
+    	this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.36D);
+    	this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.5D);
+    }
 	
 	@Override
 	public boolean getAlwaysRenderNameTag()
@@ -147,6 +172,8 @@ public class EntityVillageLord extends EntityToroNpc implements IInventoryChange
 		
 		if ( this.ticksExisted % 100 == 0 )
 		{
+			this.pledgeAllegianceIfUnaffiliated(false);
+
 			if ( this.getHealth() >= this.getMaxHealth() )
 			{
 				this.hitSafety = true;
@@ -183,124 +210,14 @@ public class EntityVillageLord extends EntityToroNpc implements IInventoryChange
 				this.returnToPost();
 			}
     		
-			if ( this.ticksExisted % 500 == 0 && this.isEntityAlive() )
+			if ( this.talkingWith != null && this.getDistance(this.talkingWith) > 7 )
 			{
 				this.talkingWith = null;
-				this.pledgeAllegianceIfUnaffiliated(true);
 			}
 		}
 	}
 	
-	// ============================= PLEDGE ==============================
-	// ======================== PLEDGE ALLEGIANCE =========================
-	/* returns TRUE if allegiance is set by this method */
-	protected boolean pledgeAllegianceIfUnaffiliated( boolean force )
-	{
-		if ( force || this.getProvince() == null || this.getUUID() == null || this.getCivilization() == null )
-		{
-			Province prov = CivilizationUtil.getProvinceAt(this.world, this.chunkCoordX, this.chunkCoordZ);
-			
-			this.setHasLord(true, prov);
-
-			if ( this.pledgeAllegiance(prov) )
-			{
-				this.playTameEffect((byte)6);
-		        this.world.setEntityState(this, (byte)6);
-		        return true;
-			}
-		}
-		return false;
-	}
-	
-	public boolean returnToPost()
-	{
-		if ( this.raidX == null || this.raidZ == null || ( this.raidX == 0 && this.raidZ == 0 ) )
-		{
-			return false;
-		}
-		
-		if ( this.hasPath() )
-		{
-			return false;
-		}
-		
-		double x = this.raidX - this.posX;
-		double z = this.raidZ - this.posZ;
-		
-		double xz = Math.abs(x) + Math.abs(z);
-		
-		if ( xz < 4 )
-		{
-			return false;
-		}
-		
-		x = x/xz * 12 + this.posX + (this.rand.nextInt(3)-1);
-		z = z/xz * 12 + this.posZ + (this.rand.nextInt(3)-1);
-		
-		BlockPos moveTo = EntityAIRaid.findValidSurface(this.world, new BlockPos(x, this.posY, z), 8);
-		
-		if ( moveTo != null )
-		{
-			if ( this.getNavigator().tryMoveToXYZ(moveTo.getX(), moveTo.getY(), moveTo.getZ(), 0.4D) )
-			{
-				return true;
-			}
-		}
-				
-		Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this, 2, 8, new Vec3d(x,this.posY,z));
-		
-		if ( vec3d == null || !this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.4D) )
-        {
-			vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this, 4, 8, new Vec3d(x,this.posY,z));
-			
-			if ( vec3d == null || !this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.4D ) )
-			{
-				vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this, 8, 8, new Vec3d(x,this.posY,z));
-				
-				if ( vec3d == null || !this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.4D ) )
-				{
-					return false;
-				}
-			}
-        }
-		
-		return true;
-	}
-
-//	private BlockPos getSurfacePosition(World world, int x, int z)
-//	{
-//		int i = 8;
-//		BlockPos search = new BlockPos(x, this.posY+i, z);
-//		IBlockState blockState;
-//		while ( i > 0 )
-//		{
-//			i++;
-//			search = search.down();
-//			blockState = world.getBlockState(search);
-//			if (isLiquid(blockState))
-//			{
-//				break;
-//			}
-//			if ((blockState).isOpaqueCube())
-//			{
-//				break;
-//			}
-//		}
-//		return search.up();
-//	}
-	
-//	private boolean isLiquid(IBlockState blockState)
-//	{
-//		return blockState.getBlock() == Blocks.WATER || blockState.getBlock() == Blocks.LAVA;
-//	}
-
 	protected Map<UUID, VillageLordInventory> inventories = new HashMap<UUID, VillageLordInventory>();
-
-	public EntityVillageLord(World world)
-	{
-		super(world, null);
-		this.initInventories();
-	}
 
 	public IVillageLordInventory getInventory(UUID playerId)
 	{
@@ -371,36 +288,48 @@ public class EntityVillageLord extends EntityToroNpc implements IInventoryChange
 			return false;
 		}
 		
-		if ( this.isChild() || this.recentlyHit > 0 )
+		if ( this.isChild() )
 		{
 			return true;
 		}
 		
-		if ( this.getCivilization() == null || this.getProvince() == null || this.getUUID() == null || player.isInvisible() )
+		if ( this.getCivilization() == null || this.getUUID() == null || player.isInvisible() )
 		{
 			return true;
 		}
 		
-		Province lordProvince = CivilizationUtil.getProvinceAt(this.world, this.chunkCoordX, this.chunkCoordZ);
+		Province homeProvince = this.getHomeProvince();
 		
-		if ( lordProvince == null )
+		if ( homeProvince == null )
 		{
 			return true;
 		}
 		
-		Province playerProvince = CivilizationUtil.getProvinceAt(player.world, player.chunkCoordX, player.chunkCoordZ);
+		Province standingProvince = this.getStandingInProvince();
+		
+		if ( standingProvince == null )
+		{
+			return true;
+		}
+		
+//		Province playerProvince = CivilizationUtil.getProvinceAt(player.world, player.chunkCoordX, player.chunkCoordZ);
+//
+//		if ( playerProvince == null )
+//		{
+//			return true;
+//		}
+//		
+//		if ( standingProvince != playerProvince )
+//		{
+//			return true;
+//		}
+		
+		if ( homeProvince != standingProvince )
+		{
+			return true;
+		}
 
-		if ( playerProvince == null )
-		{
-			return true;
-		}
-		
-		if ( lordProvince != playerProvince )
-		{
-			return true;
-		}
-
-		int rep = PlayerCivilizationCapabilityImpl.get(player).getReputation(playerProvince.civilization);
+		int rep = PlayerCivilizationCapabilityImpl.get(player).getReputation(homeProvince.civilization);
 		
 		if ( rep < -50 || ( this.murderWitness != null && this.murderWitness == player ) || ( this.underAttack != null && this.underAttack == player ) )
 		{
@@ -440,8 +369,8 @@ public class EntityVillageLord extends EntityToroNpc implements IInventoryChange
 					{
 						return true;
 					}
-			        playerProvince.setName(name);
-					worldData.setName(playerProvince.getUUID(), name);
+					homeProvince.setName(name);
+					worldData.setName(homeProvince.getUUID(), name);
 					this.chatfriendly("rename", player, name);
 					return true;
 	        	}
@@ -573,11 +502,9 @@ public class EntityVillageLord extends EntityToroNpc implements IInventoryChange
 	@Override
 	protected void initEntityAI()
 	{
-		super.initEntityAI();
-		this.setHasLord(true, CivilizationUtil.getProvinceAt(this.world, this.chunkCoordX, this.chunkCoordZ) );
 		this.tasks.addTask(0, new EntityAISwimming(this));
 		this.tasks.addTask(1, new EntityAIPanic(this, 0.485D));
-		this.tasks.addTask(7, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F)
+		this.tasks.addTask(2, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F)
 		{
 			@Override
 			public boolean shouldExecute()
@@ -606,7 +533,8 @@ public class EntityVillageLord extends EntityToroNpc implements IInventoryChange
 	        	}
 	        }
 		});
-		this.tasks.addTask(8, new EntityAILookIdle(this));
+		this.tasks.addTask(3, new EntityAILookIdle(this));
+		this.pledgeAllegianceIfUnaffiliated(false);
 	}
 		
 	@Nullable
@@ -617,6 +545,7 @@ public class EntityVillageLord extends EntityToroNpc implements IInventoryChange
 		this.detachHome();
 		this.addArmor();
 		this.setLeftHanded(false);
+		this.pledgeAllegianceIfUnaffiliated(false);
 		return livingdata;
 	}
 	
@@ -826,11 +755,13 @@ public class EntityVillageLord extends EntityToroNpc implements IInventoryChange
 
 		EntityPlayer player = (EntityPlayer) entity;
 
-		CivilizationType civ = getCivilization();
-		if (civ == null)
+		CivilizationType civ = this.getCivilization();
+		
+		if ( civ == null )
 		{
 			return false;
 		}
+		
 		CivilizationHandlers.adjustPlayerRep(player, civ, amount);
 		return true;
 	}
@@ -843,16 +774,14 @@ public class EntityVillageLord extends EntityToroNpc implements IInventoryChange
 
 	public void onDeath(DamageSource cause)
 	{
-		Province province = CivilizationUtil.getProvinceAt(this.world, this.chunkCoordX, this.chunkCoordZ);
-
-		this.setHasLord(false, province);
+		this.setHasLord(true, this.getHomeProvince());
 		
-		if ( world.isRemote ) // inventories == null
+		if ( this.world.isRemote )
 		{
 			return;
 		}
 		
-		if ( inventories != null )
+		if ( this.inventories != null )
 		{
 			this.killer(cause);
 		}
@@ -901,13 +830,13 @@ public class EntityVillageLord extends EntityToroNpc implements IInventoryChange
 		
 		for ( EntityPlayer player : this.world.playerEntities )
 		{
-			if ( this.getProvince() == null || getProvince().equals("") )
+			if ( this.getHomeProvince() == null )
 			{
 				player.sendStatusMessage( TextComponentHelper.createComponentTranslation(player, "entity.toroquest.lord.slaingeneric", new Object[0]), true);
 			}
-			else if ( getProvince() != null )
+			else
 			{
-				player.sendStatusMessage(   new TextComponentString(( TextComponentHelper.createComponentTranslation(player, "entity.toroquest.lord.slaincivilization", new Object[0]).getUnformattedText() ).replace("@e", getProvince())), true   );
+				player.sendStatusMessage(   new TextComponentString(( TextComponentHelper.createComponentTranslation(player, "entity.toroquest.lord.slaincivilization", new Object[0]).getUnformattedText() ).replace("@e", this.getHomeProvince().getName())), true   );
 			}
 		}
 	}
@@ -928,29 +857,29 @@ public class EntityVillageLord extends EntityToroNpc implements IInventoryChange
 		}
 	}
 
-	public static void registerFixesVillageLord(DataFixer fixer)
+	public static void registerFixesVillageLord( DataFixer fixer )
 	{
 		EntityLiving.registerFixesMob(fixer, EntityVillageLord.class);
 		fixer.registerWalker(FixTypes.ENTITY, new ItemStackDataLists(EntityVillageLord.class, new String[] { "Items" }));
 	}
 
-	private void setHasLord(boolean hasLord, Province province)
-	{		
+	public void setHasLord( boolean hasLord, @Nullable Province province )
+	{
 		if ( province == null )
 		{
 			return;
 		}
 		
-		CivilizationDataAccessor worldData = CivilizationsWorldSaveData.get(world);
+		if ( !isEntityAlive() )
+		{
+			hasLord = false;
+		}
+		
+		CivilizationDataAccessor worldData = CivilizationsWorldSaveData.get(this.world);
 		
 		if ( worldData.provinceHasLord(province.id) == hasLord )
 		{
 			return;
-		}
-
-		if ( !isEntityAlive() && hasLord )
-		{
-			hasLord = false;
 		}
 		
 		if ( !hasLord )
@@ -967,6 +896,40 @@ public class EntityVillageLord extends EntityToroNpc implements IInventoryChange
 		
 		worldData.setProvinceHasLord(province.id, hasLord);
 	}
+	
+	@Override
+	protected boolean pledgeAllegianceIfUnaffiliated( boolean force )
+	{
+		if ( force || this.getCivilization() == null || this.getUUID() == null )
+		{
+			Province p = this.getStandingInProvince();
+			
+			if ( this.pledgeAllegiance(p) )
+			{
+				if ( force )
+				{
+					this.playTameEffect((byte)6);
+			        this.world.setEntityState(this, (byte)6);
+				}
+				this.setHasLord(true, p);
+		        return true;
+			}
+		}
+		return false;
+	}
+	// ===
+	
+	public boolean pledgeAllegianceTo( Province p )
+	{
+		if ( this.pledgeAllegiance(p) )
+		{
+			this.playTameEffect((byte)6);
+	        this.world.setEntityState(this, (byte)6);
+	        return true;
+		}
+		return false;
+	}
+	// ===
 
 @Override
 public void writeEntityToNBT(NBTTagCompound compound)
@@ -994,4 +957,52 @@ public void writeEntityToNBT(NBTTagCompound compound)
 		super.readEntityFromNBT(compound);
 	}
 
+//	@Override
+//	public ResourceLocation getCivSkin()
+//	{		
+//		if ( this.CIV_SKIN != null )
+//		{
+//			return this.CIV_SKIN;
+//		}
+//		
+//		CivilizationType civ = this.getCivilization();
+//		
+//		if ( civ == null )
+//		{
+//			return this.CIV_SKIN = new ResourceLocation(ToroQuest.MODID + ":textures/entity/lord/lord_null.png");
+//		}
+//		
+//		switch ( civ )
+//		{
+//			case FIRE:
+//			{
+//				return this.CIV_SKIN = new ResourceLocation(ToroQuest.MODID + ":textures/entity/lord/lord_fire.png");
+//			}
+//			case EARTH:
+//			{
+//				return this.CIV_SKIN = new ResourceLocation(ToroQuest.MODID + ":textures/entity/lord/lord_earth.png");
+//			}
+//			case MOON:
+//			{
+//				return this.CIV_SKIN = new ResourceLocation(ToroQuest.MODID + ":textures/entity/lord/lord_moon.png");
+//			}
+//			case SUN:
+//			{
+//				return this.CIV_SKIN = new ResourceLocation(ToroQuest.MODID + ":textures/entity/lord/lord_sun.png");
+//			}
+//			case WIND:
+//			{
+//				return this.CIV_SKIN = new ResourceLocation(ToroQuest.MODID + ":textures/entity/lord/lord_wind.png");
+//			}
+//			case WATER:
+//			{
+//				return this.CIV_SKIN = new ResourceLocation(ToroQuest.MODID + ":textures/entity/lord/lord_water.png");
+//			}
+//			default:
+//			{
+//				return this.CIV_SKIN = new ResourceLocation(ToroQuest.MODID + ":textures/entity/lord/lord_null.png");
+//			}
+//		}
+//	}
+	
 }

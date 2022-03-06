@@ -370,7 +370,7 @@ public class QuestCaptureEntity extends QuestBase implements Quest {
 			//if (quest.getCurrentAmount() >= quest.getTargetAmount())
 			//{
 				quest.getData().setCompleted(true);
-				quest.getData().setCompleted(true);
+				// quest.getData().setCompleted(true);
 				chatCompletedQuest(quest.getData());
 			//}
 			return true;
@@ -546,7 +546,7 @@ public class QuestCaptureEntity extends QuestBase implements Quest {
 					break;
 				}
 			}
-			spawner.setColor(color);
+			spawner.setExtra(color);
 		}
 		else
 		{

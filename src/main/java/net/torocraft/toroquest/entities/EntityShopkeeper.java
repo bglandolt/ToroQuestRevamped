@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Predicate;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.IMerchant;
@@ -26,7 +26,11 @@ import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -44,9 +48,10 @@ import net.torocraft.toroquest.civilization.CivilizationUtil;
 import net.torocraft.toroquest.civilization.Province;
 import net.torocraft.toroquest.civilization.player.PlayerCivilizationCapabilityImpl;
 import net.torocraft.toroquest.config.ToroQuestConfiguration;
+import net.torocraft.toroquest.entities.ai.AIHelper;
 import net.torocraft.toroquest.entities.ai.EntityAIAvoidEnemies;
+import net.torocraft.toroquest.entities.ai.EntityAIRaid;
 import net.torocraft.toroquest.entities.ai.EntityAISmartTempt;
-import net.torocraft.toroquest.entities.ai.EntityAIToroVillagerMate;
 import net.torocraft.toroquest.entities.trades.ToroVillagerTrades;
 import net.torocraft.toroquest.generation.village.util.VillagePieceBlockMap;
 import net.torocraft.toroquest.item.ItemScrollEarth;
@@ -70,44 +75,159 @@ public class EntityShopkeeper extends EntityToroVillager implements IMerchant
 	}
 	
 	@Override
-	public String getName()
+	protected void entityInit()
+	{
+		super.entityInit();
+		this.getDataManager().register(RAID_X, Integer.valueOf(0));
+		this.getDataManager().register(RAID_Y, Integer.valueOf(0));
+		this.getDataManager().register(RAID_Z, Integer.valueOf(0));
+	}
+	
+	public static DataParameter<Integer> RAID_X = EntityDataManager.<Integer>createKey(EntityToroNpc.class, DataSerializers.VARINT);
+	public static DataParameter<Integer> RAID_Y = EntityDataManager.<Integer>createKey(EntityToroNpc.class, DataSerializers.VARINT);
+	public static DataParameter<Integer> RAID_Z = EntityDataManager.<Integer>createKey(EntityToroNpc.class, DataSerializers.VARINT);
+
+	protected void setRaidLocation(int x, int y, int z)
+	{
+		this.getDataManager().set(RAID_X, x);
+		this.getDataManager().set(RAID_Y, y);
+		this.getDataManager().set(RAID_Z, z);
+	}
+	
+	public Integer getRaidLocationX()
+	{
+		return this.getDataManager().get(RAID_X);
+	}
+	
+	public Integer getRaidLocationY()
+	{
+		return this.getDataManager().get(RAID_Y);
+	}
+	
+	public Integer getRaidLocationZ()
+	{
+		return this.getDataManager().get(RAID_Z);
+	}
+	
+    @Override
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-		return "Shopkeeper";
+        super.writeEntityToNBT(compound);
+        
+        compound.setInteger("raidX", this.getRaidLocationX());
+        compound.setInteger("raidY", this.getRaidLocationY());
+        compound.setInteger("raidZ", this.getRaidLocationZ());
+    }
+    
+	public boolean returnToPost()
+	{
+		int raid_y = this.getRaidLocationY();
+		
+		if ( raid_y == 0 )
+		{
+			return false;
+		}
+		
+		int raid_x = this.getRaidLocationX();
+		int raid_z = this.getRaidLocationZ();
+		
+		if ( this.getNavigator().tryMoveToXYZ(raid_x, 1+raid_y, raid_z, 0.6D) ) // try moving directly
+		{
+            AIHelper.faceEntitySmart(this, raid_x, raid_z);
+			return true;
+		}
+		
+		double x = raid_x - this.posX;
+		double z = raid_z - this.posZ;
+		
+		double xz = Math.abs(x) + Math.abs(z);
+		
+		x = x/xz * 16 + this.posX;
+		z = z/xz * 16 + this.posZ;
+		
+		BlockPos moveTo = EntityAIRaid.findValidSurface(this.world, new BlockPos(x, this.posY, z), 8);
+		
+		if ( moveTo != null )
+		{
+			if ( this.getNavigator().tryMoveToXYZ(moveTo.getX(), moveTo.getY(), moveTo.getZ(), 0.6D) )
+			{
+	            AIHelper.faceEntitySmart(this, moveTo.getX(), moveTo.getZ());
+				return true;
+			}
+		}
+				
+		Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this, 16, 8, new Vec3d(x,this.posY,z));
+		
+		if ( vec3d == null || !this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.6D) )
+        {
+			vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this, 8, 8, new Vec3d(x,this.posY,z));
+			
+			if ( vec3d == null || !this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.6D ) )
+			{
+				vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this, 20, 8, new Vec3d(x,this.posY,z));
+				
+				if ( vec3d == null || !this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.6D ) )
+				{
+					return false;
+				}
+			}
+        }
+		
+        AIHelper.faceEntitySmart(this, (int)vec3d.x, (int)vec3d.z);
+		return true;
+	}
+
+    @Override
+    public void readEntityFromNBT(NBTTagCompound compound)
+    {
+        super.readEntityFromNBT(compound);
+        this.setRaidLocation(compound.getInteger("raidX"), compound.getInteger("raidY"), compound.getInteger("raidZ"));
     }
 	
-	@Override
-	public ITextComponent getDisplayName()
-    {
-		return new TextComponentString("Shopkeeper");
-    }
-
-	public static void init(int entityId) {
-		EntityRegistry.registerModEntity(new ResourceLocation(ToroQuest.MODID, NAME), EntityShopkeeper.class, NAME, entityId, ToroQuest.INSTANCE, 80,
-				3, true, 0x000000, 0xe0d6b9);
-	}
-
-	public EntityShopkeeper(World worldIn)
-	{
-		super(worldIn, 0);
-	}
-
 	@Override
 	public IEntityLivingData finalizeMobSpawn(DifficultyInstance p_190672_1_, @Nullable IEntityLivingData p_190672_2_, boolean p_190672_3_) {
 		return p_190672_2_;
 	}
 	
-	@Override
-	public boolean processInteract(EntityPlayer player, EnumHand hand)
+	private boolean postHasEmeraldBlock()
 	{
-		ItemStack itemstack = player.getHeldItem(hand);
-		Item item = itemstack.getItem();
-		if ( item.equals(Item.getByNameOrId("toroquest:recruitment_papers")) )
+        IBlockState b;
+
+        int raid_y = this.getRaidLocationY();
+		
+		if ( raid_y == 0 )
 		{
-			return true;
+			return false;
 		}
-		return super.processInteract(player, hand);
+		
+		int raid_x = this.getRaidLocationX();
+		int raid_z = this.getRaidLocationZ();
+		
+		BlockPos pos = new BlockPos(raid_x, raid_y, raid_z);
+		
+		try { b = this.getWorld().getBlockState(pos).getBlock().getDefaultState(); } catch ( Exception e ) { return false; };
+        
+        if ( b == null )
+        {
+        	return false;
+        }
+
+        /** POST IS EMERALD BLOCK **/
+		if ( b == Blocks.EMERALD_BLOCK.getDefaultState() )
+		{	
+			// if ( this.noShopKeepersNear(pos) )
+	        {
+	        	return true;
+	        }
+		}
+		
+		return false;
 	}
-	
+		
+	private boolean shouldReturnToEmeraldBlock()
+	{
+		return ( this.world.isDaytime() && !this.isUnderAttack() );
+	}
 	
 	@Override
 	public void onLivingUpdate()
@@ -128,57 +248,140 @@ public class EntityShopkeeper extends EntityToroVillager implements IMerchant
 	        	return;
 	        }
 	        
-	        Block b;
-	        
-	        try
+	        IBlockState b;
+
+	        if ( this.shouldReturnToEmeraldBlock() )
 	        {
-	        	b = this.getWorld().getBlockState(pos).getBlock();
-	        }
-	        catch ( Exception e )
-	        {
-	        	return;
-	        }
-	        
-			if ( b == Blocks.EMERALD_BLOCK )
-			{
-				if ( this.noShopKeepersNear(pos) )
+		        try{b = this.getWorld().getBlockState(pos).getBlock().getDefaultState(); } catch ( Exception e ) { this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D); this.setEmeraldBlock(false); return;}
+		        
+		        if ( b == null )
 		        {
-		        	this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.0D);
-		        	this.hasEmeraldBlock = true;
+		        	this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
+		        	this.setEmeraldBlock(false);
 		        	return;
 		        }
-			}
-			else
-			{
-		        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
-		        
-		        int x = pos.getX();
-		        int y = pos.getY();
-		        int z = pos.getZ();
-
-		        for ( int xx = -8; xx <= 8; xx++ )
+	
+		        /** STANDING ON EMERALD BLOCK **/
+				if ( b == Blocks.EMERALD_BLOCK.getDefaultState() )
+				{	
+					if ( this.noShopKeepersNear(pos) )
+			        {
+			        	this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.0D);
+						this.setEmeraldBlock(true, pos.getX(), pos.getY(), pos.getZ());
+			        	return;
+			        }
+				}
+				else if ( this.postHasEmeraldBlock() )
 				{
-					for ( int zz = -8; zz <= 8; zz++ )
+					this.returnToPost();
+				}
+		        /** NO EMERALD BLOCK **/
+				else
+				{	
+			        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
+			        
+					this.returnToPost();
+					
+			        int x = pos.getX();
+			        int y = pos.getY();
+			        int z = pos.getZ();
+	
+			        for ( int xx = -8; xx <= 8; xx++ )
 					{
-						for ( int yy = -3; yy <= 3; yy++ )
+						for ( int zz = -8; zz <= 8; zz++ )
 						{
-							pos = new BlockPos(new BlockPos(x+xx,y+yy,z+zz));
-							
-							if ( b == Blocks.EMERALD_BLOCK )
-							{
-								if ( this.noShopKeepersNear(pos) )
+							for ( int yy = -3; yy <= 3; yy++ )
+							{	
+								pos = new BlockPos(new BlockPos(x+xx,y+yy,z+zz));
+								
+								try
 						        {
-									this.getNavigator().tryMoveToXYZ(x+xx+0.5D,y+yy+0.5D,z+zz+0.5D, 0.6D);
-									this.hasEmeraldBlock = true;
-									return;
+						        	b = this.getWorld().getBlockState(pos).getBlock().getDefaultState();
+						        }
+						        catch ( Exception e )
+						        {
+							        continue;
+						        }
+								
+						        /** FOUND AN EMERALD BLOCK **/
+								if ( b == Blocks.EMERALD_BLOCK.getDefaultState() )
+								{	
+									if ( this.noShopKeepersNear(pos) )
+							        {	
+										if ( this.getNavigator().tryMoveToXYZ(x+xx,1+y+yy,z+zz, 0.6D))
+										{
+											this.setEmeraldBlock(true, x+xx,y+yy,z+zz);
+											return;
+										}
+									}
 								}
 							}
 						}
 					}
 				}
 			}
-			this.hasEmeraldBlock = false;
+	        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
+			this.setEmeraldBlock(false);
+			return;
 		}
+	}
+	
+	public boolean hasEmeraldBlock()
+	{
+		return this.hasEmeraldBlock;
+	}
+	
+	public void setEmeraldBlock( boolean b )
+	{
+		this.hasEmeraldBlock = b;
+	}
+	
+	public void setEmeraldBlock( boolean b, int x, int y, int z )
+	{
+		this.setRaidLocation(x, y, z);
+		this.hasEmeraldBlock = b;
+	}
+	// ================================================================================================
+	
+	@Override
+	public boolean processInteract(EntityPlayer player, EnumHand hand)
+	{
+		ItemStack itemstack = player.getHeldItem(hand);
+		Item item = itemstack.getItem();
+		if ( item.equals(Item.getByNameOrId("toroquest:recruitment_papers")) )
+		{
+			return true;
+		}
+		return super.processInteract(player, hand);
+	}
+	
+	@Override
+	public String getName()
+    {
+		return "Shopkeeper";
+    }
+	
+	@Override
+	public ITextComponent getDisplayName()
+    {
+		return new TextComponentString("Shopkeeper");
+    }
+
+	public static void init(int entityId) {
+		EntityRegistry.registerModEntity(new ResourceLocation(ToroQuest.MODID, NAME), EntityShopkeeper.class, NAME, entityId, ToroQuest.INSTANCE, 80,
+				3, true, 0x000000, 0xe0d6b9);
+	}
+
+	public EntityShopkeeper(World worldIn)
+	{
+		super(worldIn, 1);
+	}
+
+	
+	@Override
+	public boolean canBePushed()
+	{
+		return !this.hasEmeraldBlock();
 	}
 	
 	private boolean noShopKeepersNear( BlockPos pos )
@@ -190,11 +393,6 @@ public class EntityShopkeeper extends EntityToroVillager implements IMerchant
 				return entity != EntityShopkeeper.this;
 			}
 		}).isEmpty();
-	}
-	
-	public boolean hasEmeraldBlock()
-	{
-		return this.hasEmeraldBlock;
 	}
 
 	@Override
@@ -256,10 +454,54 @@ public class EntityShopkeeper extends EntityToroVillager implements IMerchant
 		        return super.shouldExecute();
 		    }
 		});
-	    this.tasks.addTask(7, new EntityAIMoveIndoors(this));
-	    this.tasks.addTask(8, new EntityAIRestrictOpenDoor(this));
-	    this.tasks.addTask(9, new EntityAIOpenDoor(this, true));
-	    this.tasks.addTask(10, new EntityAIMoveTowardsRestriction(this, 0.6D));
+	    this.tasks.addTask(7, new EntityAIMoveIndoors(this)
+	    {
+	    	@Override
+	    	public boolean shouldExecute()
+	        {
+	    		if ( hasEmeraldBlock() || isMating() || isTrading() || isUnderAttack() )
+	    		{
+	    			return false;
+	    		}
+	    		return super.shouldExecute();
+	        }
+		});
+	    this.tasks.addTask(8, new EntityAIRestrictOpenDoor(this)
+	    {
+	    	@Override
+	    	public boolean shouldExecute()
+	        {
+	    		if ( hasEmeraldBlock() || isMating() || isTrading() || isUnderAttack() )
+	    		{
+	    			return false;
+	    		}
+	    		return super.shouldExecute();
+	        }
+		});
+	    this.tasks.addTask(9, new EntityAIOpenDoor(this, true)
+	    {
+	    	@Override
+	    	public boolean shouldExecute()
+	        {
+	    		if ( hasEmeraldBlock() || isMating() || isTrading() || isUnderAttack() )
+	    		{
+	    			return false;
+	    		}
+	    		return super.shouldExecute();
+	        }
+		});
+	    this.tasks.addTask(10, new EntityAIMoveTowardsRestriction(this, 0.6D)
+		{
+	    	@Override
+	    	public boolean shouldExecute()
+	        {
+	    		if ( hasEmeraldBlock() || isMating() || isTrading() || isUnderAttack() )
+	    		{
+	    			return false;
+	    		}
+	    		return super.shouldExecute();
+	        }
+		});
 	    this.tasks.addTask(11, new EntityAIWanderAvoidWater(this, 0.5D)
 	    {
 	    	@Override

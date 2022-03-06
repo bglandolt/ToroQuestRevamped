@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockAnvil;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.BlockBrewingStand;
@@ -12,8 +13,10 @@ import net.minecraft.block.BlockChest;
 import net.minecraft.block.BlockDirt;
 import net.minecraft.block.BlockDirt.DirtType;
 import net.minecraft.block.BlockDoor;
+import net.minecraft.block.BlockFence;
 import net.minecraft.block.BlockFlowerPot;
 import net.minecraft.block.BlockFurnace;
+import net.minecraft.block.BlockGlass;
 import net.minecraft.block.BlockGrass;
 import net.minecraft.block.BlockGrassPath;
 import net.minecraft.block.BlockHorizontal;
@@ -21,7 +24,7 @@ import net.minecraft.block.BlockPane;
 import net.minecraft.block.BlockSand;
 import net.minecraft.block.BlockSkull;
 import net.minecraft.block.BlockStairs;
-import net.minecraft.block.BlockStone;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.passive.EntityVillager;
@@ -97,9 +100,8 @@ public class CivilizationGeneratorHandlers
 	}
 
 	@SubscribeEvent (priority = EventPriority.LOWEST)
-	public void registerNewCiviliationBorder2(PopulateChunkEvent.Post event)
+	public void registerNewCiviliationBorderPost(PopulateChunkEvent.Post event)
 	{
-
 		if ( !event.isHasVillageGenerated() )
 		{
 			return;
@@ -134,24 +136,21 @@ public class CivilizationGeneratorHandlers
 			{
 				for ( int yy = CivilizationHandlers.MAX_SPAWN_HEIGHT; yy >= y; yy-- )
 				{
+					short maxDestroyedBlocks = 2;
 					pos = new BlockPos(new BlockPos(x+xx,yy,z+zz));
 					b = event.getWorld().getBlockState(pos).getBlock();
 					
 					if ( destroyedVillage )
 					{
-						if ( b == Blocks.AIR )
+						if ( b instanceof BlockAir )
 						{
-							continue;
+
 						}
-						else if ( b == Blocks.STONE || b instanceof BlockStone || b instanceof BlockDirt ) // GROUND, BREAK LOOP
+						else if ( b instanceof BlockGrass || b instanceof BlockSand )
 						{
-							break;
-						}
-						else if ( b instanceof BlockGrass || b instanceof BlockSand ) // GROUND, BREAK LOOP
-						{
-							if ( hasVillagerChunk && event.getRand().nextInt(128) == 0 )
+							if ( hasVillagerChunk && event.getRand().nextInt(100) == 0 )
 							{
-								if ( event.getWorld().getBlockState(pos.add(1, 1, 0)).getBlock() == Blocks.AIR && event.getWorld().getBlockState(pos.add(0, 1, 1)).getBlock() == Blocks.AIR && event.getWorld().getBlockState(pos.add(-1, 1, 0)).getBlock() == Blocks.AIR && event.getWorld().getBlockState(pos.add(0, 1, -1)).getBlock() == Blocks.AIR)
+								if ( event.getWorld().getBlockState(pos.add(1, 1, 0)).getBlock() instanceof BlockAir && event.getWorld().getBlockState(pos.add(0, 1, 1)).getBlock() instanceof BlockAir && event.getWorld().getBlockState(pos.add(-1, 1, 0)).getBlock() instanceof BlockAir && event.getWorld().getBlockState(pos.add(0, 1, -1)).getBlock() instanceof BlockAir)
 								{
 									event.getWorld().setBlockState(pos.up(2), Blocks.SKULL.getDefaultState().withProperty(BlockSkull.FACING, EnumFacing.UP));
 									if ( ToroQuestConfiguration.useIronBarsForHeadSpike ) event.getWorld().setBlockState(pos.up(1), Blocks.IRON_BARS.getDefaultState());
@@ -159,7 +158,6 @@ public class CivilizationGeneratorHandlers
 									event.getWorld().setBlockState(pos, Blocks.DIRT.getDefaultState().withProperty(BlockDirt.VARIANT, DirtType.COARSE_DIRT));
 								}
 							}
-							break;
 						}
 						else if ( b instanceof BlockChest )
 						{
@@ -169,12 +167,10 @@ public class CivilizationGeneratorHandlers
 								((TileEntityChest) tileentity).clear();
 								((TileEntityChest) tileentity).markDirty();
 							}
-							continue;
 						}
-						else if ( b instanceof BlockBed || b instanceof BlockDoor || b instanceof BlockFurnace || b instanceof BlockAnvil || b instanceof BlockBrewingStand )
+						else if ( b.getBlockState() == Blocks.WOOL.getDefaultState() || b instanceof BlockBed || b instanceof BlockDoor || b instanceof BlockFurnace || b instanceof BlockAnvil || b instanceof BlockBrewingStand )
 						{
 							event.getWorld().setBlockState(pos, Blocks.AIR.getDefaultState());
-							continue;
 						}
 						else if ( b instanceof BlockPane )
 						{
@@ -182,35 +178,40 @@ public class CivilizationGeneratorHandlers
 							{
 								event.getWorld().setBlockState(pos, Blocks.AIR.getDefaultState());
 							}
-							continue;
 						}
-						else if ( event.getWorld().rand.nextInt(5) == 0 )
+						else if ( maxDestroyedBlocks > 0 && event.getWorld().rand.nextInt(8) == 0 )
 						{
-							if ( b instanceof BlockGrassPath ) // GROUND, BREAK LOOP
+							if ( b instanceof BlockGrassPath )
 							{
 								event.getWorld().setBlockState(pos, Blocks.DIRT.getDefaultState().withProperty(BlockDirt.VARIANT, DirtType.COARSE_DIRT));
-								break;
 							}
-							else if ( b == Blocks.COBBLESTONE )
+							else if ( b.getDefaultState().getMaterial() == Material.ROCK )
 							{
-								if ( event.getWorld().rand.nextBoolean() ) event.getWorld().setBlockState(pos, Blocks.STONE_STAIRS.getDefaultState());
-								else if ( event.getWorld().rand.nextBoolean() ) event.getWorld().setBlockState(pos, Blocks.STONE_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.EAST));
-								else event.getWorld().setBlockState(pos, Blocks.AIR.getDefaultState());
+								event.getWorld().setBlockState(pos, Blocks.AIR.getDefaultState());
+								maxDestroyedBlocks--;
 							}
-							else if ( b instanceof BlockStairs && event.getWorld().rand.nextInt(7) == 0 )
+							else if ( b.getDefaultState().getMaterial() == Material.GROUND )
 							{
-								event.getWorld().setBlockState(pos, Blocks.FIRE.getDefaultState());
+								maxDestroyedBlocks--;
 							}
 							else
 							{
 								event.getWorld().setBlockState(pos, Blocks.AIR.getDefaultState());
+								maxDestroyedBlocks--;
 							}
-							continue;
 						}
-						continue;
 					}
 					else // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 					{
+//						if ( pos.getY() == CivilizationHandlers.MAX_SPAWN_HEIGHT )
+//						{
+//							if ( b instanceof BlockGlass || b.getDefaultState() == Blocks.GLASS.getDefaultState() )
+//							{
+//								event.getWorld().setBlockState(pos, Blocks.GOLD_BLOCK.getDefaultState());
+//							}
+//							event.getWorld().setBlockState(pos, Blocks.GLASS.getDefaultState());
+//						}
+						
 						if ( b instanceof BlockChest && ToroQuestConfiguration.replaceVillageChestsWithTrappedChests )
 						{
 							try
@@ -405,10 +406,171 @@ public class CivilizationGeneratorHandlers
 							}
 							continue;
 						}
+						else if ( b.getDefaultState() == Blocks.WOOL.getDefaultState() ) // LANTERN !!!
+						{
+							if ( event.getWorld().getBlockState(pos.add(0, -1, 0)).getBlock() instanceof BlockFence && ( event.getWorld().getBlockState(pos.add(1, 0, 0)).getBlock().getDefaultState() == Blocks.TORCH.getDefaultState() || event.getWorld().getBlockState(pos.add(0, 0, 1)).getBlock().getDefaultState() == Blocks.TORCH.getDefaultState() || event.getWorld().getBlockState(pos.add(-1, 0, 0)).getBlock().getDefaultState() == Blocks.TORCH.getDefaultState() || event.getWorld().getBlockState(pos.add(0, 0, -1)).getBlock().getDefaultState() == Blocks.TORCH.getDefaultState() ) )
+							{
+								event.getWorld().setBlockState(pos.add(1, 0, 0), Blocks.AIR.getDefaultState());
+								event.getWorld().setBlockState(pos.add(0, 0, 1), Blocks.AIR.getDefaultState());
+								event.getWorld().setBlockState(pos.add(-1, 0, 0), Blocks.AIR.getDefaultState());
+								event.getWorld().setBlockState(pos.add(0, 0, -1), Blocks.AIR.getDefaultState());
+								event.getWorld().setBlockState(pos, Blocks.AIR.getDefaultState());
+								
+								this.placeLantern(event.getWorld(), pos);
+								
+								//  --
+								// |  |
+								//    |
+								//    |
+								//    |
+								//    |
+								
+								
+								
+								int i = 1;
+								
+								while ( i <= 6 )
+								{
+									if ( event.getWorld().getBlockState(pos.add(0, -i, 0)).getBlock() instanceof BlockFence )
+									{
+										i++;
+									}
+									else
+									{
+										if ( i > 1 )
+										{
+											i--;
+											event.getWorld().setBlockState(pos.add(0, -i, 0), Blocks.COBBLESTONE_WALL.getDefaultState());
+										}
+										break;
+									}
+								}
+							}
+							
+							
+						}
 					}
 				}
 			}
 		}
+	}
+	
+	private IBlockState getLantern()
+	{
+		IBlockState LA;
+
+		try
+		{
+			LA = Block.getBlockFromName(ToroQuestConfiguration.lanternResourceName).getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.byName("up"));
+		}
+		catch ( Exception e )
+		{
+			try
+			{
+				LA = Block.getBlockFromName(ToroQuestConfiguration.lanternResourceName).getDefaultState();
+			}
+			catch ( Exception ee )
+			{
+				LA = Blocks.GLOWSTONE.getDefaultState();
+			}
+		}
+		
+		return LA;
+	}
+
+	private void placeLantern(World world, BlockPos pos)
+	{		
+		for ( int i = 0; i < 8; i++ )
+		{
+			IBlockState gp = world.getBlockState(pos.add(1, -i, 0)).getBlock().getDefaultState();
+			if ( gp == Blocks.AIR.getDefaultState() )
+			{
+				continue;
+			}
+			else if ( gp == Blocks.GRASS_PATH.getDefaultState() )
+			{
+				world.setBlockState(pos.add(0, 0, 0), Blocks.OAK_FENCE.getDefaultState());
+				world.setBlockState(pos.add(0, 1, 0), Blocks.OAK_FENCE.getDefaultState());
+				world.setBlockState(pos.add(1, 1, 0), Blocks.OAK_FENCE.getDefaultState());
+				world.setBlockState(pos.add(2, 1, 0), Blocks.OAK_FENCE.getDefaultState());
+				Block chain = Block.getBlockFromName(ToroQuestConfiguration.chainResourceName);
+				world.setBlockState(pos.add(2, 0, 0), (chain==null?Blocks.IRON_BARS.getDefaultState():chain.getDefaultState()) );
+				world.setBlockState(pos.add(2, 0, 0), getLantern() );
+				return;
+			}
+			break;
+		}
+		
+		for ( int i = 0; i < 8; i++ )
+		{
+			IBlockState gp = world.getBlockState(pos.add(0, -i, 1)).getBlock().getDefaultState();
+			if ( gp == Blocks.AIR.getDefaultState() )
+			{
+				continue;
+			}
+			else if ( gp == Blocks.GRASS_PATH.getDefaultState() )
+			{
+				world.setBlockState(pos.add(0, 0, 0), Blocks.OAK_FENCE.getDefaultState());
+				world.setBlockState(pos.add(0, 1, 0), Blocks.OAK_FENCE.getDefaultState());
+				world.setBlockState(pos.add(0, 1, 1), Blocks.OAK_FENCE.getDefaultState());
+				world.setBlockState(pos.add(0, 1, 2), Blocks.OAK_FENCE.getDefaultState());
+				Block chain = Block.getBlockFromName(ToroQuestConfiguration.chainResourceName);
+				world.setBlockState(pos.add(0, 0, 2), (chain==null?Blocks.IRON_BARS.getDefaultState():chain.getDefaultState()) );
+				world.setBlockState(pos.add(0, 0, 2), getLantern() );
+				return;
+			}
+			break;
+		}
+		
+		for ( int i = 0; i < 8; i++ )
+		{
+			IBlockState gp = world.getBlockState(pos.add(-1, -i, 0)).getBlock().getDefaultState();
+			if ( gp == Blocks.AIR.getDefaultState() )
+			{
+				continue;
+			}
+			else if ( gp == Blocks.GRASS_PATH.getDefaultState() )
+			{
+				world.setBlockState(pos.add(0, 0, 0), Blocks.OAK_FENCE.getDefaultState());
+				world.setBlockState(pos.add(0, 1, 0), Blocks.OAK_FENCE.getDefaultState());
+				world.setBlockState(pos.add(-1, 1, 0), Blocks.OAK_FENCE.getDefaultState());
+				world.setBlockState(pos.add(-2, 1, 0), Blocks.OAK_FENCE.getDefaultState());
+				Block chain = Block.getBlockFromName(ToroQuestConfiguration.chainResourceName);
+				world.setBlockState(pos.add(-2, 0, 0), (chain==null?Blocks.IRON_BARS.getDefaultState():chain.getDefaultState()) );
+				world.setBlockState(pos.add(-2, 0, 0), getLantern() );
+				return;
+			}
+			break;
+		}
+		
+		for ( int i = 0; i < 8; i++ )
+		{
+			IBlockState gp = world.getBlockState(pos.add(0, -i, -1)).getBlock().getDefaultState();
+			if ( gp == Blocks.AIR.getDefaultState() )
+			{
+				continue;
+			}
+			else if ( gp == Blocks.GRASS_PATH.getDefaultState() )
+			{
+				world.setBlockState(pos.add(0, 0, 0), Blocks.OAK_FENCE.getDefaultState());
+				world.setBlockState(pos.add(0, 1, 0), Blocks.OAK_FENCE.getDefaultState());
+				world.setBlockState(pos.add(0, 1, -1), Blocks.OAK_FENCE.getDefaultState());
+				world.setBlockState(pos.add(0, 1, -2), Blocks.OAK_FENCE.getDefaultState());
+				Block chain = Block.getBlockFromName(ToroQuestConfiguration.chainResourceName);
+				world.setBlockState(pos.add(0, 0, -2), (chain==null?Blocks.IRON_BARS.getDefaultState():chain.getDefaultState()) );
+				world.setBlockState(pos.add(0, 0, -2), getLantern() );
+				return;
+			}
+			break;
+		}
+		
+		world.setBlockState(pos.add(0, 0, 0), Blocks.OAK_FENCE.getDefaultState());
+		world.setBlockState(pos.add(0, 1, 0), Blocks.OAK_FENCE.getDefaultState());
+		world.setBlockState(pos.add(1, 1, 0), Blocks.OAK_FENCE.getDefaultState());
+		world.setBlockState(pos.add(2, 1, 0), Blocks.OAK_FENCE.getDefaultState());
+		Block chain = Block.getBlockFromName(ToroQuestConfiguration.chainResourceName);
+		world.setBlockState(pos.add(2, 0, 0), (chain==null?Blocks.IRON_BARS.getDefaultState():chain.getDefaultState()) );
+		world.setBlockState(pos.add(2, 0, 0), getLantern() );
 	}
 	
 	/*

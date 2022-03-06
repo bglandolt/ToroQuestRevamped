@@ -53,7 +53,8 @@ public class BlockToroSpawner extends BlockContainer
 		//Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(ITEM_INSTANCE, 0, model);
 	}
 
-	protected BlockToroSpawner() {
+	protected BlockToroSpawner()
+	{
 		super(Material.AIR);
 		setCreativeTab(CreativeTabs.MISC);
 	}
@@ -63,34 +64,41 @@ public class BlockToroSpawner extends BlockContainer
 	}
 
 	@Nullable
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos) {
+	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
+	{
 		return NULL_AABB;
 	}
 
-	public boolean isOpaqueCube(IBlockState state) {
+	public boolean isOpaqueCube(IBlockState state)
+	{
 		return false;
 	}
 
-	public boolean canCollideCheck(IBlockState state, boolean hitIfLiquid) {
+	public boolean canCollideCheck(IBlockState state, boolean hitIfLiquid)
+	{
 		return false;
 	}
 
 	/**
 	 * Spawns this Block's drops into the World as EntityItems.
 	 */
+	@Override
 	public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
 	{
+		
 	}
 
 	/**
 	 * Returns a new instance of a block's tile entity class. Called on placing
 	 * the block.
 	 */
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
+	public TileEntity createNewTileEntity(World worldIn, int meta)
+	{
 		return new TileEntityToroSpawner();
 	}
 
-	public boolean isFullCube(IBlockState state) {
+	public boolean isFullCube(IBlockState state)
+	{
 		return false;
 	}
 
@@ -98,14 +106,16 @@ public class BlockToroSpawner extends BlockContainer
 	 * Get the Item that this Block should drop when harvested.
 	 */
 	@Nullable
-	public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+	public Item getItemDropped(IBlockState state, Random rand, int fortune)
+	{
 		return null;
 	}
 
 	/**
 	 * Returns the quantity of items to drop on block destruction.
 	 */
-	public int quantityDropped(Random random) {
+	public int quantityDropped(Random random)
+	{
 		return 0;
 	}
 
@@ -116,7 +126,8 @@ public class BlockToroSpawner extends BlockContainer
 	}
 
 	@Nullable
-	public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
+	public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
+	{
 		return null;
 	}
 

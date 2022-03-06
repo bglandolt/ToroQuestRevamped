@@ -34,7 +34,7 @@ public class RenderConstruct extends RenderLiving<EntityConstruct>
     {
         super.applyRotations(entityLiving, p_77043_2_, rotationYaw, partialTicks);
 
-        if ((double)entityLiving.limbSwingAmount >= 0.01D)
+        if ( entityLiving.world.isRemote && entityLiving.limbSwingAmount >= 0.01F )
         {
             // float f = 13.0F;
             float f1 = entityLiving.limbSwing - entityLiving.limbSwingAmount * (1.0F - partialTicks) + 6.0F;

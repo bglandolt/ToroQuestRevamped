@@ -10,13 +10,16 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.IRangedAttackMob;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
@@ -27,6 +30,9 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
@@ -41,7 +47,6 @@ import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -54,6 +59,8 @@ import net.torocraft.toroquest.generation.WorldGenPlacer;
 
 public class EntityMonolithEye extends EntityMob implements IRangedAttackMob, IMob
 {
+	
+	// replace with wither?
 	
 	public static String NAME = "monolitheye";
 	static
@@ -70,20 +77,9 @@ public class EntityMonolithEye extends EntityMob implements IRangedAttackMob, IM
         return false;
     }
 	
-	@Override
-    protected float getWaterSlowDown()
-    {
-        return 0.0F;
-    }
-	
     public boolean startRiding(Entity entityIn, boolean force)
     {
     	return false;
-    }
-    
-    public boolean isNonBoss()
-    {
-        return false;
     }
     
 	@Override
@@ -102,25 +98,158 @@ public class EntityMonolithEye extends EntityMob implements IRangedAttackMob, IM
 	public EntityMonolithEye(World worldIn)
 	{
 		super(worldIn);
+		this.enablePersistence();
+		this.setSize(20.0F, 38.0F);
+		this.setRealSize(20.0F, 38.0F);
 		this.isImmuneToFire = true;
-		this.setSize(14.0F, 36.0F);
-		
-		// this.setSize(2.95F, 2.95F);
-
         this.bossInfo.setColor(BossInfo.Color.WHITE);
 		this.setEntityInvulnerable(true);
 		this.setNoGravity(true);
 		this.experienceValue = 440;
 	}
 	
+	public EntityMonolithEye(World worldIn, int x, int y, int z)
+	{
+		this(worldIn);
+		this.setRaidLocation(x, y, z);
+	}
+	
+	protected void setRealSize(float width, float height)
+    {
+        if (width != this.width || height != this.height)
+        {
+            float f = this.width;
+            this.width = width;
+            this.height = height;
+
+            if (this.width < f)
+            {
+                double d0 = (double)width / 2.0D;
+                this.setEntityBoundingBox(new AxisAlignedBB(this.posX - d0, this.posY, this.posZ - d0, this.posX + d0, this.posY + (double)this.height, this.posZ + d0));
+                return;
+            }
+
+            AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
+            this.setEntityBoundingBox(new AxisAlignedBB(axisalignedbb.minX, axisalignedbb.minY, axisalignedbb.minZ, axisalignedbb.minX + (double)this.width, axisalignedbb.minY + (double)this.height, axisalignedbb.minZ + (double)this.width));
+
+            if (this.width > f && !this.firstUpdate && !this.world.isRemote)
+            {
+                this.move(MoverType.SELF, (double)(f - this.width), 0.0D, (double)(f - this.width));
+            }
+        }
+    }
+	
 	@Override
 	@Nullable
     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
     {
 		WorldGenPlacer.clearTrees(this.world, new BlockPos((int)this.posX, (int)this.posY, (int)this.posZ), 56);
-		this.setRaidLocation((int)this.posX, (int)this.posY+16, (int)this.posZ);
-        return super.onInitialSpawn(difficulty, livingdata);
+        
+		if ( (int)this.posY != 0 && this.getRaidLocationY() == 0 )
+		{
+			this.setRaidLocation((int)this.posX, (int)this.posY, (int)this.posZ);
+		}
+		
+		return super.onInitialSpawn(difficulty, livingdata);
     }
+	
+	// ============================================================================================================================
+	
+	protected static final DataParameter<Integer> RAID_X = EntityDataManager.<Integer>createKey(EntityMonolithEye.class, DataSerializers.VARINT);
+	protected static final DataParameter<Integer> RAID_Y = EntityDataManager.<Integer>createKey(EntityMonolithEye.class, DataSerializers.VARINT);
+	protected static final DataParameter<Integer> RAID_Z = EntityDataManager.<Integer>createKey(EntityMonolithEye.class, DataSerializers.VARINT);
+
+	@Override
+	protected void entityInit()
+	{
+		super.entityInit();
+		
+		this.getDataManager().register(RAID_X, Integer.valueOf(0));
+		this.getDataManager().register(RAID_Y, Integer.valueOf(0));
+		this.getDataManager().register(RAID_Z, Integer.valueOf(0));
+	}
+	
+    @Override
+    public void writeEntityToNBT(NBTTagCompound compound)
+    {
+        super.writeEntityToNBT(compound);
+        
+        compound.setInteger("raidX", this.getRaidLocationX());
+        compound.setInteger("raidY", this.getRaidLocationY());
+        compound.setInteger("raidZ", this.getRaidLocationZ());
+    }
+
+    @Override
+    public void readEntityFromNBT(NBTTagCompound compound)
+    {
+        super.readEntityFromNBT(compound);
+        
+        this.setRaidLocation(compound.getInteger("raidX"), compound.getInteger("raidY"), compound.getInteger("raidZ"));
+    }
+	
+	protected void setRaidLocation(int x, int y, int z)
+	{
+		this.getDataManager().set(RAID_X, x);
+		this.getDataManager().set(RAID_Y, y);
+		this.getDataManager().set(RAID_Z, z);
+	}
+	
+	public Integer getRaidLocationX()
+	{
+		return this.getDataManager().get(RAID_X).intValue();
+	}
+	
+	public Integer getRaidLocationY()
+	{
+		return this.getDataManager().get(RAID_Y).intValue();
+	}
+	
+	public Integer getRaidLocationZ()
+	{
+		return this.getDataManager().get(RAID_Z).intValue();
+	}
+		
+	// ============================================================================================================================
+		
+	@Override
+	public void onDeath(DamageSource cause)
+	{
+		super.onDeath(cause);
+		
+		if ( !this.world.isRemote )
+		{
+			this.dropBossLoot();
+			
+			int x = this.getRaidLocationX();
+			int y = this.getRaidLocationY();
+			int z = this.getRaidLocationZ();
+			
+			if ( y == 0 )
+			{
+				x = this.getPosition().getX();
+				y = this.getPosition().getY();
+				z = this.getPosition().getZ();
+			}
+			
+			int range = 64;
+			for ( int xx = -range; xx < range; xx++ )
+			{
+				for ( int yy = -32; yy < 8; yy++ )
+				{
+					for ( int zz = -range; zz < range; zz++ )
+					{
+						BlockPos pos = new BlockPos(x+xx,y+yy,z+zz);
+						world.extinguishFire(null, pos, EnumFacing.UP);
+						IBlockState block = world.getBlockState(pos);
+						if ( block == Blocks.OBSIDIAN.getDefaultState() )
+						{
+							world.setBlockState(pos, Blocks.GRAVEL.getDefaultState() );
+						}
+					}
+				}
+			}
+		}
+	}
 	
 	@Override
     public boolean canBePushed()
@@ -234,7 +363,7 @@ public class EntityMonolithEye extends EntityMob implements IRangedAttackMob, IM
 		
 		if ( entityIn instanceof EntityLivingBase )
 		{
-			float damage = 6f;
+			float damage = 6.0f;
 	
 			DamageSource ds = DamageSource.causeIndirectMagicDamage(this, this);
 	
@@ -331,41 +460,6 @@ public class EntityMonolithEye extends EntityMob implements IRangedAttackMob, IM
 		this.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(10.0D);
 	}
 
-	public Integer raidX = null;
-	public Integer raidY = null;
-	public Integer raidZ = null;
-	
-	@Override
-	public void readEntityFromNBT(NBTTagCompound compound)
-	{
-	    if ( compound.hasKey("raidX") && compound.hasKey("raidY") && compound.hasKey("raidZ") )
-	    {
-	    	this.setRaidLocation(compound.getInteger("raidX"), compound.getInteger("raidY"), compound.getInteger("raidZ"));
-	    }
-	    super.readEntityFromNBT(compound);
-	}
-
-	@Override
-	public void writeEntityToNBT(NBTTagCompound compound)
-	{
-		if ( this.raidX != null && this.raidZ != null && this.raidY != null )
-		{
-			compound.setInteger("raidX", this.raidX);
-			compound.setInteger("raidY", this.raidY);
-			compound.setInteger("raidZ", this.raidZ);
-		}
-		super.writeEntityToNBT(compound);
-	}
-
-	public void setRaidLocation( int x, int y, int z)
-	{
-		this.raidX = x;
-		this.raidY = y;
-		this.raidZ = z;
-		this.setPosition(this.raidX+0.5, this.raidY+1, this.raidZ+0.5);
-		this.writeEntityToNBT(new NBTTagCompound());
-	}
-
 	protected int crystalsDestroyed = 0;
 	
 	public void onLivingUpdate()
@@ -376,32 +470,28 @@ public class EntityMonolithEye extends EntityMob implements IRangedAttackMob, IM
 		{
 			return;
 		}
-		
-		EntityLivingBase entitylivingbase = this.getAttackTarget();
-		if ( entitylivingbase != null )
+				
+		if ( this.getAttackTarget() != null )
 		{
-	        this.getLookHelper().setLookPositionWithEntity(entitylivingbase, 30.0F, 30.0F);
-	        this.faceEntity(entitylivingbase, 30.0F, 30.0F);
+	        this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 30.0F, 30.0F);
+	        this.faceEntity(this.getAttackTarget(), 30.0F, 30.0F);
 		}
 		
 		if ( this.ticksExisted % 25 == 0 )
 		{
 			
-			{
-				this.heal(ToroQuestConfiguration.bossHealthMultiplier);
-		        this.bossInfo.setPercent(this.getHealth()/this.getMaxHealth());
-			}
+			this.heal(ToroQuestConfiguration.bossHealthMultiplier);
+	        this.bossInfo.setPercent(this.getHealth()/this.getMaxHealth());
 			
-			entitylivingbase = this.getAttackTarget();
-
-			if ( entitylivingbase != null )
+			if ( this.getAttackTarget() != null )
 			{
 				this.spawnAuraParticle();
 				this.world.setEntityState(this, (byte)16);
 				
-				if ( !entitylivingbase.isEntityAlive() )
+				if ( !this.getAttackTarget().isEntityAlive() )
 				{
 					this.setAttackTarget(null);
+					return;
 				}
 			}
 			
@@ -412,6 +502,7 @@ public class EntityMonolithEye extends EntityMob implements IRangedAttackMob, IM
 					return true;
 				}
 			});
+			
 			for ( EntityPlayer p : e )
 			{
 				if ( this.getDistance(p) < 88 )
@@ -422,6 +513,7 @@ public class EntityMonolithEye extends EntityMob implements IRangedAttackMob, IM
 			}
 			
 			List<EntityEnderCrystal> crystals = world.getEntitiesWithinAABB(EntityEnderCrystal.class, new AxisAlignedBB(this.getPosition()).grow(96, 64, 96));
+			
 			if ( crystals.size() < 1 )
 			{
 				if ( this.getIsInvulnerable() )
@@ -429,11 +521,11 @@ public class EntityMonolithEye extends EntityMob implements IRangedAttackMob, IM
 					this.spawnExplosionParticle();
 					this.world.setEntityState(this, (byte) 15);
 					this.world.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_ENDERDRAGON_DEATH, this.getSoundCategory(), 1.0F, 1.0F);
-					if ( entitylivingbase != null )
+					if ( this.getAttackTarget() != null )
 					{
-						this.world.playSound((EntityPlayer)null, entitylivingbase.posX, entitylivingbase.posY, entitylivingbase.posZ, SoundEvents.ENTITY_ENDERDRAGON_DEATH, this.getSoundCategory(), 1.0F, 1.0F);
-			            this.world.playSound((EntityPlayer)null, entitylivingbase.posX, entitylivingbase.posY, entitylivingbase.posZ, SoundEvents.ENTITY_GENERIC_EXPLODE, this.getSoundCategory(), 1.0F, 1.0F);
-			            this.world.playSound((EntityPlayer)null, entitylivingbase.posX, entitylivingbase.posY, entitylivingbase.posZ, SoundEvents.ENTITY_ENDEREYE_DEATH, this.getSoundCategory(), 1.0F, 1.0F);
+						this.world.playSound((EntityPlayer)null, this.getAttackTarget().posX, this.getAttackTarget().posY, this.getAttackTarget().posZ, SoundEvents.ENTITY_ENDERDRAGON_DEATH, this.getSoundCategory(), 1.0F, 1.0F);
+			            this.world.playSound((EntityPlayer)null, this.getAttackTarget().posX, this.getAttackTarget().posY, this.getAttackTarget().posZ, SoundEvents.ENTITY_GENERIC_EXPLODE, this.getSoundCategory(), 1.0F, 1.0F);
+			            this.world.playSound((EntityPlayer)null, this.getAttackTarget().posX, this.getAttackTarget().posY, this.getAttackTarget().posZ, SoundEvents.ENTITY_ENDEREYE_DEATH, this.getSoundCategory(), 1.0F, 1.0F);
 					}
 			    	this.world.addWeatherEffect(new EntityLightningBolt(this.world, this.posX + rand.nextGaussian() * 32, this.posY - rand.nextFloat() * 32, this.posZ + rand.nextGaussian() * 16, false));
 			    	this.world.addWeatherEffect(new EntityLightningBolt(this.world, this.posX + rand.nextGaussian() * 16, this.posY - rand.nextFloat() * 32, this.posZ + rand.nextGaussian() * 16, false));
@@ -458,32 +550,34 @@ public class EntityMonolithEye extends EntityMob implements IRangedAttackMob, IM
 			}
 			
 			int current = this.crystalsDestroyed;
+			
 			this.crystalsDestroyed = MathHelper.clamp(12 - crystals.size(), 0, 12);
-			if ( current != this.crystalsDestroyed && entitylivingbase != null )
+			
+			if ( current != this.crystalsDestroyed && this.getAttackTarget() != null )
 			{
 				this.world.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_ENDERDRAGON_DEATH, this.getSoundCategory(), 1.0F, 1.0F);
-				this.world.playSound((EntityPlayer)null, entitylivingbase.posX, entitylivingbase.posY, entitylivingbase.posZ, SoundEvents.ENTITY_ENDERDRAGON_HURT, this.getSoundCategory(), 1.0F, 1.0F + rand.nextFloat()/50.0F);
-	            this.world.playSound((EntityPlayer)null, entitylivingbase.posX, entitylivingbase.posY, entitylivingbase.posZ, SoundEvents.ENTITY_ENDEREYE_DEATH, this.getSoundCategory(), 1.0F, 1.0F);
+				this.world.playSound((EntityPlayer)null, this.getAttackTarget().posX, this.getAttackTarget().posY, this.getAttackTarget().posZ, SoundEvents.ENTITY_ENDERDRAGON_HURT, this.getSoundCategory(), 1.0F, 1.0F + rand.nextFloat()/50.0F);
+	            this.world.playSound((EntityPlayer)null, this.getAttackTarget().posX, this.getAttackTarget().posY, this.getAttackTarget().posZ, SoundEvents.ENTITY_ENDEREYE_DEATH, this.getSoundCategory(), 1.0F, 1.0F);
 			}
 		}
 		
 		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 		
-		if ( this.raidX != null && this.raidY != null && this.raidZ != null )
+		if ( this.getRaidLocationY() != 0 )
 		{
-			this.setPosition(this.raidX+0.5, this.raidY+1, this.raidZ+0.5);
+			this.setPosition(this.getRaidLocationX(), this.getRaidLocationY(), this.getRaidLocationZ());
 		}
 		
-		if ( entitylivingbase == null || !entitylivingbase.isEntityAlive() )
+		if ( this.getAttackTarget() == null || !this.getAttackTarget().isEntityAlive() )
 		{
 			return;
 		}
 
-		double d0 = this.getDistance(entitylivingbase);
+		double d0 = this.getDistance(this.getAttackTarget());
 	    
-        if ( d0 <= 32 )
+        if ( d0 <= 22 )
         {
-        	this.collideWithEntity(entitylivingbase);
+        	this.collideWithEntity(this.getAttackTarget());
         }
         
         if ( d0 <= 88)
@@ -492,22 +586,22 @@ public class EntityMonolithEye extends EntityMob implements IRangedAttackMob, IM
 	    	 
 	    	 if ( attackTimer == 28 )
 	         {
-		         this.world.playSound((EntityPlayer)null, entitylivingbase.posX, entitylivingbase.posY, entitylivingbase.posZ, SoundEvents.ENTITY_ENDERDRAGON_GROWL, this.getSoundCategory(), 1.0F, 1.2F);
+		         this.world.playSound((EntityPlayer)null, this.getAttackTarget().posX, this.getAttackTarget().posY, this.getAttackTarget().posZ, SoundEvents.ENTITY_ENDERDRAGON_GROWL, this.getSoundCategory(), 1.0F, 1.2F);
 	        	 // this.world.playEvent((EntityPlayer)null, 1015, new BlockPos(this), 0);
 	         }
 	    	 else if ( ( attackTimer == 30 && this.crystalsDestroyed >= 8 ) || attackTimer == 40 || ( attackTimer == 50 && this.crystalsDestroyed >= 4 ) || ( attackTimer == 60 && this.crystalsDestroyed >= 1 ) || ( attackTimer == 70 && this.crystalsDestroyed >= 12 ) )
 	         {
 	             Vec3d vec3d = this.getLook(1.0F);
-	             double d2 = entitylivingbase.posX - (this.posX + vec3d.x * 4.0D) + rand.nextGaussian() * (this.crystalsDestroyed/8.0D);
-	             double d3 = entitylivingbase.getEntityBoundingBox().minY + (double)(entitylivingbase.height) - (this.posY + (double)(this.height / 9.0D)) + rand.nextGaussian() * (this.crystalsDestroyed/12.0D) - 1.0D;
-	             double d4 = entitylivingbase.posZ - (this.posZ + vec3d.z * 4.0D) + rand.nextGaussian() * (this.crystalsDestroyed/8.0D);
+	             double d2 = this.getAttackTarget().posX - (this.posX + vec3d.x) + rand.nextGaussian() * (this.crystalsDestroyed/8.0D);
+	             double d3 = this.getAttackTarget().getEntityBoundingBox().minY + (double)(this.getAttackTarget().height) - (this.posY + (double)(this.height / 9.0D)) + rand.nextGaussian() * (this.crystalsDestroyed/12.0D) - 3.0D;
+	             double d4 = this.getAttackTarget().posZ - (this.posZ + vec3d.z) + rand.nextGaussian() * (this.crystalsDestroyed/8.0D);
 	             //this.world.playEvent((EntityPlayer)null, 1016, new BlockPos(this), 0);
-		         this.world.playSound((EntityPlayer)null, entitylivingbase.posX, entitylivingbase.posY, entitylivingbase.posZ, SoundEvents.ENTITY_ENDERDRAGON_SHOOT, this.getSoundCategory(), 1.0F, 0.9F + rand.nextFloat()/25.0F);
+		         this.world.playSound((EntityPlayer)null, this.getAttackTarget().posX, this.getAttackTarget().posY, this.getAttackTarget().posZ, SoundEvents.ENTITY_ENDERDRAGON_SHOOT, this.getSoundCategory(), 1.0F, 0.9F + rand.nextFloat()/25.0F);
 	             EntityLargeFireball entitylargefireball = new EntityLargeFireball(world, this, d2, d3, d4);
 	             entitylargefireball.explosionPower = 2;
-	             entitylargefireball.posX = this.posX + vec3d.x * 3.7D;
-	             entitylargefireball.posY = this.posY + 7;
-	             entitylargefireball.posZ = this.posZ + vec3d.z * 3.7D;
+	             entitylargefireball.posX = this.posX - vec3d.x * 2.0D;
+	             entitylargefireball.posY = this.posY - vec3d.y * 2.0D;
+	             entitylargefireball.posZ = this.posZ - vec3d.z * 2.0D;
 	             this.world.spawnEntity(entitylargefireball);
 	         }
 	    }
@@ -518,27 +612,16 @@ public class EntityMonolithEye extends EntityMob implements IRangedAttackMob, IM
 	    }
 	}
 
-	protected void updateLogic()
-	{
-		handleAttachLogicUpdate();
-
-		if (this.rand.nextFloat() < 7.5E-4F) {
-			this.world.setEntityState(this, (byte) 15);
-		}
-
-	}
-
 //	@SideOnly(Side.CLIENT)
 	public void spawnAuraParticle( )
 	{
-		EntityLivingBase player = this.getAttackTarget();
-		if ( player != null )
+		if ( this.getAttackTarget() != null )
 		{
 			if (this.world instanceof WorldServer)
 			{
 				for ( int i = 16; i > 0; i-- )
 				{
-					((WorldServer) this.world).spawnParticle(EnumParticleTypes.PORTAL, player.posX + this.rand.nextGaussian() * 0.06999999523162842D, player.posY + this.rand.nextGaussian() * 0.20999999523162842D, player.posZ + this.rand.nextGaussian() * 0.06999999523162842D, this.rand.nextGaussian() * 0.05D, this.rand.nextGaussian() * 0.05D, this.rand.nextGaussian() * 0.05D, new int[0]);
+					((WorldServer) this.world).spawnParticle(EnumParticleTypes.PORTAL, this.getAttackTarget().posX + this.rand.nextGaussian() * 0.06999999523162842D, this.getAttackTarget().posY + this.rand.nextGaussian() * 0.20999999523162842D, this.getAttackTarget().posZ + this.rand.nextGaussian() * 0.06999999523162842D, this.rand.nextGaussian() * 0.05D, this.rand.nextGaussian() * 0.05D, this.rand.nextGaussian() * 0.05D, new int[0]);
 				}
 			}
 		}
@@ -566,14 +649,10 @@ public class EntityMonolithEye extends EntityMob implements IRangedAttackMob, IM
 		}
 	}
 
-	protected void handleAttachLogicUpdate()
-	{
-
-	}
-
 	@Nullable
-	protected ResourceLocation getLootTable() {
-		return LootTableList.ENTITIES_GUARDIAN;
+	protected ResourceLocation getLootTable()
+	{
+		return null; // LootTableList.ENTITIES_GUARDIAN;
 	}
 
 
@@ -644,118 +723,6 @@ public class EntityMonolithEye extends EntityMob implements IRangedAttackMob, IM
 		}
 		return false;
 	}
-//	@Override
-//	public boolean attackEntityFrom(DamageSource source, float amount)
-//	{
-//		if (!net.minecraftforge.common.ForgeHooks.onLivingAttack(this, source, amount)) return false;
-//        if (this.getIsInvulnerable())
-//        {
-//            return false;
-//        }
-//        else if (this.world.isRemote)
-//        {
-//            return false;
-//        }
-//        else
-//        {
-//            this.idleTime = 0;
-//
-//            if (this.getHealth() <= 0.0F)
-//            {
-//                return false;
-//            }
-//            else
-//            {
-//                float f = amount;
-//                boolean flag = false;
-//                boolean flag1 = true;
-//
-//                if ((float)this.hurtResistantTime > (float)this.maxHurtResistantTime / 2.0F)
-//                {
-//                    if (amount <= this.lastDamage)
-//                    {
-//                        return false;
-//                    }
-//
-//                    this.damageEntity(source, amount - this.lastDamage);
-//                    this.lastDamage = amount;
-//                    flag1 = false;
-//                }
-//                else
-//                {
-//                    this.lastDamage = amount;
-//                    this.hurtResistantTime = this.maxHurtResistantTime;
-//                    this.damageEntity(source, amount);
-//                    this.maxHurtTime = 10;
-//                    this.hurtTime = this.maxHurtTime;
-//                }
-//
-//                this.attackedAtYaw = 0.0F;
-//                Entity entity1 = source.getTrueSource();
-//
-//                if (entity1 != null)
-//                {
-//                    if (entity1 instanceof EntityLivingBase)
-//                    {
-//                        this.setRevengeTarget((EntityLivingBase)entity1);
-//                    }
-//
-//                    if (entity1 instanceof EntityPlayer)
-//                    {
-//                        this.recentlyHit = 100;
-//                        this.attackingPlayer = (EntityPlayer)entity1;
-//                    }
-//                    else
-//                    {
-//                        return false;
-//                    }
-//                }
-//
-//                if (flag1)
-//                {
-//                    if (flag)
-//                    {
-//                        this.world.setEntityState(this, (byte)29);
-//                    }
-//                    else if (source instanceof EntityDamageSource && ((EntityDamageSource)source).getIsThornsDamage())
-//                    {
-//                        this.world.setEntityState(this, (byte)33);
-//                    }
-//                    
-//                    if (entity1 != null)
-//                    {
-////                        double d1 = entity1.posX - this.posX;
-////                        double d0;
-////
-////                        for (d0 = entity1.posZ - this.posZ; d1 * d1 + d0 * d0 < 1.0E-4D; d0 = (Math.random() - Math.random()) * 0.01D)
-////                        {
-////                            d1 = (Math.random() - Math.random()) * 0.01D;
-////                        }
-////
-////                        this.attackedAtYaw = (float)(MathHelper.atan2(d0, d1) * (180D / Math.PI) - (double)this.rotationYaw);
-////                        this.knockBack(entity1, 0.4F, d1, d0);
-//                    }
-//                    else
-//                    {
-//                        this.attackedAtYaw = (float)((int)(Math.random() * 2.0D) * 180);
-//                    }
-//                }
-//
-//                if (flag1)
-//                {
-//                    this.playHurtSound(source);
-//                }
-//
-//                boolean flag2 = !flag || amount > 0.0F;
-//                
-//                if (entity1 instanceof EntityPlayerMP)
-//                {
-//                    CriteriaTriggers.PLAYER_HURT_ENTITY.trigger((EntityPlayerMP)entity1, this, source, f, amount, flag);
-//                }
-//                return flag2;
-//            }
-//        }
-//	}
 	
 	protected void damageEntity(DamageSource damageSrc, float damageAmount)
     {
@@ -778,10 +745,10 @@ public class EntityMonolithEye extends EntityMob implements IRangedAttackMob, IM
                 this.setAbsorptionAmount(this.getAbsorptionAmount() - damageAmount);
             }
         }
-    	if ( this.getHealth() <= 0 )
-        {
-        	this.dropBossLoot();
-        }
+//    	if ( this.getHealth() <= 0 )
+//        {
+//        	this.dropBossLoot();
+//        }
     }
 
 	protected void redirectAttack(DamageSource source, float amount)
@@ -839,7 +806,8 @@ public class EntityMonolithEye extends EntityMob implements IRangedAttackMob, IM
 //	}
 
 	@Override
-	public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
+	public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor)
+	{
 		// TODO Auto-generated method stub
 		
 	}
@@ -868,39 +836,14 @@ public class EntityMonolithEye extends EntityMob implements IRangedAttackMob, IM
     
     private void dropBossLoot()
 	{
-    	if (!this.world.isRemote)
-		{
-			// quest
-			int x = this.getPosition().getX();
-			int y = this.getPosition().getY();
-			int z = this.getPosition().getZ();
-			int range = 128;
-			for ( int xx = -range/2; xx < range; xx++ )
-			{
-				for ( int yy = -range/4; yy < range/2; yy++ )
-				{
-					for ( int zz = -range/2; zz < range; zz++ )
-					{
-						BlockPos pos = new BlockPos(x+xx-16,y+yy-4,z+zz-16);
-						world.extinguishFire(null, pos, EnumFacing.UP);
-						IBlockState block = world.getBlockState(pos);
-						if ( block != null && block == Blocks.OBSIDIAN )
-						{
-							world.setBlockToAir(pos);
-						}
-					}
-				}
-			}
-
-	    	dropTrophy();
-	    	
-			this.dropLootItem(Item.getByNameOrId("minecraft:obsidian"), rand.nextInt(3)+1);
-			this.dropLootItem(Item.getByNameOrId("minecraft:obsidian"), rand.nextInt(3)+1);
-			this.dropLootItem(Item.getByNameOrId("minecraft:obsidian"), rand.nextInt(3)+1);
-			this.dropLootItem(Item.getByNameOrId("minecraft:obsidian"), rand.nextInt(3)+1);
-			this.dropLootItem(Item.getByNameOrId("minecraft:obsidian"), rand.nextInt(3)+1);
-			this.dropLootItem(Item.getByNameOrId("minecraft:obsidian"), rand.nextInt(3)+1);
-		}
+    	this.dropTrophy();
+    	
+		this.dropLootItem(Item.getByNameOrId("minecraft:obsidian"), rand.nextInt(3)+1);
+		this.dropLootItem(Item.getByNameOrId("minecraft:obsidian"), rand.nextInt(3)+1);
+		this.dropLootItem(Item.getByNameOrId("minecraft:obsidian"), rand.nextInt(3)+1);
+		this.dropLootItem(Item.getByNameOrId("minecraft:obsidian"), rand.nextInt(3)+1);
+		this.dropLootItem(Item.getByNameOrId("minecraft:obsidian"), rand.nextInt(3)+1);
+		this.dropLootItem(Item.getByNameOrId("minecraft:obsidian"), rand.nextInt(3)+1);
 	}
     
     private void dropTrophy()

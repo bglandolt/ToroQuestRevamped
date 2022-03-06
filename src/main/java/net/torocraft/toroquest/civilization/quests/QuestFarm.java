@@ -67,7 +67,7 @@ public class QuestFarm extends QuestBase implements Quest
 				{
 					quest.setCurrentAmount(quest.getCurrentAmount() + 1);
 					
-					quest.getData().getPlayer().sendStatusMessage( new TextComponentString(MathHelper.clamp(quest.getCurrentAmount(), 0, quest.getTargetAmount())+"/"+quest.getTargetAmount()), true);
+					quest.getData().getPlayer().sendStatusMessage( new TextComponentString("Planted " + MathHelper.clamp(quest.getCurrentAmount(), 0, quest.getTargetAmount())+"/"+quest.getTargetAmount() + " Crops"), true);
 					if ( quest.getCurrentAmount() >= quest.getTargetAmount() )
 					{
 						quest.getData().setCompleted(true);

@@ -31,6 +31,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.torocraft.toroquest.entities.EntitySentry;
+import net.torocraft.toroquest.entities.EntityToroNpc;
 
 public class TileEntityToroSpawner extends TileEntity implements ITickable
 {
@@ -38,7 +39,9 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 	protected int triggerDistance = 60;
 	protected List<String> entityIds = new ArrayList<String>();
 	protected int spawnRadius = 0;
-	protected Integer color = 0;
+	
+	protected int extra = 0; /* above 0 for color, below 0 for instant spawns */
+	
 	protected List<String> entityTags = new ArrayList<String>();
 
 	public TileEntityToroSpawner()
@@ -64,9 +67,9 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 		this.entityIds = entityIds;
 	}
 	
-	public void setColor(Integer c)
+	public void setExtra(int c)
 	{
-		color = c;
+		extra = c;
 		writeToNBT(new NBTTagCompound());
 	}
 
@@ -77,7 +80,7 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 		spawnRadius = compound.getInteger("spawn_radius");
 		
 		// extra //
-		color = compound.getInteger("color");
+		extra = compound.getInteger("extra");
 
 		entityIds = new ArrayList<String>();
 		entityTags = new ArrayList<String>();
@@ -118,8 +121,6 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 		compound.setInteger("trigger_distance", triggerDistance);
 		compound.setInteger("spawn_radius", spawnRadius);
 
-		compound.setInteger("color", color);
-
 		NBTTagList list = new NBTTagList();
 		for (String id : entityIds) {
 			list.appendTag(new NBTTagString(id));
@@ -133,7 +134,8 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 			}
 		}
 		compound.setTag("entity_tags", list);
-
+		compound.setInteger("extra", extra);
+		
 		return compound;
 	}
 
@@ -146,8 +148,10 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 		compound.setTag(key, c);
 	}
 
-	protected ItemStack readItemStack(String key, NBTTagCompound compound) {
-		if (!compound.hasKey(key)) {
+	protected ItemStack readItemStack(String key, NBTTagCompound compound)
+	{
+		if (!compound.hasKey(key))
+		{
 			return null;
 		}
 		return new ItemStack(compound.getCompoundTag(key));
@@ -155,7 +159,7 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 
 	public void update()
 	{
-		if (!world.isRemote && isRunTick() && withinRange())
+		if ( !this.world.isRemote && ( extra < 0 || (isRunTick() && withinRange()) ) )
 		{
 			this.triggerSpawner();
 		}
@@ -163,7 +167,7 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 
 	protected void triggerSpawner()
 	{
-		for (String entityId : entityIds)
+		for ( String entityId : entityIds )
 		{
 			spawnCreature(entityId);
 		}
@@ -180,12 +184,8 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 			System.out.println("entity not EntityLivingBase: " + entityID);
 			return;
 		}
-		else if ( entity instanceof EntitySentry )
-		{
-			((EntitySentry)(entity)).setRaidLocation((int)entity.posX, (int)entity.posZ);
-		}
 		
-		spawnEntityLiving((EntityLiving) entity, findSuitableSpawnLocation());
+		this.spawnEntityLiving((EntityLiving) entity, this.findSuitableSpawnLocation());
 	}
 
 	public BlockPos findSuitableSpawnLocation()
@@ -295,23 +295,20 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 
 		entity.enablePersistence();
 
-		if (entityTags != null) {
-			for (String tag : entityTags) {
+		if (entityTags != null)
+		{
+			for (String tag : entityTags)
+			{
 				entity.addTag(tag);
 			}
 		}
 		
-		if ( color != null && color != 0 && entity instanceof EntitySheep )
+		if ( extra > 0 && entity instanceof EntitySheep )
 		{
 			EntitySheep sheep = (EntitySheep)entity;
 			
-			switch ( color )
+			switch ( extra )
 			{
-				case 0:
-				{
-					sheep.setFleeceColor(EnumDyeColor.WHITE);
-					break;
-				}
 				case 1:
 				{
 					sheep.setFleeceColor(EnumDyeColor.RED);
@@ -352,12 +349,10 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 			sheep.setAlwaysRenderNameTag(true);
 			sheep.setGlowing(true);
 			world.spawnEntity(sheep);
-			entity.playLivingSound();
 		}
 		else
 		{
 			world.spawnEntity(entity);
-			entity.playLivingSound();
 		}
 		return true;
 	}

@@ -1108,7 +1108,7 @@ public class ModelGraveTitan extends ModelBase
 //        this.body_r6.rotateAngleZ = 0.05F * limbSwingAmount - 0.05F;
 //        this.body_r7.rotateAngleZ = -0.05F * limbSwingAmount + 0.05F;
 
-        float armSwing = MathHelper.cos((ageInTicks % 314) * 0.66F);
+        float armSwing = MathHelper.cos((ageInTicks * 0.66F) * 0.66F);
         this.zombie5.rotateAngleY = -0.05F * armSwing;// + 0.05F;
         this.zombie3.rotateAngleY = -0.05F * armSwing + 0.05F;
         this.arm_r1.rotateAngleY = -0.1F * armSwing;// + 0.1F;

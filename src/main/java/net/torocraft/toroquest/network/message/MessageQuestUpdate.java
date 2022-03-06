@@ -74,17 +74,20 @@ public class MessageQuestUpdate implements IMessage {
 				return;
 			}
 			
-			Province province = CivilizationUtil.getProvinceAt(player.getEntityWorld(), player.chunkCoordX, player.chunkCoordZ);
-
-			if ( province == null )
-			{
-				player.closeScreen();
-				return;
-			}
+//			Province province = CivilizationUtil.getProvinceAt(player.getEntityWorld(), player.chunkCoordX, player.chunkCoordZ);
+//
+//			if ( province == null )
+//			{
+//				player.closeScreen();
+//				return;
+//			}
 			
 			EntityVillageLord lord = (EntityVillageLord) player.world.getEntityByID(message.lordEntityId);
 			
-			if ( lord == null || lord.ticksExisted < 500 || lord.getCivilization() == null || lord.getProvince() == null )
+			Province lordProvince = lord.getHomeProvince();
+			Province standingProvince = lord.getStandingInProvince();
+			
+			if ( lord == null || lord.ticksExisted <= 100 || lord.getCivilization() == null || lordProvince == null || standingProvince == null || lordProvince != standingProvince )
 			{
 				player.closeScreen();
 				return;
@@ -106,19 +109,19 @@ public class MessageQuestUpdate implements IMessage {
 				case ACCEPT:
 				{
 					player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.BLOCK_NOTE_CHIME, SoundCategory.AMBIENT, 1.0F, 1.0F);					
-					processAccept(player, province, inventory);
+					processAccept(player, lordProvince, inventory);
 					break;
 				}
 				case COMPLETE:
 				{
-					processComplete(player, province, inventory, lord);
+					processComplete(player, lordProvince, inventory, lord);
 		            //if ( !player.world.isRemote )
 					break;
 				}
 				case REJECT:
 				{
 		            // this.spawnParticles(player, EnumParticleTypes.VILLAGER_ANGRY);
-					processReject(player, province, inventory);
+					processReject(player, lordProvince, inventory);
 					if ( !player.world.isRemote )
 					{
 						lord.playTameEffect((byte)7);
@@ -130,7 +133,7 @@ public class MessageQuestUpdate implements IMessage {
 				case DONATE:
 				{
 		            //this.spawnParticles(player, EnumParticleTypes.VILLAGER_HAPPY);
-					processDonate(player, province, inventory);
+					processDonate(player, lordProvince, inventory);
 					if ( !player.world.isRemote )
 					{
 						lord.playTameEffect((byte)8);

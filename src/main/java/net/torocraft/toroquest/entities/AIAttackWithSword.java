@@ -35,12 +35,7 @@ public class AIAttackWithSword extends EntityAIBase
     
     public boolean shouldExecute()
     {
-    	if ( this.attacker.getHeldItemMainhand().getItem() instanceof ItemBow )
-		{
-    		return false;
-    	}
-		        
-        if ( !shouldContinueExecuting() )
+        if ( !this.shouldContinueExecuting() )
         {
         	return false;
         }
@@ -58,6 +53,7 @@ public class AIAttackWithSword extends EntityAIBase
 	            return true;
 	        }
         }
+        
         return this.getAttackReachSqr(this.attacker.getAttackTarget()) >= this.attacker.getDistanceSq(this.attacker.getAttackTarget().posX, this.attacker.getAttackTarget().getEntityBoundingBox().minY, this.attacker.getAttackTarget().posZ);
     }
 

@@ -129,7 +129,7 @@ public class QuestKillMobs extends QuestBase implements Quest
 		}
 		
 		quest.setCurrentAmount(quest.getCurrentAmount()+1);
-		quest.getData().getPlayer().sendStatusMessage( new TextComponentString(MathHelper.clamp(quest.getCurrentAmount(), 0, quest.getTargetAmount())+"/"+quest.getTargetAmount()), true);
+		quest.getData().getPlayer().sendStatusMessage( new TextComponentString("Slain " + MathHelper.clamp(quest.getCurrentAmount(), 0, quest.getTargetAmount())+"/"+quest.getTargetAmount() + " " + quest.getMobDisplay()+"s"), true);
 
 		if ( !quest.getData().getCompleted() && quest.getCurrentAmount() >= quest.getTargetAmount() )
 		{

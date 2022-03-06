@@ -19,6 +19,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.torocraft.toroquest.ToroQuest;
+import net.torocraft.toroquest.config.ToroQuestConfiguration;
 
 @Mod.EventBusSubscriber
 public class ItemArtifactRed extends Item
@@ -54,7 +55,7 @@ public class ItemArtifactRed extends Item
     @SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
     {
-		tooltip.add("Give this artifact to it's respective Village Lord for a reward §7[put the item in donate box]§r.");
+		tooltip.add("Give this artifact to a Village Lord of House " + ToroQuestConfiguration.redName + " for a reward §7[put the item in donate box]§r.");
     }
 
 }

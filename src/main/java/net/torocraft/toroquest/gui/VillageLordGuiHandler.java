@@ -12,7 +12,6 @@ import net.torocraft.toroquest.inventory.IVillageLordInventory;
 
 public class VillageLordGuiHandler implements IGuiHandler
 {
-
 	private static final int VILLAGE_LORD_GUI_ID = 70;
 
 	public static int getGuiID()
@@ -38,7 +37,6 @@ public class VillageLordGuiHandler implements IGuiHandler
 		}
 		return null;
 	}
-	
 	
 	private IVillageLordInventory getVillageLordInventory(World world, EntityPlayer player, int x, int y, int z)
 	{

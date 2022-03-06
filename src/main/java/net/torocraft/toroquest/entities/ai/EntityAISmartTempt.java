@@ -90,7 +90,7 @@ public class EntityAISmartTempt extends EntityAIBase
         }
     }
 
-    protected boolean isTempting(ItemStack stack)
+    public boolean isTempting(ItemStack stack)
     {
         return (this.temptItem.contains(stack.getItem()));
     }

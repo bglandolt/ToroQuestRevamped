@@ -92,7 +92,7 @@ public class QuestTradeWithVillagers extends QuestBase implements Quest
 		if ( !quest.getData().getCompleted() )
 		{
 			quest.setCurrentAmount(quest.getCurrentAmount() + 1);
-			quest.getData().getPlayer().sendStatusMessage( new TextComponentString(MathHelper.clamp(quest.getCurrentAmount(), 0, quest.getTargetAmount())+"/"+quest.getTargetAmount()), true);
+			quest.getData().getPlayer().sendStatusMessage( new TextComponentString("Completed " + MathHelper.clamp(quest.getCurrentAmount(), 0, quest.getTargetAmount())+"/"+quest.getTargetAmount()+ " Trades"), true);
 	
 			if (quest.getCurrentAmount() >= quest.getTargetAmount())
 			{

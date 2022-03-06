@@ -1,6 +1,8 @@
 package net.torocraft.toroquest.entities.ai;
 
 
+import java.util.Random;
+
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -16,13 +18,14 @@ public class EntityAIZombieLeap extends EntityAIBase
     /** The entity's motionY after leaping. */
     double leapMotionY;
     boolean immuneWhileLeaping = false;
+    Random rand = new Random();
 
     public EntityAIZombieLeap(EntityLiving leapingEntity, double d, boolean immuneWhileLeaping)
     {
         this.leaper = leapingEntity;
         this.leapMotionY = d;
         this.immuneWhileLeaping = immuneWhileLeaping;
-        this.setMutexBits(2);
+        this.setMutexBits(0);
     }
 
     /**
@@ -38,10 +41,9 @@ public class EntityAIZombieLeap extends EntityAIBase
         }
         else
         {
-        	// System.out.println("goo");
-            double d0 = this.leaper.getDistanceSq(this.leapTarget);
+            double d0 = this.leaper.getDistance(this.leapTarget);
 
-            if (d0 >= 3.5D && d0 <= 16.0D)
+            if ( d0 >= 2.0D && d0 <= 6.0D )
             {
                 if ( !this.leaper.onGround )
                 {
@@ -49,7 +51,7 @@ public class EntityAIZombieLeap extends EntityAIBase
                 }
                 else
                 {
-                    return ( this.leaper.getNavigator().getPathToEntityLiving(this.leapTarget) == null );
+                    return ( this.leaper.getNavigator().getPathToEntityLiving(this.leapTarget) == null || ( d0 <= 3.0D && rand.nextInt(32) == 0 ) );
                 }
             }
             else

@@ -15,7 +15,6 @@ import net.torocraft.toroquest.entities.model.ModelGuard;
 @SideOnly(Side.CLIENT)
 public class RenderVillageLord extends RenderBiped<EntityVillageLord>
 {
-	
 	private static final ResourceLocation DEFAULT = new ResourceLocation(ToroQuest.MODID + ":textures/entity/lord/lord_null.png");
 	private static final ResourceLocation TEXTURES_SUN = new ResourceLocation(ToroQuest.MODID + ":textures/entity/lord/lord_sun.png");
 	private static final ResourceLocation TEXTURES_MOON = new ResourceLocation(ToroQuest.MODID + ":textures/entity/lord/lord_moon.png");
@@ -69,12 +68,17 @@ public class RenderVillageLord extends RenderBiped<EntityVillageLord>
 	 * unless you call Render.bindEntityTexture.
 	 */
 	
-	CivilizationType civ = null;
+	ResourceLocation R;
 
 	@Override
 	protected ResourceLocation getEntityTexture(EntityVillageLord entity)
 	{
-		civ = entity.getCivilization();
+		if ( R != null )
+		{
+			return R;
+		}
+		
+		CivilizationType civ = entity.getCivilization();
 		
 		if ( civ == null )
 		{
@@ -85,31 +89,31 @@ public class RenderVillageLord extends RenderBiped<EntityVillageLord>
 		{
 			case FIRE:
 			{
-				return TEXTURES_FIRE;
+				return R = TEXTURES_FIRE;
 			}
 			case EARTH:
 			{
-				return TEXTURES_EARTH;
+				return R = TEXTURES_EARTH;
 			}
 			case MOON:
 			{
-				return TEXTURES_MOON;
+				return R = TEXTURES_MOON;
 			}
 			case SUN:
 			{
-				return TEXTURES_SUN;
+				return R = TEXTURES_SUN;
 			}
 			case WIND:
 			{
-				return TEXTURES_WIND;
+				return R = TEXTURES_WIND;
 			}
 			case WATER:
 			{
-				return TEXTURES_WATER;
+				return R = TEXTURES_WATER;
 			}
 			default:
 			{
-				return DEFAULT;
+				return R;
 			}
 		}
 	}

@@ -25,6 +25,10 @@ import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
@@ -48,6 +52,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.torocraft.toroquest.ToroQuest;
 import net.torocraft.toroquest.config.ToroQuestConfiguration;
 import net.torocraft.toroquest.entities.ai.AIHelper;
+import net.torocraft.toroquest.entities.ai.EntityAIRaid;
 import net.torocraft.toroquest.entities.ai.EntityAIThrow;
 import net.torocraft.toroquest.entities.ai.EntityAIZombieLeap;
 import net.torocraft.toroquest.entities.render.RenderBas;
@@ -65,8 +70,64 @@ public class EntityBas extends EntitySkeleton implements IMob
 		}
 	}
 
-	//public static Achievement BASTION_ACHIEVEMNT = new Achievement("bastion", "bastion", 0, 0, Items.DIAMOND_SWORD, null).registerStat();
+	// ============================================================================================================================
+	
+    public static DataParameter<Integer> RAID_X = EntityDataManager.<Integer>createKey(EntityBas.class, DataSerializers.VARINT);
+ 	public static DataParameter<Integer> RAID_Y = EntityDataManager.<Integer>createKey(EntityBas.class, DataSerializers.VARINT);
+ 	public static DataParameter<Integer> RAID_Z = EntityDataManager.<Integer>createKey(EntityBas.class, DataSerializers.VARINT);
 
+	@Override
+	protected void entityInit()
+	{
+		super.entityInit();
+		
+		this.getDataManager().register(RAID_X, Integer.valueOf(0));
+		this.getDataManager().register(RAID_Y, Integer.valueOf(0));
+		this.getDataManager().register(RAID_Z, Integer.valueOf(0));
+	}
+	
+    @Override
+    public void writeEntityToNBT(NBTTagCompound compound)
+    {
+        super.writeEntityToNBT(compound);
+        
+        compound.setInteger("raidX", this.getRaidLocationX());
+        compound.setInteger("raidY", this.getRaidLocationY());
+        compound.setInteger("raidZ", this.getRaidLocationZ());
+    }
+
+    @Override
+    public void readEntityFromNBT(NBTTagCompound compound)
+    {
+        super.readEntityFromNBT(compound);
+        
+        this.setRaidLocation(compound.getInteger("raidX"), compound.getInteger("raidY"), compound.getInteger("raidZ"));
+    }
+	
+	protected void setRaidLocation(int x, int y, int z)
+	{
+		this.getDataManager().set(RAID_X, x);
+		this.getDataManager().set(RAID_Y, y);
+		this.getDataManager().set(RAID_Z, z);
+	}
+	
+	public Integer getRaidLocationX()
+	{
+		return this.getDataManager().get(RAID_X).intValue();
+	}
+	
+	public Integer getRaidLocationY()
+	{
+		return this.getDataManager().get(RAID_Y).intValue();
+	}
+	
+	public Integer getRaidLocationZ()
+	{
+		return this.getDataManager().get(RAID_Z).intValue();
+	}
+		
+	// ============================================================================================================================
+ 	
 	public static void init(int entityId)
 	{
 		EntityRegistry.registerModEntity(new ResourceLocation(ToroQuest.MODID, NAME), EntityBas.class, NAME, entityId, ToroQuest.INSTANCE, 80, 3,
@@ -96,7 +157,7 @@ public class EntityBas extends EntitySkeleton implements IMob
 	@Override
     protected float getWaterSlowDown()
     {
-        return 0.0F;
+        return 1.0F;
     }
 	
     public boolean startRiding(Entity entityIn, boolean force)
@@ -133,11 +194,37 @@ public class EntityBas extends EntitySkeleton implements IMob
 	public EntityBas(World world)
 	{
 		super(world);
+		
+		int x = this.getRaidLocationX();
+		int y = this.getRaidLocationY();
+	    int z = this.getRaidLocationZ();
+	    
+	    if ( y != 0 )
+	    {
+			this.tasks.addTask(4, new EntityAIRaid(this, x, z, 0.8D));
+	    }
+	    
+		this.setUpEntity();
+	}
+	
+	private void setUpEntity()
+	{		
+		this.enablePersistence();
 		this.setSize(1.95F, 3.5F);
 		this.setRealSize(1.95F, 3.5F);
 		this.experienceValue = 320;
         this.isImmuneToFire = true;
 		this.stepHeight = 4.05F;
+	}
+	
+	public EntityBas(World world, int x, int y, int z)
+	{
+		super(world);
+		
+		this.setRaidLocation(x, y, z);
+		this.tasks.addTask(4, new EntityAIRaid(this, x, z, 0.8D));
+	    
+		this.setUpEntity();
 	}
 	
     
@@ -238,6 +325,12 @@ public class EntityBas extends EntitySkeleton implements IMob
 		this.spawnBat(null);
 		this.spawnBat(null);
 		this.spawnBat(null);
+		
+		if ( (int)this.posY != 0 && this.getRaidLocationY() == 0 )
+		{
+			this.setRaidLocation((int)this.posX, (int)this.posY, (int)this.posZ);
+		}
+		
 		return livingdata;
 	}
 
@@ -446,7 +539,14 @@ public class EntityBas extends EntitySkeleton implements IMob
 			{
 				if ( this.getAttackTarget() instanceof EntityPlayer )
 				{
-					teleportToEntity(this.getAttackTarget());
+					if ( this.teleportToEntity(this.getAttackTarget()) )
+					{
+						
+					}
+					else
+					{
+		            	this.teleportTo(this.getRaidLocationX(), this.getRaidLocationY(), this.getRaidLocationZ());
+					}
 				}
 				spawnBat(null);
 			}
@@ -526,9 +626,9 @@ public class EntityBas extends EntitySkeleton implements IMob
 				this.spawnBat((EntityLivingBase)source.getTrueSource());
 			}
 		}
-		else if ( rand.nextBoolean() && source.getTrueSource() instanceof EntityLivingBase )
+		else if ( this.rand.nextBoolean() && source.getTrueSource() instanceof EntityLivingBase )
 		{
-			if ( rand.nextBoolean() )
+			if ( this.rand.nextBoolean() )
 			{
 				this.spawnBat((EntityLivingBase)source.getTrueSource());
 			}
@@ -557,7 +657,10 @@ public class EntityBas extends EntitySkeleton implements IMob
 
         if ( this.rand.nextInt(3) == 0 )
         {
-            this.teleportRandomly();
+            if ( !this.teleportRandomly() && this.getRaidLocationY() != 0 )
+            {
+            	this.teleportTo(this.getRaidLocationX(), this.getRaidLocationY(), this.getRaidLocationZ());
+            }
         }
 
         return flag;

@@ -1,10 +1,7 @@
 package net.torocraft.toroquest.entities;
 
-import java.util.Random;
-
 import com.google.common.base.Predicate;
 
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIMoveThroughVillage;
@@ -20,7 +17,10 @@ import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
@@ -33,108 +33,82 @@ import net.torocraft.toroquest.entities.ai.EntityAIZombieLeap;
 
 public class EntityZombieVillagerRaider extends EntityZombieVillager implements IMob
 {
+	// ========================== DATA MANAGER ==========================
 
-	public EntityZombieVillagerRaider(World worldIn )
-	{
-		super(worldIn);
-		this.isImmuneToFire();
-	}
-	
-	public EntityZombieVillagerRaider(World worldIn, int x, int z)
-	{
-		super(worldIn);
-		this.setRaidLocation(x,z);
-	}
+	public static DataParameter<Integer> DESPAWN_TIMER = EntityDataManager.<Integer>createKey(EntityZombieVillagerRaider.class, DataSerializers.VARINT);
+	public static DataParameter<Integer> RAID_X = EntityDataManager.<Integer>createKey(EntityZombieVillagerRaider.class, DataSerializers.VARINT);
+	public static DataParameter<Integer> RAID_Z = EntityDataManager.<Integer>createKey(EntityZombieVillagerRaider.class, DataSerializers.VARINT);
 
-	public static String NAME = "zombie_villager_raider";
-	static
-	{
-		if (ToroQuestConfiguration.specificEntityNames)
-		{
-			NAME = ToroQuestEntities.ENTITY_PREFIX + NAME;
-		}
-	}
-	public static void init(int entityId)
-	{
-		EntityRegistry.registerModEntity(new ResourceLocation(ToroQuest.MODID, NAME), EntityZombieVillagerRaider.class, NAME, entityId, ToroQuest.INSTANCE, 80, 3,
-				true, 0x000000, 0x000000);
-	}
-	
-	public void setImmuneFire()
-	{
-		this.isImmuneToFire = true;
-		this.despawn = true;
-	}
-	
 	@Override
-	protected boolean shouldBurnInDay()
+	protected void entityInit()
+	{
+		super.entityInit();
+		this.getDataManager().register(DESPAWN_TIMER, Integer.valueOf(100));
+		this.getDataManager().register(RAID_X, Integer.valueOf(0));
+		this.getDataManager().register(RAID_Z, Integer.valueOf(0));
+	}
+	
+    @Override
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        return !this.isImmuneToFire;
+        super.writeEntityToNBT(compound);
+        
+        compound.setInteger("customDespawnTimer", this.despawnTimer());
+        compound.setInteger("raidX", this.getRaidLocationX());
+        compound.setInteger("raidZ", this.getRaidLocationZ());
+    }
+
+    @Override
+    public void readEntityFromNBT(NBTTagCompound compound)
+    {
+        super.readEntityFromNBT(compound);
+        
+        this.setDespawnTimer(compound.getInteger("customDespawnTimer"));
+        this.setRaidLocation(compound.getInteger("raidX"), compound.getInteger("raidZ"));
     }
 	
-	protected boolean despawn = false;
-	public Integer raidX = null;
-	public Integer raidZ = null;
-	protected Random rand = new Random();
-	protected final EntityAIRaid areaAI = new EntityAIRaid(this, 0.7D, 16, 48);
-    public int despawnTimer = 100;
-
-	@Override
-	public void readEntityFromNBT(NBTTagCompound compound)
+	public Integer despawnTimer()
 	{
-	    if ( compound.hasKey("raidX") && compound.hasKey("raidZ") )
-	    {
-	    	this.raidX = compound.getInteger("raidX");
-	    	this.raidZ = compound.getInteger("raidZ");
-	    	this.setRaidLocation(this.raidX, this.raidZ);
-	    }
-	    if ( compound.hasKey("despawnTimer") )
-	    {
-	    	this.despawnTimer = compound.getInteger("despawnTimer");
-	    }
-	    this.setBreakDoorsAItask(true);
-	    super.readEntityFromNBT(compound);
+		return this.getDataManager().get(DESPAWN_TIMER);
 	}
-
-	@Override
-	public void writeEntityToNBT(NBTTagCompound compound)
-	{	
-		if ( this.raidX != null && this.raidZ != null )
-		{
-			compound.setInteger("raidX", this.raidX);
-			compound.setInteger("raidZ", this.raidZ);
-			this.despawn = false;
-		}
-		else
-		{
-			this.despawn = true;
-		}
-		compound.setInteger("despawnTimer", this.despawnTimer);
-		super.writeEntityToNBT(compound);
-	}
-
-	/* Set the direction for bandits to move to */
-	public void setRaidLocation(Integer x, Integer z)
+	
+	public Integer despawnTick()
 	{
-		this.tasks.removeTask(this.areaAI);
-		if ( x != null && z != null )
+		int d = this.despawnTimer()-1;
+		this.getDataManager().set(DESPAWN_TIMER, d);
+		return d;
+	}
+	
+	public void setDespawnTimer( int i )
+	{
+		this.getDataManager().set(DESPAWN_TIMER, i);
+	}
+    
+	protected void setRaidLocation(Integer x, Integer z)
+	{
+		if ( x != null && z != null && ( x != 0 && z != 0 ) )
 		{
-			if ( x == 0 && z == 0 )
-			{
-				this.despawn = true;
-				return;
-			}
-			this.raidX = x;
-			this.raidZ = z;
-			this.areaAI.setCenter(x, z);
-			this.tasks.addTask(7, this.areaAI);
-			this.writeEntityToNBT(new NBTTagCompound());
-			this.despawn = false;
+			this.getDataManager().set(RAID_X, x);
+			this.getDataManager().set(RAID_Z, z);
 		}
-		else
-		{
-			this.despawn = true;
-		}
+	}
+	
+	public Integer getRaidLocationX()
+	{
+		return this.getDataManager().get(RAID_X).intValue();
+	}
+	
+	public Integer getRaidLocationZ()
+	{
+		return this.getDataManager().get(RAID_Z).intValue();
+	}
+	
+	// ==================================================================
+    
+	@Override
+	protected boolean canDespawn()
+	{
+		return this.bossMob;
 	}
 		
 	@Override
@@ -155,63 +129,34 @@ public class EntityZombieVillagerRaider extends EntityZombieVillager implements 
 		
 		if ( this.ticksExisted % 100 == 0 )
     	{
-    		if ( --this.despawnTimer < 0 )
+			if ( this.despawnTick() < 0 )
     		{
-    			this.setHealth( 0 );
-				this.despawn = true;
-
-				if ( world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(this.getPosition()).grow(25, 15, 25)).isEmpty() || this.despawnTimer < -60 )
+    			if ( this.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(this.getPosition()).grow(25, 15, 25)).isEmpty() || ( this.world.getWorldTime() == 22000 && this.despawnTimer() < -50 ) || ( this.despawnTimer() < -100 ) )
 				{
-					this.despawn = true;
-					this.setHealth(0);
+	    			this.setHealth(0);
 	    			this.setDead();
 	    			return;
 				}
     		}
-    		
-    		EntityLivingBase attacker = this.getAttackTarget();
-    		
-            if ( attacker == null )
+    		    		
+            if ( this.getAttackTarget() == null )
             {
             	return;
             }
-            
-            double dist = this.getDistanceSq(attacker);
-                		
-    		if ( dist < 64 && dist >= 4 && Math.pow(this.posY - attacker.posY,2) > Math.abs((this.posX - attacker.posX)*(this.posZ - attacker.posZ)) )
+                            		
+    		if ( this.getNavigator().getPathToEntityLiving(this.getAttackTarget()) == null )
     		{
-    			Vec3d vector3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 12, 6, attacker.getPositionVector());
+    			Vec3d vector3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 8, 8, this.getAttackTarget().getPositionVector());
     				
 			    if ( vector3d != null )
 			    {
 					this.setAttackTarget( null );
-			        this.getNavigator().tryMoveToXYZ(vector3d.x, vector3d.y, vector3d.z, 0.7D);
+					this.setRevengeTarget( null );
+			        this.getNavigator().tryMoveToXYZ(vector3d.x, vector3d.y, vector3d.z, 0.8D);
 			    }
     		}
     	}
     }
-		
-	@Override
-	protected boolean canDespawn()
-	{
-		return this.despawn;
-	}
-	
-	@Override
-	public boolean processInteract(EntityPlayer player, EnumHand hand)
-    {
-		return false;
-    }
-	
-//	@Override
-//	protected void applyEntityAttributes()
-//    {
-//        super.applyEntityAttributes();
-//        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(35.0D);
-//        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0D);
-//        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.22D+rand.nextDouble()/50.0D);
-//        this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(2.0D);
-//    }
 	
 	@Override
 	protected void initEntityAI()
@@ -255,8 +200,60 @@ public class EntityZombieVillagerRaider extends EntityZombieVillager implements 
 	@Override
 	protected void applyEntityAI()
 	{
-		
+		// remove target tasks, because mine are more better.
 	}
 	
+	// =========================== ZOMBIE VILLAGER RAIDER ===========================
 	
+	public EntityZombieVillagerRaider(World worldIn)
+	{
+		super(worldIn);
+		
+		int x = this.getRaidLocationX();
+	    int z = this.getRaidLocationZ();
+	    
+	    if ( !( x == 0 && z == 0 ) )
+	    {
+			this.tasks.addTask(4, new EntityAIRaid(this, x, z, 0.8D));
+	    }
+	    
+	}
+	
+	public EntityZombieVillagerRaider(World worldIn, boolean bossMob)
+	{
+		super(worldIn);
+    	((PathNavigateGround)this.getNavigator()).setBreakDoors(true);
+
+		this.bossMob = bossMob;
+	}
+	
+	public EntityZombieVillagerRaider(World worldIn, int x, int z)
+	{
+		super(worldIn);
+
+		this.setRaidLocation(x+rand.nextInt(33)-16, z+rand.nextInt(33)-16);
+		this.tasks.addTask(7, new EntityAIRaid(this, x, z, 0.8D));
+	}
+	
+	public boolean bossMob = false;
+	
+	@Override
+	protected boolean shouldBurnInDay()
+    {
+        return !this.bossMob;
+    }
+
+	public static String NAME = "zombie_villager_raider";
+	static
+	{
+		if (ToroQuestConfiguration.specificEntityNames)
+		{
+			NAME = ToroQuestEntities.ENTITY_PREFIX + NAME;
+		}
+	}
+	public static void init(int entityId)
+	{
+		EntityRegistry.registerModEntity(new ResourceLocation(ToroQuest.MODID, NAME), EntityZombieVillagerRaider.class, NAME, entityId, ToroQuest.INSTANCE, 80, 3,
+				true, 0x000000, 0x000000);
+	}
 }

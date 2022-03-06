@@ -120,14 +120,14 @@ public class ProvinceNames
 	// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= GLACIER =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	private static final String[] START_WATER =
 	{
-		"ivar", "sno", "snow", "drift", "flur", "bliz", "sleet", "storm", "bleak", "alf", "sleet", "hers", "ulf", "nov",
+		"water", "ivar", "sno", "snow", "drift", "flur", "bliz", "sleet", "storm", "bleak", "alf", "sleet", "hers", "ulf", "nov",
 		"white", "pale", "winter", "freeze", "frost", "cold", "winter", "river", "shiver", "kirk", "surj",
-		"dew", "sunken", "ice", "glace", "glacier", "bleak", "numb", "glacial", "wolf", "polar", "novi"
+		"dew", "sunke", "ice", "glace", "glacier", "bleak", "numb", "glacial", "wolf", "polar", "novi"
 	};
 	
 	private static final String[] END_WATER =
 	{
-		"stead", "sted", "burg", "jarl", "berg", "heim", "rime", "kir", "dner", "dnar", "grasp", "weald", "snap", "fall",
+		"crest", "stead", "sted", "burg", "jarl", "berg", "heim", "rime", "kir", "dner", "dnar", "grasp", "weald", "snap", "fall",
 		"gate", "watch", "bite", "fjord", "gard", "guard", "vik", "vin", "kild", "igrad", "graft", "hild", "hold",
 		"hearth", "ford", "weld", "whelm", "kyr", "thaw", "post", "fort", "watch", "well", "rift", "run", "scape", "ridge",
 		"igard"
@@ -164,7 +164,7 @@ public class ProvinceNames
 	// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= SWAMP =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	private static final String[] START_MOON =
 	{
-		"fallen", "soul", "ash", "salt", "blight", "swamp", "peat", "peats", "corpse", "rot", "weap", "stilt", "pitch", "copse", "death", "bleak", "dead",
+		"wailing", "fallen", "soul", "ash", "salt", "blight", "swamp", "peat", "peats", "corpse", "rot", "weap", "stilt", "pitch", "copse", "death", "bleak", "dead",
 		"shamble", "ink", "soot", "wilt", "dark", "bog", "mud", "musk", "shadow", "ahsen", "bitter", "blight", "fog", "weeping",
 		"gilt", "black", "scar", "night", "luster", "ink", "mirk", "murk", "moor", "mourn", "marsh", "fen", "quag", "barren",
 		"sump", "marsh", "sump", "glade", "slough", "musk", "gloom", "moon", "dusk", "shade", "wllow", "luster", "lily"
@@ -173,7 +173,7 @@ public class ProvinceNames
 	
 	private static final String[] END_MOON =
 	{
-		"mist", "deep", "smog", "marsh", "burg", "fen", "fens", "basin", "borg", "cove", "quag", "basin", "pond", "keg", "well", "dam", "morg", "warg", "wail"
+		"cove", "mist", "deep", "smog", "marsh", "burg", "fen", "fens", "basin", "borg", "cove", "quag", "basin", "pond", "keg", "well", "dam", "morg", "warg", "wail"
 	};
 	
 	private static final String[] MOON =

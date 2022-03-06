@@ -143,10 +143,9 @@ public class ModelConstruct extends ModelBase
         EntityConstruct entityirongolem = (EntityConstruct)entitylivingbaseIn;
         int i = entityirongolem.getAttackTimer();
 
-
         if (i > 0)
         {
-            float x = -2.0F + 1.5F * this.triangleWave((float)i - partialTickTime, 10.0F);
+            float x = -2.0F + 1.5F * this.triangleWave((float)i - partialTickTime, 13.0F);
             this.ironGolemRightArm.rotateAngleX = x;
             this.ironGolemLeftArm.rotateAngleX = x;
             this.ironGolemRightPlate.rotateAngleX = x;
@@ -167,8 +166,8 @@ public class ModelConstruct extends ModelBase
         }
     }
 
-    private float triangleWave(float p_78172_1_, float p_78172_2_)
+    private float triangleWave(float currentSwingTime, float maxSwingTime)
     {
-        return (Math.abs(p_78172_1_ % p_78172_2_ - p_78172_2_ * 0.5F) - p_78172_2_ * 0.25F) / (p_78172_2_ * 0.25F);
+        return (Math.abs(currentSwingTime % maxSwingTime - maxSwingTime * 0.5F) - maxSwingTime * 0.25F) / (maxSwingTime * 0.25F);
     }
 }

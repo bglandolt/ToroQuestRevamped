@@ -36,22 +36,21 @@ public class ToroQuestConfiguration
 	public static float banditAttackDamage = 4.0F;
 	public static int banditArmor = 0;
 	public static int banditArmorToughness = 0;
-	public static float banditDamageMultiplier = 0.6F;
-	//public static float banditDamageAdditiveModifierPer1HP = 0.05F;
 	
 	// ORC
 	public static int orcBaseHealth = 24;
 	public static float orcAttackDamage = 5.0F;
 	public static int orcArmor = 0;
 	public static int orcArmorToughness = 0;
-	public static float orcDamageMultiplier = 0.7F;
-	//public static float orcDamageAdditiveModifierPer1HP = 0.06F;
 	
-	public static int banditAndOrcFleeHealthPercentBase = 15;
-	public static int banditAndOrcFleeHealthPercentRange = 15;
+	public static float banditAndOrcFleeHealthPercentageBase = 0.15F;
+	public static float banditAndOrcFleeHealthPercentageRange = 0.15F;
 	
+	public static float banditAndOrcKnockBackResistance = 0.25F;
+	public static float guardKnockBackResistance = 0.25F;
+
 	// GUARD
-	public static float guardSpeakChance = 0.25F;
+	public static float guardSpeakChance = 0.3F;
 	public static int guardBaseHealth = 40;
 	public static float guardAttackDamage = 5.0F;
 	public static int guardArmor = 0;
@@ -64,16 +63,14 @@ public class ToroQuestConfiguration
 	public static float guardDamageBaseMultiplierToMobsOutsideProvinceOrToBosses = 0.6F;
 	public static int minBaseHealthToBeConsideredBossMob = 500;
 	
-	public static int raiderSiegeChance = 40;
+	public static int configRaiderSiegeChance = 35;
 	
 	public static boolean disableKeep = false;
 	public static boolean disableShop = false;
 	public static boolean disableGuardTower = false;
 	public static boolean disableBarracks = false;
 
-	public static boolean enableBloodParticles = false;
-	public static boolean betterKnockback = true;
-	public static float knockUpStrength = 0.5F;
+	// public static boolean enableBloodParticles = false;
 	
 	// public static float banditDamageBasedOnHealthModifier = 0.01; per 1HP
 	// public static float orcDamageBasedOnHealthModifier = 0.01; per 1HP
@@ -82,8 +79,8 @@ public class ToroQuestConfiguration
 	// a bandit with 50HP over their default base health (20) would have a damage multiplier of...   
 	//1 * ( banditDamageMultiplier + banditDamageBasedOnHealthModifier )  ->  1 * (1.25 * 0.5)  -> 1.75
 	
-	public static int maxSpawnHeight = 150;
-	public static int minSpawnHeight = 50;
+	public static int maxSpawnHeight = 144;
+	public static int minSpawnHeight = 48;
 	
 	public static int villagerUniqueShopInventoryVarients = 4;
 	
@@ -91,6 +88,12 @@ public class ToroQuestConfiguration
 	public static float villageDoorsModifier = 0.4F;
 	public static int maxVillagersPerVillage = 20;
 	
+	public static boolean replaceWoolLanternsWithActualLanterns = true;
+	public static String turkeyBlockResourceName = "betteranimalsplus:turkey_cooked";
+	public static String cakeBlockResourceName = "minecraft:cake";
+	public static String chandelierResourceName = "rustic:chandelier";
+	public static String tableResourceName = "rustic:table_oak";
+	public static String chairResourceName = "rustic:chair_spruce";
 	public static String lanternResourceName = "futuremc:lantern";
 	public static String chainResourceName = "futuremc:chain";
 	public static String craftingTableResourceName = "minecraft:crafting_table";
@@ -116,7 +119,8 @@ public class ToroQuestConfiguration
 	// public static boolean guardWatchClosestTask = false;
 	public static boolean guardLookIdleTask = false;
 
-	//public static boolean renderGuardCape = true;
+	public static boolean renderGuardCape = true;
+	public static boolean renderArrowLayer = true;
 	public static boolean renderBanditMask = true;
 	public static boolean renderOrcMask = false;
 	public static boolean banditsHaveArmorForSpartanWeaponry = true;
@@ -148,8 +152,9 @@ public class ToroQuestConfiguration
 	public static int murderLivestockRepLoss = 10;
 	public static int abandonQuestRepLoss = 10;
 	public static int expensiveRepLoss = 10;
+	public static int murderRepLoss = 100;
 	
-	public static int killMobRepGain = 1;
+	public static int healthOfMobNeededToGainOneRep = 50;
 	public static int donateEmeraldRepGain = 1;
 	public static int donateBanditMaskRepGain = 4;
 	public static int recruitGuardRepGain = 2;
@@ -175,6 +180,7 @@ public class ToroQuestConfiguration
 	public static boolean villagesSpawnGolems = false;
 
 	public static int banditMountChance = 10;
+	public static int goldenHorseArmorChance = 30;
 	public static int orcMountChance = 0;
 	public static boolean orcsAreNeutral = false;
 
@@ -196,11 +202,15 @@ public class ToroQuestConfiguration
 	public static int provinceSiegeRate = 8;
 	public static int caravanSpawnRate = 10;
 	//public static int adventurerSpawnRate = 6;
+	public static int shopKeeperSpawnChance = 3;
 	public static int banditSpawnRate = 8;
 	public static int fugitiveSpawnRate = 8;
 	public static int artifactDropRate = 10;
-	public static int disableMobSpawningNearVillage = 104;
-	public static int disableZombieSpawningNearVillage = 80;
+	public static int disableMobSpawningNearVillage = 76;
+	public static int disableZombieSpawningNearVillage = 76;
+	
+	public static String[] safePotionList = new String[]{};
+	public static ArrayList<String> safePotions = new ArrayList<String>();
 	
 	public static String[] tradeList = new String[]{};
 	public static ArrayList<Trade> trades = new ArrayList<Trade>();
@@ -242,7 +252,6 @@ public class ToroQuestConfiguration
 	public static String[] banditTwoHandedMeleeWeaponsPowerful = new String[]{};
 	public static String[] banditRangedWeaponsPowerful = new String[]{};
 
-	
 	public static String[] orcShields = new String[]{};
 	public static String[] orcOneHandedMeleeWeapons = new String[]{};
 	public static String[] orcTwoHandedMeleeWeapons = new String[]{};
@@ -308,9 +317,9 @@ public class ToroQuestConfiguration
 		}
 	}
 	
-	public static int adventurerSkins = 1;
-	public static int banditSkins = 1;
-	public static int orcSkins = 1;
+	// public static int adventurerSkins = 1;
+	public static int banditSkins = 36;
+	public static int orcSkins = 16;
 
 	private static void loadConfiguration()
 	{
@@ -319,17 +328,17 @@ public class ToroQuestConfiguration
 			
 			// SKINS =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 			
-			adventurerSkins = config.getInt("adventurerSkins", CATEGORY_SKINS, 1, 1, 5120,
-					"The number of adventurer skins in your Resource Folder (check mod description on CurseForge for details) that you wish to use. For example, in your folder you have adventurer_0,"
-					+ " adventurer_1, adventurer_2, adventurer_3, adventurer_4, then you would set this number to 5.");
+//			adventurerSkins = config.getInt("adventurerSkins", CATEGORY_SKINS, 1, 1, 5120,
+//					"The number of adventurer skins in your Resource Folder (check mod description on CurseForge for details) that you wish to use. For example, in your folder you have adventurer_0,"
+//					+ " adventurer_1, adventurer_2, adventurer_3, adventurer_4, then you would set this number to 5.");
+//			
+			banditSkins = config.getInt("banditSkins", CATEGORY_SKINS, 36, 1, 5120,
+					"The number of bandit skins in your Resource Folder (check mod description on CurseForge for details) that you wish to use. For example, in your folder you have bandit_1,"
+					+ " bandit_2, bandit_3, bandit_4, bandit_5, then you would set this number to 5. Starts at bandit_1.");
 			
-			banditSkins = config.getInt("banditSkins", CATEGORY_SKINS, 1, 1, 5120,
-					"The number of bandit skins in your Resource Folder (check mod description on CurseForge for details) that you wish to use. For example, in your folder you have bandit_0,"
-					+ " bandit_1, bandit_2, bandit_3, bandit_4, then you would set this number to 5.");
-			
-			orcSkins = config.getInt("orcSkins", CATEGORY_SKINS, 1, 1, 5120,
-					"The number of orc skins in your Resource Folder (check mod description on CurseForge for details) that you wish to use. For example, in your folder you have orc_0,"
-					+ " orc_1, orc_2, then you would set this number to 3.");
+			orcSkins = config.getInt("orcSkins", CATEGORY_SKINS, 16, 1, 5120,
+					"The number of orc skins in your Resource Folder (check mod description on CurseForge for details) that you wish to use. For example, in your folder you have orc_1,"
+					+ " orc_2, orc_3, then you would set this number to 3. Starts at orc_1.");
 			
 			// GEN =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 			
@@ -350,13 +359,31 @@ public class ToroQuestConfiguration
 					"Villages within X blocks of [0,0] will generate as ruined/raided/destoyed villages.");
 
 			lanternResourceName = config.getString("lanternResourceName", CATEGORY_GEN, "futuremc:lantern",
-					"Resource string for Lanterns that generate in villages. Some mods add lanterns so pick your fav.");
+					"Resource string for Lanterns that generate in villages. Some mods (futuremc or rustic) add lanterns so pick your fav.");
+			
+			replaceWoolLanternsWithActualLanterns = config.getBoolean("replaceWoolLanternsWithActualLanterns", CATEGORY_GEN, true,
+					"Replaces the wool lanterns in villages with hanging lanterns. Uses the lanterns as the lanternResourceName option.");
 			
 			chainResourceName = config.getString("chainResourceName", CATEGORY_GEN, "futuremc:chain",
 					"Resource string for Chains that generate in villages.");
 			
 			craftingTableResourceName = config.getString("craftingTableResourceName", CATEGORY_GEN, "minecraft:crafting_table",
 					"Resource string for Crafting Tables that generate in villages. This setting is mostly for me, I change the crafting tables with thebetweenlands ones because the items show up on top which looks cool.");
+			
+			turkeyBlockResourceName = config.getString("turkeyBlockResourceName", CATEGORY_GEN, "betteranimalsplus:turkey_cooked",
+					"Resource string for Turkey Blocks that generate in villages.");
+			
+			cakeBlockResourceName = config.getString("cakeBlockResourceName", CATEGORY_GEN, "minecraft:cake",
+					"Resource string for Cake Blocks that generate in villages.");
+			
+			chandelierResourceName = config.getString("chandelierResourceName", CATEGORY_GEN, "rustic:chandelier",
+					"Resource string for Chandelier that generate in villages.");
+			
+			tableResourceName = config.getString("tableResourceName", CATEGORY_GEN, "rustic:table_oak",
+					"Resource string for Tables that generate in villages.");
+			
+			chairResourceName = config.getString("chairResourceName", CATEGORY_GEN, "rustic:chair_spruce",
+					"Resource string for Chairs that generate in villages.");
 			
 			replaceVillageChestsWithTrappedChests = config.getBoolean("replaceVillageChestsWithTrappedChests", CATEGORY_GEN, true,
 					"Replace the chests that generate in villages with trapped chests. Stealing/ breaking a trapped chest will trigger a crime report. However, stealing/ breaking normal chests is not a crime! This is so players can place their usual normal chests in villages and open/use them without getting aggrod by every guard in sight. This setting replaces those normal chests that generate in villages with trapped ones to differentiate between (normal) player chests and (trapped) village chests.");
@@ -392,7 +419,7 @@ public class ToroQuestConfiguration
 			useDefaultVillagersOutsideOfProvince = config.getBoolean("useDefaultVillagersOutsideOfProvince", CATEGORY_MOBS, true, "Enable to make default villagers"
 					+ "spawn (instead of toro villagers) outside the bounds of a province. Enable this if you want to be able to trade with villagers that spawn from random structures such as Recurrent Complex.");
 			
-			useDefaultVillagers = config.getBoolean("useDefaultVillagers", CATEGORY_MOBS, false, "If you are using another village mod such as Minecraft Comes Alive, enable this to disable toro villagers and allow normal villager spawning");
+			useDefaultVillagers = config.getBoolean("useDefaultVillagers", CATEGORY_MOBS, false, "If you are using another village mod such as Minecraft Comes Alive, enable this to disable toro villagers and allow normal villager spawning.");
 			
 			banditsDropEmeralds = config.getBoolean("banditsDropEmeralds", CATEGORY_MOBS, true,
 					"Enable to allow bandits a 1/3 chance to drop 1-3 Emeralds on death.");
@@ -400,15 +427,9 @@ public class ToroQuestConfiguration
 			banditsUseBoats = config.getBoolean("banditsUseBoats", CATEGORY_MOBS, true,
 					"Enable to allow bandits to use boats to make them a deadly threat on water.");
 			
-			enableBloodParticles = config.getBoolean("enableBloodParticles", CATEGORY_MOBS, false,
-					"Enable to have guards and bandits show blood particles when attacked.");
-			
-			betterKnockback = config.getBoolean("betterKnockback", CATEGORY_MOBS, true,
-					"Enable have the knockback_resistance attribute reduce the STRENGTH of knockback effects, rather than reducing the CHANCE to not be knocked back. (For example: by default, a knockback_resistance of 0.5 means a 50% chance to not be knocked back from an attack. However, if this setting is true, a knockback_resistance of 0.5 means the distance or effects of being knocked back are 50% less far or powerful.");			
-			
-			knockUpStrength = config.getFloat("knockUpStrength", CATEGORY_MOBS, 0.5f, 0.0f, 2.0f,
-					"Multiply the motionY amount of knockback by this amount. Set to 0.5 by default to reduce the motionY by 50%. Does nothing if betterKnockback is disabled.");
-			
+//			enableBloodParticles = config.getBoolean("enableBloodParticles", CATEGORY_MOBS, false,
+//					"Enable to have guards and bandits show blood particles when attacked.");
+
 			banditsDropPotions = config.getInt("banditsDropPotions", CATEGORY_MOBS, 6, 0, 128,
 					"Chance ( 1 out of X ) for bandits to drop 1 Potion on death. Set to 0 to disable.");
 			
@@ -436,8 +457,11 @@ public class ToroQuestConfiguration
 			guardArmorDropChance = config.getFloat("guardArmorDropChance", CATEGORY_MOBS, 0.1f, 0.0f, 1.0f,
 					"Chance for guards to drop their armor on death. Does nothing if guardsHaveArmorForSpartanWeaponry is set to false.");
 			
-//			renderGuardCape = config.getBoolean("renderGuardCape", CATEGORY_MOBS, true,
-//					"Enable to allow cape to be rendered/ visible on guards. Disabling this will slightly improve performance!");
+			renderGuardCape = config.getBoolean("renderGuardCape", CATEGORY_MOBS, true,
+					"Enable to allow cape to be rendered/ visible on guards. Disabling this will very slightly improve performance on the client.");
+			
+			renderArrowLayer = config.getBoolean("renderArrowLayer", CATEGORY_MOBS, true,
+					"Enable to allow arrows to be rendered/ visible on guards, bandits, and orc. Disabling this will very slightly improve performance on the client.");
 			
 			renderBanditMask = config.getBoolean("renderBanditMask", CATEGORY_MOBS, true,
 					"Enable to allow mask to be rendered/ visible on bandits.");
@@ -474,23 +498,20 @@ public class ToroQuestConfiguration
 			
 			// GUARD
 			
-			guardSpeakChance = config.getFloat("guardSpeakChance", CATEGORY_MOBS, 0.25f, 0.0f, 1.0f,
-					"Chance for guards to speak to players who are near them. The value 0.25f means a 25% chance to speak, and if they do not, their ability to speak passively will be put on a cooldown.");
+			guardSpeakChance = config.getFloat("guardSpeakChance", CATEGORY_MOBS, 0.3f, 0.0f, 1.0f,
+					"Chance for guards to speak to players who are near them. The value 0.3f means a 30% chance to speak, and if they do not, their ability to speak passively will be put on a cooldown.");
 			
 			guardDamageBaseMultiplierToMobs = config.getFloat("guardDamageBaseMultiplierToMobs", CATEGORY_MOBS, 1.0f, 0.0f, 16.0f,
-					"Guard base multiplier to mobs. Guard final damage to mobs = DAMAGE * ( guardDamageBaseMultiplierToMobs + ( guardDamageAdditiveModifierPer1HP * ( MAX_HEALTH_ATTRIBUTE - guardBaseHealth ) ) )");
+					"Guard base multiplier to mobs, use this to increase or decrease damage guards deal to mobs,");
 			
 			guardDamageBaseMultiplierToPlayers = config.getFloat("guardDamageBaseMultiplierToPlayers", CATEGORY_MOBS, 0.7f, 0.25f, 16.0f,
-					"Guard base multiplier to players. Guard damage to players = DAMAGE * ( guardDamageBaseMultiplierToPlayers + ( guardDamageAdditiveModifierPer1HP * ( MAX_HEALTH_ATTRIBUTE - guardBaseHealth ) ) )");
-			
-//			guardDamageAdditiveModifierPer1HP = config.getFloat("guardDamageAdditiveModifierPer1HP", CATEGORY_MOBS, 0.05f, 0.0f, 1.0f,
-//					"Guard additive multiplier to players/mobs. For every 1 HP the guard has over guardBaseHealth, add guardDamageAdditiveModifierPer1HP to the guard's damage multiplier. (Assuming default config values) For example:   guardBaseHealth is 24 in the config, but the guards MAX_HEALTH_ATTRIBUTE is increased to 40 through another mod (such as WAIG). This guard that spawned now has 16 health over it's base value. So, the damage the guard now does to mobs is multiplied by (guardDamageBaseMultiplierToMobs + guardDamageAdditiveModifierPer1HP * 16) = (1.0 + 0.05 * 16) = (1.8)");
-//			
+					"Guard base multiplier to players, use this to increase or decrease damage guards deal to players.");
+
 			trophyTitanAdditionalGuardDamageMulitiplier = config.getFloat("trophyTitanAdditionalGuardDamageMulitiplier", CATEGORY_MOBS, 1.5f, 1.0f, 16.0f,
-					"Guard final damage is muliplied by this amount (default 1.5) to mobs in provinces with the titan trophy active.");
+					"Guard damage is muliplied by this amount (default 1.5) to mobs in provinces with the titan trophy active.");
 			
 			guardDamageBaseMultiplierToMobsOutsideProvinceOrToBosses = config.getFloat("guardDamageBaseMultiplierToMobsOutsideProvinceOrToBosses", CATEGORY_MOBS, 0.6f, 0.0f, 1.0f,
-					"Guard final damage is multiplied by this value while outside a province or when fighting bosses. This is useful if you want to prevent the effectiveness of players using guards to 'cheese' bosses.");
+					"Guard damage is multiplied by this value while outside a province or when fighting bosses. This is useful if you want to prevent the effectiveness of players using guards to 'cheese' bosses.");
 			
 			minBaseHealthToBeConsideredBossMob = config.getInt("minBaseHealthToBeConsideredBossMob", CATEGORY_MOBS, 500, 0, 2560,
 					"When a mob has at least minBaseHealthToBeConsideredBossMob health, they will be considered a 'boss'. This is useful for mods with powerful creatures you don't want players to 'cheese' with guards.");
@@ -521,14 +542,6 @@ public class ToroQuestConfiguration
 			banditArmorToughness = config.getInt("banditArmorToughness", CATEGORY_MOBS, 0, 0, 20,
 					"Armor toughness value of orcs.");
 			
-			banditDamageMultiplier = config.getFloat("banditDamageMultiplier", CATEGORY_MOBS, 0.6f, 0.0f, 16.0f,
-					"See guardDamageBaseMultiplierToMobs for more info.");
-			
-//			banditDamageAdditiveModifierPer1HP = config.getFloat("banditDamageAdditiveModifierPer1HP", CATEGORY_MOBS, 0.05f, 0.0f, 1.0f,
-//					"See guardDamageAdditiveModifierPer1HP for more info.");
-			
-			// ORC
-			
 			orcBaseHealth = config.getInt("orcBaseHealth", CATEGORY_MOBS, 24, 1, 256,
 					"Base HP of orcs.");
 			
@@ -541,40 +554,34 @@ public class ToroQuestConfiguration
 			orcArmorToughness = config.getInt("orcArmorToughness", CATEGORY_MOBS, 0, 0, 20,
 					"Armor toughness value of orcs.");
 			
-			orcDamageMultiplier = config.getFloat("orcDamageMultiplier", CATEGORY_MOBS, 0.7f, 0.0f, 16.0f,
-					"See guardDamageBaseMultiplierToMobs for more info.");
-			
-//			orcDamageAdditiveModifierPer1HP = config.getFloat("orcDamageAdditiveModifierPer1HP", CATEGORY_MOBS, 0.06f, 0.0f, 1.0f,
-//					"See guardDamageAdditiveModifierPer1HP for more info.");
-			
-			//
-			
-			
 			banditMountChance = config.getInt("banditMountChance", CATEGORY_MOBS, 10, 0, 100,
 					"The chance (out of 10) for a group of non-village-raiding bandits to spawn as archers on horse mounts. Set to 0 to disable.");
+			
+			goldenHorseArmorChance = config.getInt("goldenHorseArmorChance", CATEGORY_MOBS, 30, 0, 100,
+					"The chance (out of 10) for a bandit mount to spawn with golden horse armor. Set to 0 to disable.");
 			
 			orcMountChance = config.getInt("orcMountChance", CATEGORY_MOBS, 0, 0, 100,
 					"The chance (out of 10) for a group of non-village-raiding orcs to spawn as archers on horse mounts. Set to 0 to disable.");
 			
-			banditAndOrcFleeHealthPercentBase = config.getInt("banditAndOrcFleeHealthPercentBase", CATEGORY_MOBS, 15, 0, 100,
-					"When orcs or bandits have their & percent max health reduced to or below this number, they will flee.");
+			banditAndOrcFleeHealthPercentageBase = config.getFloat("banditAndOrcFleeHealthPercentageBase", CATEGORY_MOBS, 0.15F, 0.0F, 1.0F,
+					"Base percentage of health that will cause orcs & bandits to flee until they heal up. 0.15F is 15% of their maximum health.");
 
-			banditAndOrcFleeHealthPercentRange = config.getInt("banditAndOrcFleeHealthPercentRange", CATEGORY_MOBS, 15, 1, 100,
-					"This percent is randomly added to the base flee modifier.");
+			banditAndOrcFleeHealthPercentageRange = config.getFloat("banditAndOrcFleeHealthPercentageRange", CATEGORY_MOBS, 0.15F, 0.0F, 1.0F,
+					"Random percentage that is added to the base flee amount for orcs & bandits. By default, bandits will flee randomly when below a random percentage between 15% to 30% of their maximum health.");
 			
 			// SPAWNING =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 			
-			maxSpawnHeight = config.getInt("maxSpawnHeight", CATEGORY_MOBS, 150, -2560, 2560,
-					"Max spawn height of toroquest entities and ender idol teleport, also used for checking villagers and structures for ruined villages.");
+			maxSpawnHeight = config.getInt("maxSpawnHeight", CATEGORY_SPAWNING, 144, 0, 256,
+					"Max spawn height of toroquest entities, ender idol, & scroll teleport. Also used for checking villagers and structures for creating uined villages.");
 			
-			minSpawnHeight = config.getInt("minSpawnHeight", CATEGORY_MOBS, 50, -2560, 2560,
-					"Min spawn height of toroquest entities and ender idol teleport, also used for checking villagers and structures for ruined villages.");
+			minSpawnHeight = config.getInt("minSpawnHeight", CATEGORY_SPAWNING, 48, 0, 256,
+					"Min spawn height of toroquest entities, ender idol & scroll teleport. Also used for checking villagers and structures for creating ruined villages.");
 			
-			disableMobSpawningNearVillage = config.getInt("disableMobSpawningNearVillage", CATEGORY_SPAWNING, 104, 0, 208,
-					"Disable mob spawns within X blocks from the village center. The higher the number, the further from the center of a province mobs will spawn. 208 blocks is the max distance of a province. Setting this to 208 means mobs can NOT spawn anywhere in a province. Setting this to 0 disables this feature and mobs can spawn anywhere - RIP villages!");
+			disableMobSpawningNearVillage = config.getInt("disableMobSpawningNearVillage", CATEGORY_SPAWNING, 76, 0, 104,
+					"Disable mob spawns within X blocks from the village center. The higher the number, the further from the center of a province mobs will spawn. 208 blocks is the total length of a province. Setting this to 104 means mobs can NOT spawn anywhere in a province. Setting this to 0 disables this feature and mobs can spawn anywhere - RIP villages!");
 			
-			disableZombieSpawningNearVillage = config.getInt("disableZombieSpawningNearVillage", CATEGORY_SPAWNING, 80, 0, 208,
-					"Disable zombie spawns within X blocks from the village center. The higher the number, the further from the center of a province mobs will spawn. 208 blocks is the max distance of a province. Setting this to 208 means zombies can NOT spawn anywhere in a province. Setting this to 0 disables this feature and zombies can spawn anywhere.");
+			disableZombieSpawningNearVillage = config.getInt("disableZombieSpawningNearVillage", CATEGORY_SPAWNING, 76, 0, 104,
+					"Disable zombie spawns within X blocks from the village center. The higher the number, the further from the center of a province mobs will spawn. 208 blocks is the total length of a province. Setting this to 104 means zombies can NOT spawn anywhere in a province. Setting this to 0 disables this feature and zombies can spawn anywhere.");
 						
 			fugitiveSpawnRate = config.getInt("fugitiveSpawnRate", CATEGORY_SPAWNING, 8, 0, 100, "every 1200 ticks/ every minute, the chance out of 100 for a random village (with a player visiting or nearby) to spawn a fugitive."
 					+ " This chance increases by 1 for each other player online, up to a max of fugitiveSpawnRate. Setting to 0 will disable spawning. NOTE: there are 24000 ticks per day/night cycle. These fugitives will not despawn, although there is a max of 4 that can be in a village!");
@@ -584,6 +591,8 @@ public class ToroQuestConfiguration
 
 			banditSpawnRate = config.getInt("banditSpawnRate", CATEGORY_SPAWNING, 8, 0, 100, "every 1200 ticks/ every minute, the chance out of 100 for a random player to have bandits spawned near them."
 					+ " This chance increases by 2 for each other player online, up to a max of banditSpawnRate*2. Setting to 0 will disable spawning. NOTE: there are 24000 ticks per day/night cycle. These bandits eventually despawn.");
+			
+			shopKeeperSpawnChance = config.getInt("shopKeeperSpawnChance", CATEGORY_SPAWNING, 3, 0, 100, "The chance out of 100 for a villager to be spawned with the shopkeeper profession. Shopkeepers will seek out vacant shopkeeper stalls!");
 			
 //			adventurerSpawnRate = config.getInt("adventurerSpawnRate", CATEGORY_SPAWNING, 6, 0, 100, "every 1200 ticks/ every minute, the chance out of 100 for a random player to have adventurers spawned near them."
 //					+ " This chance increases by 2 for each other player online, up to a max of adventurersSpawnRate*2. Setting to 0 will disable spawning. NOTE: there are 24000 ticks per day/night cycle. These adventurers eventually despawn.");
@@ -611,8 +620,8 @@ public class ToroQuestConfiguration
 			abandonQuestRepLoss = config.getInt("abandonQuestRepLoss", CATEGORY_REPUTATION, 10, 0, 3000,
 					"The amount of rep you will lose for abandoning a quest.");
 			
-			killMobRepGain = config.getInt("killMobRepGain", CATEGORY_REPUTATION, 1, 0, 3000,
-					"The amount of rep you will gain for killing mobs in a province.");
+			healthOfMobNeededToGainOneRep = config.getInt("healthOfMobNeededToGainOneRep", CATEGORY_REPUTATION, 50, 0, 3000,
+					"The amount of health from mobs killed that will net you one reputation. For example, if healthOfMobNeededToGainOneRep is set to 50, a mob with 75 health will give you 1 reputation with a 25/50 chance to give another 1 reputation.");
 			
 			donateEmeraldRepGain = config.getInt("donateEmeraldRepGain", CATEGORY_REPUTATION, 1, 1, 3000,
 					"The amount of rep you will gain for donating emeralds to a village lord.");
@@ -644,6 +653,14 @@ public class ToroQuestConfiguration
 			loseReputationForBlockGrief = config.getBoolean("loseReputationForBlockGrief", CATEGORY_REPUTATION, true,
 					"If set to true and a player's reputation is below 250, they will lose reputation for griefing villages.");
 			
+			safePotionList = config.getStringList("safePotionList", CATEGORY_REPUTATION,
+			
+			new String[]
+				    {
+				    	"water","regeneration","healing","breathing","swiftness","strength","resistance","leaping","vision","invisibility","luck"
+				    },
+			"Safe and unharmful potions that will not cause reputation loss when throwing them at guards or villagers.");
+						
 			// BOSSES =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 			bossHealthMultiplier = config.getFloat("bossHealthMultiplier", CATEGORY_BOSSES, 1, 0.01f, 100f, "ToroQuest boss health multipler");
@@ -712,10 +729,10 @@ public class ToroQuestConfiguration
 			disableTreeChoppingQuest = config.getBoolean("disableTreeChoppingQuest", CATEGORY, false,
 					"Set to true if you have DynamicTrees installed and have the option for felling an entire tree (removes tree chopping quest).");
 			
-			cartographerMapTrade = config.getBoolean("cartographerMapTrade", CATEGORY, true,
+			cartographerMapTrade = config.getBoolean("cartographerMapTrade", CATEGORY_TRADES, true,
 					"Set true to torovillager enable map trade.");
 			
-			villagerUniqueShopInventoryVarients = config.getInt("villagerUniqueShopInventoryVarients", CATEGORY, 4, 0 , 256,
+			villagerUniqueShopInventoryVarients = config.getInt("villagerUniqueShopInventoryVarients", CATEGORY_TRADES, 4, 0 , 256,
 					"The unique inventory of trades that villagers can offer. If set to 4 (meaning the varients are: 0, 1, 2, 3, 4) then for each profession there are 5 different inventories of trades that profession can offer. For example: a varient 0 and 1 blacksmith could sell iron swords, a varient 3 blacksmith could buy iron ingots, and a varient 4 blacksmith could sell shields. YOU MUST MANUALLY CONFIGURE TORO VILLAGER TRADES IF YOU PLAN ON CHANGING THIS SETTING!");
 			
 			tradeList = config.getStringList("tradeList", CATEGORY_TRADES,
@@ -830,7 +847,7 @@ public class ToroQuestConfiguration
 		    	
 		    	"minecraft:enchanted_book,1,x,minecraft:emerald,2,x,x,librarian,x",
 		    	
-		    	"minecraft:emerald,1,x,minecraft:bookshelf,3,x,x,librarian,x",
+		    	"minecraft:emerald,6,x,minecraft:bookshelf,3,x,x,librarian,x",
 
 		    	// CARTOGRAPHER =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 		    	
@@ -1074,10 +1091,9 @@ public class ToroQuestConfiguration
 		    	
 		    	// LEATHER =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 		    	
-		    	"minecraft:emerald,1,x,minecraft:leather,10,x,x,leather,x",
-		    	"minecraft:leather,10,x,minecraft:emerald,1,x,x,leather,x",
+		    	"minecraft:emerald,9,x,minecraft:leather,1,x,x,leather,x",
 		    	
-		    	"minecraft:rabbit_hide,4,x,minecraft:emerald,1,x,x,leather,0",
+		    	"minecraft:rabbit_hide,2,x,minecraft:emerald,1,x,x,leather,0",
 		    	
 		    	"minecraft:string,12,x,minecraft:emerald,1,x,x,leather,1",
 		    	
@@ -1218,8 +1234,8 @@ public class ToroQuestConfiguration
 			provinceSiegeRate = config.getInt("provinceSiegeRate", CATEGORY_RAIDS, 8, 0, 100, "every 1200 ticks/ every minute, the chance out of 100 for a random village (with a player visiting or nearby) to spawn a siege."
 					+ " This chance increases by 2 for each other player online, up to a max of provinceSiegeRate*2. Setting to 0 will disable spawning. NOTE: there are 24000 ticks per day/night cycle. These mobs eventually despawn.");
 
-			raiderSiegeChance = config.getInt("raiderSiegeChance", CATEGORY_RAIDS, 40, 0, 100,
-					"The chance (out of 100) to have custom raiders spawn, instead of bandits when a raid happens. These custom raiders can be configured for each House (raiderString_RED_BRIAR, raiderString_YELLOW_DAWN, raiderString_GREEN_WILD...)");
+			configRaiderSiegeChance = config.getInt("configRaiderSiegeChance", CATEGORY_RAIDS, 40, 0, 100,
+					"The chance (out of 100) to have custom raiders spawn, instead of bandits/wolves/zombies when a raid happens. These custom raiders can be configured for each House (raiderString_RED_BRIAR, raiderString_YELLOW_DAWN, raiderString_GREEN_WILD...)");
 
 			// RED
 			raiderString_RED_BRIAR = config.getStringList("raiderString_RED_BRIAR", CATEGORY_RAIDS,
@@ -1241,7 +1257,7 @@ public class ToroQuestConfiguration
 					Raider raider = new Raider();
 					raider.entityResourceName = list[0];
 					raider.minReputationRequired  = Integer.parseInt(list[1]);
-					raider.raidSpeed = Double.parseDouble(list[2]);
+					raider.raidSpeed = Float.parseFloat(list[2]);
 					raider.minSpawn = Integer.parseInt(list[3]);
 					raider.maxSpawn = Integer.parseInt(list[4]);
 					raider.timeType = list[5];
@@ -1271,7 +1287,7 @@ public class ToroQuestConfiguration
 					Raider raider = new Raider();
 					raider.entityResourceName = list[0];
 					raider.minReputationRequired  = Integer.parseInt(list[1]);
-					raider.raidSpeed = Double.parseDouble(list[2]);
+					raider.raidSpeed = Float.parseFloat(list[2]);
 					raider.minSpawn = Integer.parseInt(list[3]);
 					raider.maxSpawn = Integer.parseInt(list[4]);
 					raider.timeType = list[5];
@@ -1302,7 +1318,7 @@ public class ToroQuestConfiguration
 					Raider raider = new Raider();
 					raider.entityResourceName = list[0];
 					raider.minReputationRequired  = Integer.parseInt(list[1]);
-					raider.raidSpeed = Double.parseDouble(list[2]);
+					raider.raidSpeed = Float.parseFloat(list[2]);
 					raider.minSpawn = Integer.parseInt(list[3]);
 					raider.maxSpawn = Integer.parseInt(list[4]);
 					raider.timeType = list[5];
@@ -1333,7 +1349,7 @@ public class ToroQuestConfiguration
 					Raider raider = new Raider();
 					raider.entityResourceName = list[0];
 					raider.minReputationRequired  = Integer.parseInt(list[1]);
-					raider.raidSpeed = Double.parseDouble(list[2]);
+					raider.raidSpeed = Float.parseFloat(list[2]);
 					raider.minSpawn = Integer.parseInt(list[3]);
 					raider.maxSpawn = Integer.parseInt(list[4]);
 					raider.timeType = list[5];
@@ -1364,7 +1380,7 @@ public class ToroQuestConfiguration
 					Raider raider = new Raider();
 					raider.entityResourceName = list[0];
 					raider.minReputationRequired  = Integer.parseInt(list[1]);
-					raider.raidSpeed = Double.parseDouble(list[2]);
+					raider.raidSpeed = Float.parseFloat(list[2]);
 					raider.minSpawn = Integer.parseInt(list[3]);
 					raider.maxSpawn = Integer.parseInt(list[4]);
 					raider.timeType = list[5];
@@ -1397,7 +1413,7 @@ public class ToroQuestConfiguration
 					Raider raider = new Raider();
 					raider.entityResourceName = list[0];
 					raider.minReputationRequired  = Integer.parseInt(list[1]);
-					raider.raidSpeed = Double.parseDouble(list[2]);
+					raider.raidSpeed = Float.parseFloat(list[2]);
 					raider.minSpawn = Integer.parseInt(list[3]);
 					raider.maxSpawn = Integer.parseInt(list[4]);
 					raider.timeType = list[5];
@@ -2000,7 +2016,7 @@ public class ToroQuestConfiguration
 	{
 		public String entityResourceName = "";
 		public int minReputationRequired = 0;
-		public double raidSpeed = 0.0D;
+		public float raidSpeed = 0.0F;
 		public int minSpawn = 0;
 		public int maxSpawn = 0;
 		public String timeType = "x";

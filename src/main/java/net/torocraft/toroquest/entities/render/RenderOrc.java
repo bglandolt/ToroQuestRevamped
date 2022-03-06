@@ -6,10 +6,10 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.layers.LayerArrow;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.torocraft.toroquest.config.ToroQuestConfiguration;
 import net.torocraft.toroquest.entities.EntityOrc;
 import net.torocraft.toroquest.entities.model.Model64Layer;
 
@@ -32,7 +32,10 @@ public class RenderOrc extends RenderBiped<EntityOrc>
 //			}
 //		};
 //		this.addLayer(layerbipedarmor);
-        this.addLayer(new LayerArrow(this));
+		if ( ToroQuestConfiguration.renderArrowLayer )
+		{
+	        this.addLayer(new LayerArrow(this));
+		}
 	}
 
 	/**

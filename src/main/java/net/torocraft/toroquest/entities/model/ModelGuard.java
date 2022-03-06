@@ -33,8 +33,10 @@ public class ModelGuard extends ModelBiped
 		this.modelSize = modelSize;
 		//for (CivilizationType civ : CivilizationType.values())
 		//{
-		// if ( ToroQuestConfiguration.renderGuardCape )
-		this.buildCape(civ);
+		if ( ToroQuestConfiguration.renderGuardCape )
+		{
+			this.buildCape(civ);
+		}
 		//}
 	}
 

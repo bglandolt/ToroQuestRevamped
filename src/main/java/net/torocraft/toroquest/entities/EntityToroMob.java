@@ -1,9 +1,12 @@
 package net.torocraft.toroquest.entities;
 
+import java.util.Arrays;
+
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,19 +15,20 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemShield;
 import net.minecraft.item.ItemStack;
+import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.torocraft.toroquest.config.ToroQuestConfiguration;
 
 public class EntityToroMob extends EntityCreature implements IMob
 {
-    public float fleeModifier = (ToroQuestConfiguration.banditAndOrcFleeHealthPercentBase + this.world.rand.nextInt(ToroQuestConfiguration.banditAndOrcFleeHealthPercentRange))/100.0F;
+    public float fleeModifier = ToroQuestConfiguration.banditAndOrcFleeHealthPercentageBase + rand.nextFloat() * ToroQuestConfiguration.banditAndOrcFleeHealthPercentageRange;
 	
     public boolean useHealingPotion = false;
 	public EntityPlayer enemy = null;
@@ -32,7 +36,33 @@ public class EntityToroMob extends EntityCreature implements IMob
 	public EntityToroMob(World worldIn)
 	{
 		super(worldIn);
+		this.enablePersistence();
+		this.setSize(0.6F, 1.9F);
+		this.stepHeight = 2.05F;
+		this.experienceValue = 20;
+		
+        this.setCustomNameTag("...");
+		this.setAlwaysRenderNameTag(true);
+		
+		Arrays.fill(inventoryHandsDropChances, ToroQuestConfiguration.banditHandsDropChance);
+		Arrays.fill(inventoryArmorDropChances, ToroQuestConfiguration.banditArmorDropChance);
+		this.setActiveHand(EnumHand.MAIN_HAND);
+    	this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(ToroQuestConfiguration.banditAndOrcKnockBackResistance);
+    	((PathNavigateGround)this.getNavigator()).setBreakDoors(true);
+	    this.setCanPickUpLoot(false);
+	    this.setLeftHanded(false);
+	    
+	    if (!this.world.isRemote && this.world.getDifficulty() == EnumDifficulty.PEACEFUL)
+        {
+            this.setDead();
+        }
 	}
+	
+    @Override
+    protected void collideWithNearbyEntities()
+    {
+    	
+    }
 
 	public SoundCategory getSoundCategory()
 	{
@@ -47,70 +77,18 @@ public class EntityToroMob extends EntityCreature implements IMob
 	
 //	public void spawnHitParticles( int amount )
 //	{
-//		double xx = this.posX;//  + (double) (-MathHelper.sin(this.rotationYaw * 0.017453292F));
+//		double xx = this.posX + -MathHelper.sin(this.rotationYaw * 0.017453292F)/16.0D;
 //		double yy = this.posY + 0.5D + this.height * 0.5D;
-//		double zz = this.posZ;// + (double) MathHelper.cos(this.rotationYaw * 0.017453292F);
+//		double zz = this.posZ + MathHelper.cos(this.rotationYaw * 0.017453292F)/16.0D;
 //
-//		double x = this.rand.nextGaussian() * 0.01D;
-//      double y = -0.1D - this.rand.nextDouble() * 0.02D;
-//      double z = this.rand.nextGaussian() * 0.01D;
-//        
-//		for ( int i = amount; i > 0; i-- )
+//		if (this.world instanceof WorldServer)
 //		{
-//			if ( rand.nextInt(4) == 0 )
+//			for ( int i = (int)amount; i > 0; i-- )
 //			{
-//				this.world.spawnParticle(EnumParticleTypes.REDSTONE, xx+this.rand.nextGaussian()/6.0D, yy+this.rand.nextGaussian()/3.0D, zz+this.rand.nextGaussian()/6.0D, x * amount, -y * amount, z * amount, Block.getStateId(Blocks.REDSTONE_BLOCK.getDefaultState()));
-//			}
-//			else
-//			{
-//				this.world.spawnParticle(EnumParticleTypes.REDSTONE, xx+this.rand.nextGaussian()/6.0D, yy+this.rand.nextGaussian()/3.0D, zz+this.rand.nextGaussian()/6.0D, z, y, x, Block.getStateId(Blocks.REDSTONE_BLOCK.getDefaultState()));
+//				((WorldServer) this.world).spawnParticle(EnumParticleTypes.REDSTONE, xx+this.rand.nextGaussian()/10.0D, yy-this.rand.nextDouble()/4.0D, zz+this.rand.nextGaussian()/10.0D, 0, 0, 0, 0, 0.4D, new int[0]);
 //			}
 //		}
 //	}
-	
-	public void spawnHitParticles( int amount )
-	{
-		double xx = this.posX + -MathHelper.sin(this.rotationYaw * 0.017453292F)/16.0D;
-		double yy = this.posY + 0.5D + this.height * 0.5D;
-		double zz = this.posZ + MathHelper.cos(this.rotationYaw * 0.017453292F)/16.0D;
-
-		if (this.world instanceof WorldServer)
-		{
-			for ( int i = (int)amount; i > 0; i-- )
-			{
-				((WorldServer) this.world).spawnParticle(EnumParticleTypes.REDSTONE, xx+this.rand.nextGaussian()/10.0D, yy-this.rand.nextDouble()/4.0D, zz+this.rand.nextGaussian()/10.0D, 0, 0, 0, 0, 0.4D, new int[0]);
-			}
-		}
-	}
-	
-//	  @SideOnly(Side.CLIENT)
-//    @Override
-//    public void handleStatusUpdate(byte id)
-//    {
-//	    if (id == 25)
-//	    {
-//	    	this.spawnHitParticles(1);
-//        }
-//	    else if (id == 26)
-//	    {
-//	    	
-//	    	this.spawnHitParticles(3);
-//        }
-//	    else if (id == 27)
-//	    {
-//	    	
-//	    	this.spawnHitParticles(5);
-//        }
-//	    else if (id == 28)
-//	    {
-//	    	
-//	    	this.spawnHitParticles(9);
-//        }
-//        else
-//        {
-//            super.handleStatusUpdate(id);
-//        }
-//    }
 
 	@Override
 	public void onLivingUpdate()
@@ -141,8 +119,8 @@ public class EntityToroMob extends EntityCreature implements IMob
 					{
 						if ( this instanceof EntityOrc )
 						{
-	//						if ( this.getAttackTarget() == e ) this.setAttackTarget(null);
-	//						return false;
+							if ( source.getTrueSource() == this.getAttackTarget() ) this.setAttackTarget(null);
+							return false;
 						}
 						else
 						{
@@ -157,18 +135,18 @@ public class EntityToroMob extends EntityCreature implements IMob
 						}
 						else
 						{
-	//						if ( this.getAttackTarget() == e ) this.setAttackTarget(null);
-	//						return false;
+							if ( source.getTrueSource() == this.getAttackTarget() ) this.setAttackTarget(null);
+							return false;
 						}
 					}
 				}
 			}
 
-			if ( ToroQuestConfiguration.enableBloodParticles )
-			{
-				int a = (int)MathHelper.clamp(Math.sqrt(amount-1), 0, 8);
-				if ( a > 0 ) this.spawnHitParticles(a);
-			}
+//			if ( ToroQuestConfiguration.enableBloodParticles )
+//			{
+//				int a = (int)MathHelper.clamp(Math.sqrt(amount-1), 0, 8);
+//				if ( a > 0 ) this.spawnHitParticles(a);
+//			}
 			return true;
 		}
 		return false;
@@ -282,4 +260,11 @@ public class EntityToroMob extends EntityCreature implements IMob
 	{
 		return false;
 	}
+	
+	@Override
+	public EnumCreatureAttribute getCreatureAttribute()
+	{
+	    return EnumCreatureAttribute.ILLAGER;
+	}
+	
 }

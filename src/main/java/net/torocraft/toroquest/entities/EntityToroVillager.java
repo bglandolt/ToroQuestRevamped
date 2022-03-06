@@ -67,10 +67,11 @@ import net.torocraft.toroquest.entities.trades.ToroVillagerTrades;
 public class EntityToroVillager extends EntityVillager implements INpc, IMerchant
 {
 	// -------------------------------------------------------------------
-	public int canTalk;
+	public short canTalk = 0;
 	public boolean uiClick = false;
+	public short chattingWithGuard = 0;
+	public short blockedTrade = 0;
 	public static String NAME = "toro_villager";
-	public int blockedTrade = 0;
 	public EntityLivingBase underAttack = null;
     public BlockPos bedLocation = null;
 	public ItemStack treasureMap = null;
@@ -148,7 +149,7 @@ public class EntityToroVillager extends EntityVillager implements INpc, IMerchan
         	@Override
         	public boolean shouldExecute()
             {
-        		if ( isMating() || isTrading() || isUnderAttack() )
+        		if ( isMating() || isTrading() || isUnderAttack() || chattingWithGuard > 0 )
         		{
         			return false;
         		}
@@ -304,6 +305,7 @@ public class EntityToroVillager extends EntityVillager implements INpc, IMerchan
 				EntityGuard newEntity = new EntityGuard(world);
 				newEntity.setPosition(this.posX, this.posY, this.posZ);
 				newEntity.onInitialSpawn(this.world.getDifficultyForLocation(new BlockPos(this.getPosition())), (IEntityLivingData) null);
+				newEntity.copyLocationAndAnglesFrom(this);
 				newEntity.actionTimer = 1;
 				
 				this.setDead();
@@ -385,7 +387,7 @@ public class EntityToroVillager extends EntityVillager implements INpc, IMerchan
 		
 		this.setUnderAttack(attacker);
 		
-		List<EntityToroVillager> villagers = world.getEntitiesWithinAABB(EntityToroVillager.class, new AxisAlignedBB(getPosition()).grow(12, 8, 12), new Predicate<EntityToroVillager>()
+		List<EntityToroVillager> villagers = world.getEntitiesWithinAABB(EntityToroVillager.class, new AxisAlignedBB(getPosition()).grow(16, 8, 16), new Predicate<EntityToroVillager>()
 		{
 			public boolean apply(@Nullable EntityToroVillager entity)
 			{
@@ -401,7 +403,7 @@ public class EntityToroVillager extends EntityVillager implements INpc, IMerchan
 			}
 		}
 		
-		List<EntityGuard> guards = world.getEntitiesWithinAABB(EntityGuard.class, new AxisAlignedBB(getPosition()).grow(16, 12, 16), new Predicate<EntityGuard>()
+		List<EntityGuard> guards = world.getEntitiesWithinAABB(EntityGuard.class, new AxisAlignedBB(getPosition()).grow(20, 12, 20), new Predicate<EntityGuard>()
 		{
 			public boolean apply(@Nullable EntityGuard entity)
 			{
@@ -411,7 +413,7 @@ public class EntityToroVillager extends EntityVillager implements INpc, IMerchan
 		
 		boolean flag = false;
 		
-		for (EntityGuard guard : guards)
+		for ( EntityGuard guard : guards )
 		{
 			if ( guard.getAttackTarget() == null )
 			{
@@ -519,10 +521,14 @@ public class EntityToroVillager extends EntityVillager implements INpc, IMerchan
     		{
     			this.blockedTrade--;
     		}
-			
-			if ( this.blockedTrade <= 0 )
+			else
 			{
 				this.underAttack = null;
+			}
+			
+			if ( this.chattingWithGuard > 0 )
+			{
+				this.chattingWithGuard--;
 			}
 		}
 	}
@@ -875,6 +881,12 @@ public class EntityToroVillager extends EntityVillager implements INpc, IMerchan
         {
         	return null;
         }
+    }
+	
+    @Override
+    protected void collideWithNearbyEntities()
+    {
+    	
     }
 	
 	@Override

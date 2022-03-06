@@ -102,25 +102,23 @@ public class VillageHandlerBarracks implements IVillageCreationHandler
 		@Override
 		protected boolean specialBlockHandling(World world, String c, int x, int y, int z)
 		{
-			if ( c.equals("xx") || c.equals("XX") )
+			if ( c.equals("xx") )
 			{
-			
-			
 				setBlockState(world, Blocks.AIR.getDefaultState(), x, y, z, boundingBox);
 	
-				int j = this.getXWithOffset(x, z);
-				int k = this.getYWithOffset(y);
-				int l = this.getZWithOffset(x, z);
+//				int j = this.getXWithOffset(x, z);
+//				int k = this.getYWithOffset(y);
+//				int l = this.getZWithOffset(x, z);
 	
 				/*
 				 * if (!structurebb.isVecInside(new BlockPos(j, k, l))) { return; }
 				 */
-				if ( c.equals("XX") )
-				{
-					EntityArmorStand stand = new EntityArmorStand(world);
-					stand.setLocationAndAngles((double) j + 0.5D, (double) k, (double) l + 0.5D, 90F, 0.0F);
-					world.spawnEntity(stand);
-				}
+//				if ( c.equals("XX") )
+//				{
+//					EntityArmorStand stand = new EntityArmorStand(world);
+//					stand.setLocationAndAngles((double) j + 0.5D, (double) k, (double) l + 0.5D, 90F, 0.0F);
+//					world.spawnEntity(stand);
+//				}
 				List<String> entities = new ArrayList<String>();
 				entities.add(ToroQuest.MODID + ":" + EntityGuard.NAME);
 				specialHandlingForSpawner(world, "xx", c, x, y, z, entities);

@@ -581,7 +581,7 @@ public class QuestEnemyEncampment extends QuestBase implements Quest {
 	public static void incrementKills(QuestData data)
 	{
 		data.getiData().put("kills", getKills(data) + 1);
-		data.getPlayer().sendStatusMessage( new TextComponentString(MathHelper.clamp(getKills(data), 0, minKillsRequired)+"/"+minKillsRequired), true);
+		data.getPlayer().sendStatusMessage( new TextComponentString("Slain " + MathHelper.clamp(getKills(data), 0, minKillsRequired)+"/"+minKillsRequired + " Bandits"), true);
 	}
 
 	@SubscribeEvent

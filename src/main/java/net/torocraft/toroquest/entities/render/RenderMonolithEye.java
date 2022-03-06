@@ -17,7 +17,7 @@ public class RenderMonolithEye extends RenderLiving<EntityMonolithEye>
 
 	public RenderMonolithEye(RenderManager renderManagerIn)
 	{
-		super(renderManagerIn, new ModelMonolithEye(), 3.5F);
+		super(renderManagerIn, new ModelMonolithEye(), 3.4F);
 	}
 
 	public ModelMonolithEye getMainModel()
@@ -31,7 +31,7 @@ public class RenderMonolithEye extends RenderLiving<EntityMonolithEye>
 
 	protected void preRenderCallback(EntityMonolithEye entitylivingbaseIn, float partialTickTime)
 	{
-		float size = 3.5F;
+		float size = 3.4F;
 		GlStateManager.scale(size, size, size);
 	}
 }

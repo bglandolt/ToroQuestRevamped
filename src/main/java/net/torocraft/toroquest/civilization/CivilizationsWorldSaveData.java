@@ -86,12 +86,12 @@ public class CivilizationsWorldSaveData extends WorldSavedData implements Civili
 
 		Collection<Province> provinces = scan(chunkX, chunkZ);
 
-		if (provinces == null || provinces.size() < 1)
+		if ( provinces == null || provinces.size() < 1 )
 		{
 			return null;
 		}
 
-		if (provinces.size() == 1)
+		if ( provinces.size() == 1 )
 		{
 			for (Province border : provinces)
 			{

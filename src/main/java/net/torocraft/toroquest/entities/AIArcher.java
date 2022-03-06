@@ -34,7 +34,7 @@ public class AIArcher<T extends EntityLiving & IRangedAttackMob> extends EntityA
         this.entity = p_i47515_1_;
         this.moveSpeedAmp = p_i47515_2_;
         this.attackCooldown = p_i47515_4_;
-        this.maxAttackDistance = p_i47515_5_ * p_i47515_5_;
+        this.maxAttackDistance = p_i47515_5_;
         this.setMutexBits(3);
     }
 
@@ -48,25 +48,31 @@ public class AIArcher<T extends EntityLiving & IRangedAttackMob> extends EntityA
      */
     public boolean shouldExecute()
     {
-    	// if there is no target or if there is no bow in hand do not execute
-    	if ( this.entity.getAttackTarget() == null || !(this.entity.getAttackTarget().isEntityAlive()) || !this.isBowInMainhand() )
+    	if ( !this.shouldContinueExecuting() )
     	{
     		return false;
     	}
     	return true;
     }
 
-    protected boolean isBowInMainhand()
-    {
-        return !this.entity.getHeldItemMainhand().isEmpty() && this.entity.getHeldItemMainhand().getItem() instanceof ItemBow;
-    }
-
-    /**
-     * Returns whether an in-progress EntityAIBase should continue executing
-     */
     public boolean shouldContinueExecuting()
-    {
-        return this.shouldExecute();
+    {    	
+		if ( !(this.entity.getHeldItemMainhand().getItem() instanceof ItemBow) )
+		{
+    		return false;
+    	}
+		
+        if ( this.entity.getAttackTarget() == null )
+        {
+            return false;
+        }
+        
+        if ( !this.entity.getAttackTarget().isEntityAlive() )
+        {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -80,8 +86,10 @@ public class AIArcher<T extends EntityLiving & IRangedAttackMob> extends EntityA
     	this.entity.getMoveHelper().strafe( 0.0F, 0.0F );
     	this.entity.getNavigator().clearPath();
     	this.strafingClockwise = rand.nextBoolean();
-    	this.hStrafeMod = (rand.nextInt(6)+1)/16.0F;
-    	this.vStrafeMod = (rand.nextInt(3)+1)/16.0F;
+    	this.hStrafeMod = rand.nextFloat()*0.4F+0.08F;
+    	this.vStrafeMod = rand.nextFloat()*0.3F+0.06F;
+//    	this.hStrafeMod = (rand.nextInt(6)+1)/16.0F;
+//    	this.vStrafeMod = (rand.nextInt(3)+1)/16.0F;
         super.startExecuting();
         ((IRangedAttackMob)this.entity).setSwingingArms(true);
     }
@@ -106,9 +114,8 @@ public class AIArcher<T extends EntityLiving & IRangedAttackMob> extends EntityA
      */
     public void updateTask()
     {
-        if ( shouldExecute() )
+        if ( this.shouldExecute() )
         {
-        	
             double d0 = this.entity.getDistance(this.entity.getAttackTarget());
             boolean canSee = this.entity.getEntitySenses().canSee(this.entity.getAttackTarget());
             boolean seeTimeIsGreaterThanZero = this.seeTime > 0;
@@ -148,7 +155,7 @@ public class AIArcher<T extends EntityLiving & IRangedAttackMob> extends EntityA
             	return;
             }
 
-            if (d0 <= this.maxAttackDistance && this.seeTime >= 20)
+            if ( d0 <= this.maxAttackDistance && this.seeTime >= 20 )
             {
             	this.entity.getMoveHelper().strafe( 0.0F, 0.0F );
             	this.entity.getNavigator().clearPath();
@@ -157,6 +164,7 @@ public class AIArcher<T extends EntityLiving & IRangedAttackMob> extends EntityA
             else
             {
             	this.entity.getNavigator().tryMoveToEntityLiving(this.entity.getAttackTarget(), this.moveSpeedAmp);
+            	this.entity.setSprinting(true);
 				this.strafingTime = -1;
             }
             
@@ -222,11 +230,11 @@ public class AIArcher<T extends EntityLiving & IRangedAttackMob> extends EntityA
             
             if ( this.strafingTime > -1 && canSee )
             {
-                if (d0 > this.maxAttackDistance * 0.6F)
+                if ( d0 > this.maxAttackDistance * 0.6F )
                 {
                     this.strafingBackwards = false;
                 }
-                else if (d0 < this.maxAttackDistance * 0.35F)
+                else if ( d0 < this.maxAttackDistance * 0.36F )
                 {
                     this.strafingBackwards = true;
                 }
@@ -237,7 +245,7 @@ public class AIArcher<T extends EntityLiving & IRangedAttackMob> extends EntityA
                 }
                 else
                 {
-                	this.entity.getMoveHelper().strafe(this.strafingBackwards ? -vAmount/4.0F : hAmount/2.0F, this.strafingClockwise ? -hAmount/8.0F : hAmount/8.0F);
+                	this.entity.getMoveHelper().strafe(this.strafingBackwards ? -vAmount/4.0F : hAmount/2.0F, this.strafingClockwise ? -hAmount/2.0F : hAmount/2.0F);
                 }
             }
             else
@@ -283,6 +291,14 @@ public class AIArcher<T extends EntityLiving & IRangedAttackMob> extends EntityA
             if ( moveTo )
             {
             	this.entity.getNavigator().tryMoveToEntityLiving( this.entity.getAttackTarget(), this.moveSpeedAmp );
+            }
+            
+            // STOP GUARDS FROM ZOOMING ON GRASS PATHS
+            if ( !this.entity.onGround || this.entity.isAirBorne || this.entity.collidedHorizontally || this.entity.collidedVertically )
+            {
+            	this.entity.motionX *= 0.1D;
+            	this.entity.motionZ *= 0.1D;
+            	this.entity.velocityChanged = true;
             }
         }
     }

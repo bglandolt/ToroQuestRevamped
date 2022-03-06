@@ -7,6 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumHandSide;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.torocraft.toroquest.entities.EntitySentry;
 
 @SideOnly(Side.CLIENT)
 public class Model64Layer extends ModelBiped
@@ -142,16 +143,26 @@ public class Model64Layer extends ModelBiped
 	    {
 	        super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
 	        GlStateManager.pushMatrix();
-            if (entityIn.isSneaking())
-            {
-                GlStateManager.translate(0.0F, 0.2F, 0.0F);
-            }
+	        
+//            if (entityIn.isSneaking())
+//            {
+//                GlStateManager.translate(0.0F, 0.2F, 0.0F);
+//            }
 
+//            if ( ((EntitySentry)entityIn).climbingTimer > 0 )
+//            {
+//                float x = -2.0F + 1.5F * this.triangleWave(((EntitySentry)entityIn).climbingTimer , 30.0F);
+//                this.bipedRightArm.rotateAngleX = x;
+//                this.bipedLeftArm.rotateAngleX = -x;
+//            }
+            
+            
             this.bipedLeftLegwear.render(scale);
             this.bipedRightLegwear.render(scale);
             this.bipedLeftArmwear.render(scale);
             this.bipedRightArmwear.render(scale);
             this.bipedBodyWear.render(scale);
+            
 	        GlStateManager.popMatrix();
 	    }
 
@@ -160,6 +171,7 @@ public class Model64Layer extends ModelBiped
 //	        this.bipedCape.render(scale);
 //	    }
 
+	    // private int lastSwing = 0;
 	    /**
 	     * Sets the model's various rotation angles. For bipeds, par1 and par2 are used for animating the movement of arms
 	     * and legs, where par1 represents the time(so that arms and legs swing back and forth) and par2 represents how
@@ -174,6 +186,50 @@ public class Model64Layer extends ModelBiped
 	        copyModelAngles(this.bipedRightArm, this.bipedRightArmwear);
 	        copyModelAngles(this.bipedBody, this.bipedBodyWear);
 
+	        if ( ((EntitySentry)entityIn).isBesideClimbableBlock() )
+	        {
+	            float x = -2.0F + this.triangleWave(ageInTicks, 28.0F);
+	            float xx = -2.0F + this.triangleWave(ageInTicks-14 , 28.0F);
+	            this.bipedRightArm.rotateAngleX = x;
+	            this.bipedLeftArm.rotateAngleX = xx;
+	        }
+	        
+//	        if ( ((EntitySentry)entityIn).isSwingInProgress )
+//	        {
+//	        	if ( this.lastSwing <= 0 )
+//	        	{
+//	        		this.lastSwing = (int) ageInTicks;
+//	        	}
+//	            float x = 2.0F - this.triangleWave(ageInTicks-this.lastSwing, 30.0F);
+//	    		this.bipedRightArm.rotateAngleY = x;
+//	    		this.bipedRightArm.rotateAngleZ = x;
+//	        }
+//	        else
+//	        {
+//	        	this.lastSwing = 0;
+//	        }
+	        
+//	        System.out.println(((EntitySentry)entityIn).swingProgress);
+//	        System.out.println(((EntitySentry)entityIn).swingProgressInt);
+//	        System.out.println(((EntitySentry)entityIn).swingingHand);
+//	        System.out.println(((EntitySentry)entityIn).isSwingInProgress);
+//	        System.out.println(((EntitySentry)entityIn).limbSwing);
+//	        System.out.println(((EntitySentry)entityIn).prevLimbSwingAmount);
+//	        System.out.println(((EntitySentry)entityIn).prevSwingProgress);
+
+//	        if ( ((EntitySentry)entityIn).isSwingInProgress )
+//	        {
+//	            float x = -2.0F + this.triangleWave(((EntitySentry)entityIn).weaponSwing-- , 30.0F);
+////	            this.bipedRightArmwear.rotateAngleX = x;
+////	            this.bipedLeftArmwear.rotateAngleX = x;
+//	            this.bipedRightArmwear.rotateAngleZ = x;
+//	            this.bipedLeftArmwear.rotateAngleZ = x;
+//	        }
+//	        if ( ((EntitySentry)entityIn).climbingTimer > 0 )
+//	        {
+//	        	this.bipedLeftArm.rotateAngleZ = limbSwingAmount; // XXX
+//	        }
+	        
 //	        if (entityIn.isSneaking())
 //	        {
 //	            this.bipedCape.rotationPointY = 2.0F;
@@ -182,5 +238,10 @@ public class Model64Layer extends ModelBiped
 //	        {
 //	            this.bipedCape.rotationPointY = 0.0F;
 //	        }
+	    }
+	    
+	    private float triangleWave(float currentSwingTime, float maxSwingTime)
+	    {
+	        return (Math.abs(currentSwingTime % maxSwingTime - maxSwingTime * 0.5F) - maxSwingTime * 0.25F) / (maxSwingTime * 0.25F);
 	    }
 }

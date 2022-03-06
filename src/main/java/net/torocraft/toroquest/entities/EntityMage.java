@@ -88,11 +88,6 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 			NAME = ToroQuestEntities.ENTITY_PREFIX + NAME;
 		}
 	}
-	
-    public boolean isNonBoss()
-    {
-        return false;
-    }
 
 	private static final DataParameter<Boolean> STAFF_ATTACK = EntityDataManager.<Boolean> createKey(EntityMage.class, DataSerializers.BOOLEAN);
 
@@ -109,6 +104,7 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 	public EntityMage(World worldIn)
 	{
 		super(worldIn);
+		this.enablePersistence();
 		this.setSize(0.6F, 1.95F);
 		this.experienceValue = 360;
 	}

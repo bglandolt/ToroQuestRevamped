@@ -12,6 +12,7 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
@@ -29,162 +30,123 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.torocraft.toroquest.civilization.CivilizationType;
 import net.torocraft.toroquest.civilization.CivilizationUtil;
 import net.torocraft.toroquest.civilization.Province;
 import net.torocraft.toroquest.config.ToroQuestConfiguration;
+import net.torocraft.toroquest.entities.ai.AIHelper;
+import net.torocraft.toroquest.entities.ai.EntityAIRaid;
 
 public class EntityToroNpc extends EntityCreature
 {	
 	// -------------------------------------------------------------------
 	public EntityPlayer annoyedAt = null;
 	public int isAnnoyedTimer = 0;
-	
 	public EntityPlayer underAttack = null;
 	public int underAttackTimer = 0;
-	
 	public EntityPlayer murderWitness = null;
 	public int murderTimer = 0;
-	
 	public int actionTimer = 5;
-	
 	public boolean inCombat = false;
-    
 	public float capeAni = 0;
 	public boolean capeAniUp = true;
-	
 	public boolean interactTalkReady = true;
-	
+	public boolean returningToPost = false;
 	EntityPlayer talkingWith = null;
-	
-	public Integer raidX = null;
-	public Integer raidZ = null;
-	
 	protected boolean hitSafety = true;
-	
 	public Random rand = new Random();
 	// -------------------------------------------------------------------
+	
+	public void playChatSound()
+	{
+		this.playSound( SoundEvents.VINDICATION_ILLAGER_AMBIENT, 1.0F, 0.9F + rand.nextFloat()/5.0F );
+		// SoundHandler
+	}
+	
+	@Override
+	protected void entityInit()
+	{
+		super.entityInit();
+		this.getDataManager().register(CIV, String.valueOf(""));
+		this.getDataManager().register(PROV_ID, String.valueOf(""));
+		this.getDataManager().register(RAID_X, Integer.valueOf(0));
+		this.getDataManager().register(RAID_Y, Integer.valueOf(0));
+		this.getDataManager().register(RAID_Z, Integer.valueOf(0));
+	}
+	
+	public static DataParameter<Integer> RAID_X = EntityDataManager.<Integer>createKey(EntityToroNpc.class, DataSerializers.VARINT);
+	public static DataParameter<Integer> RAID_Y = EntityDataManager.<Integer>createKey(EntityToroNpc.class, DataSerializers.VARINT);
+	public static DataParameter<Integer> RAID_Z = EntityDataManager.<Integer>createKey(EntityToroNpc.class, DataSerializers.VARINT);
+
+	/* set raid location to -1 if there is no valid y.
+	 * If y is 0, then it is an invalid raid location.
+	 */
+	protected void setRaidLocation(int x, int y, int z)
+	{
+		this.getDataManager().set(RAID_X, x);
+		this.getDataManager().set(RAID_Y, y);
+		this.getDataManager().set(RAID_Z, z);
+	}
+	
+	public Integer getRaidLocationX()
+	{
+		return this.getDataManager().get(RAID_X);
+	}
+	
+	public Integer getRaidLocationY()
+	{
+		return this.getDataManager().get(RAID_Y);
+	}
+	
+	public Integer getRaidLocationZ()
+	{
+		return this.getDataManager().get(RAID_Z);
+	}
+	
+//	public boolean raidLocationNotSet()
+//	{
+//		return ( this.getDataManager().get(RAID_X) == 0 && this.getDataManager().get(RAID_Y) == 0 && this.getDataManager().get(RAID_Z) == 0 );
+//	}
 	
 	// ========================= EntityToroNpc ===========================
 	public EntityToroNpc(World worldIn, Province prov)
 	{
 		super(worldIn);
-		this.setSize(0.6F, 1.95F);
+		this.enablePersistence();
+		this.setSize(0.6F, 1.9F);
 		this.experienceValue = 30;
 		Arrays.fill(inventoryHandsDropChances, ToroQuestConfiguration.guardHandsDropChance);
 		Arrays.fill(inventoryArmorDropChances, ToroQuestConfiguration.guardArmorDropChance);
-		((PathNavigateGround) this.getNavigator()).setBreakDoors(true);
+		this.detachHome();
 		this.setCanPickUpLoot(false);
+		this.setLeftHanded(false);
+		((PathNavigateGround) this.getNavigator()).setBreakDoors(true);
 		this.pledgeAllegianceIfUnaffiliated(false);
 	}
-	// ===================================================================
-	
-	// ============================== NBT ===============================
-	@Override
-	public void readEntityFromNBT(NBTTagCompound compound)
-	{
-		super.readEntityFromNBT(compound);
-
-	    if ( compound.hasKey("raidX") && compound.hasKey("raidZ") )
-	    {
-	    	this.raidX = compound.getInteger("raidX");
-	    	this.raidZ = compound.getInteger("raidZ");
-	    }
-	    
-		this.setCivilization( enumCiv(compound.getString("civilization")) );
-		this.setProvince( (compound.getString("province")).toString() );
-		this.setUUID( enumUUID(compound.getString("provinceUUID")) );
-	}
-	
-	
-	@Override
-	public void writeEntityToNBT(NBTTagCompound compound)
-	{
-		String civ = s(this.getCivilization());
-		if ( this.isSet(civ) )
-		{
-			compound.setString("civilization", s(getCivilization()));
-		}
-		else
-		{
-			compound.removeTag("civilization");
-		}
 		
-		String province = this.getProvince();
-		if ( this.isSet(province) )
-		{
-			compound.setString("province", province);
-		}
-		else
-		{
-			compound.removeTag("province");
-		}
-		
-		String uuid = s(this.getUUID());
-		if ( this.isSet(uuid) )
-		{
-			compound.setString("provinceUUID", province);
-		}
-		else
-		{
-			compound.removeTag("provinceUUID");
-		}
-
-		if ( this.posY != 0 && this.raidX != null && this.raidZ != null )
-		{
-			compound.setInteger("raidX", this.raidX);
-			compound.setInteger("raidZ", this.raidZ);
-		}
-		
-		super.writeEntityToNBT(compound);
+	public Province getHomeProvince()
+	{
+		return CivilizationUtil.getProvinceFromUUID(this.world, this.getUUID());
 	}
 	
-	private boolean isSet(String s)
+	public Province getStandingInProvince()
 	{
-		return s != null && s.length() > 0;
+		return CivilizationUtil.getProvinceAt(this.world, this.chunkCoordX, this.chunkCoordZ);
 	}
 	
-	private String s(CivilizationType civilization)
-	{
-		if ( civilization == null )
-		{
-			return null;
-		}
-		return civilization.toString();
-	}
-	
-	private String s(UUID uuid)
-	{
-		if ( uuid == null )
-		{
-			return null;
-		}
-		return uuid.toString();
-	}
-
-	@Override
-	protected void entityInit()
-	{
-		super.entityInit();
-		this.dataManager.register(CIV, "");
-		this.dataManager.register(PROV, "");
-		this.dataManager.register(ID, "");
-	}
 	// ====================================================================
 	
 	// ======================== PLEDGE ALLEGIANCE =========================
 	/* returns TRUE if allegiance is set by this method */
 	protected boolean pledgeAllegianceIfUnaffiliated( boolean force )
 	{
-		if ( force || this.getProvince() == null || this.getUUID() == null || this.getCivilization() == null )
-		{
-			Province prov = CivilizationUtil.getProvinceAt(this.world, this.chunkCoordX, this.chunkCoordZ);
-			
-			if ( this.pledgeAllegiance(prov) )
+		if ( force || this.getCivilization() == null || this.getUUID() == null )
+		{			
+			if ( this.pledgeAllegiance(this.getStandingInProvince()) )
 			{
 				if ( force )
 				{
@@ -197,54 +159,103 @@ public class EntityToroNpc extends EntityCreature
 		return false;
 	}
 	
+	public boolean pledgeAllegianceTo( Province p )
+	{
+		if ( this.pledgeAllegiance(p) )
+		{
+			this.playTameEffect((byte)6);
+		    this.world.setEntityState(this, (byte)6);
+	        return true;
+		}
+		return false;
+	}
+	// ===
+	
 	/* returns true if the province is not null */
 	protected boolean pledgeAllegiance( Province prov )
 	{
-		if ( prov != null && prov.getName() != null && prov.getCiv() != null && prov.getUUID() != null )
+		if ( prov != null )
 		{
-			this.setProvince(prov.getName());
 			this.setCivilization(prov.getCiv());
 			this.setUUID(prov.getUUID());
-			
-			onPledge(prov);
-			
+			this.onPledge(prov);
 			return true;
 		}
 		return false;
 	}
 	
-	/* returns true if the province is not null */
 	protected boolean pledgeAllegiance()
 	{
-		return this.pledgeAllegiance(CivilizationUtil.getProvinceAt(this.world, this.chunkCoordX, this.chunkCoordZ));
+		return this.pledgeAllegiance(this.getStandingInProvince());
 	}
 	
 	protected void onPledge( Province prov )
 	{
-		if ( this.ticksExisted < 202 ) this.setRaidLocation(this.getPosition().getX(), this.getPosition().getZ());
+
 	}
+	
+    @Override
+    public void writeEntityToNBT(NBTTagCompound compound)
+    {
+        super.writeEntityToNBT(compound);
+        
+        compound.setInteger("raidX", this.getRaidLocationX());
+        compound.setInteger("raidY", this.getRaidLocationY());
+        compound.setInteger("raidZ", this.getRaidLocationZ());
+        
+        compound.setString("provID", this.getDataManager().get(PROV_ID));
+        compound.setString("civ", this.getDataManager().get(CIV));
+    }
+
+    @Override
+    public void readEntityFromNBT(NBTTagCompound compound)
+    {
+        super.readEntityFromNBT(compound);
+        
+        this.setRaidLocation(compound.getInteger("raidX"), compound.getInteger("raidY"), compound.getInteger("raidZ"));
+        
+        this.setCivilization(this.enumCiv(compound.getString("civ")));
+        this.setUUID(this.enumUUID(compound.getString("provID")));
+
+    }
+	
 	// ===================================================================
 	
 	// ========================== CIVILIZATION ===========================
 	public static DataParameter<String> CIV = EntityDataManager.<String>createKey(EntityToroNpc.class, DataSerializers.STRING);
-
-	public void setCivilization(CivilizationType civ)
+	
+	public void setCivilization( @Nullable CivilizationType civ)
 	{
-		if (civ == null)
+		if ( civ == null )
 		{
-			this.dataManager.set(CIV, "");
+			this.getDataManager().set(CIV, "");
 		}
 		else
 		{
-			this.dataManager.set(CIV, civ.toString());
+			this.getDataManager().set(CIV, civ.toString());
 		}
-		this.dataManager.setDirty(CIV);
+		//this.getDataManager().setDirty(CIV);
 	}
+	
+	private CivilizationType civ = null;
 	
 	public CivilizationType getCivilization()
 	{
-		return enumCiv(this.dataManager.get(CIV));
+		if ( this.civ != null )
+		{
+			return this.civ;
+		}
+		else
+		{
+			return this.civ = enumCiv(this.getDataManager().get(CIV));
+		}
 	}
+	
+    @Override
+    protected void collideWithNearbyEntities()
+    {
+    	
+    }
 	
 	protected CivilizationType enumCiv(String s)
 	{
@@ -253,29 +264,48 @@ public class EntityToroNpc extends EntityCreature
 			CivilizationType civ = CivilizationType.valueOf(s);
 			return civ;
 		}
-		catch (Exception e)
+		catch ( Exception e )
 		{
 			return null;
 		}
 	}
+	
+//	public ResourceLocation getCivSkin()
+//	{
+//		return this.CIV_SKIN = new ResourceLocation(ToroQuest.MODID + ":textures/entity/guard/guard_null.png");
+//	}
+	
 	// ===================================================================
 	
 	// ============================== UUID ===============================
-	public static DataParameter<String> ID = EntityDataManager.<String>createKey(EntityToroNpc.class, DataSerializers.STRING);
 	
-	public void setUUID(UUID uuid)
+	public static DataParameter<String> PROV_ID = EntityDataManager.<String>createKey(EntityToroNpc.class, DataSerializers.STRING);
+	
+	public void setUUID( @Nullable UUID uuid)
 	{
 		if ( uuid == null )
 		{
-			return;
+			this.getDataManager().set(PROV_ID, "");
 		}
-		this.dataManager.set(ID, uuid.toString());
-		this.dataManager.setDirty(ID);
+		else
+		{
+			this.getDataManager().set(PROV_ID, uuid.toString());
+		}
+		//this.getDataManager().setDirty(PROV_ID);
 	}
+	
+	private UUID prov_uuid = null;
 	
 	public UUID getUUID()
 	{
-		return enumUUID(this.dataManager.get(ID));
+		if ( this.prov_uuid != null )
+		{
+			return this.prov_uuid;
+		}
+		else
+		{
+			return this.prov_uuid = enumUUID(this.getDataManager().get(PROV_ID));
+		}
 	}
 	
 	protected UUID enumUUID(String s)
@@ -290,25 +320,112 @@ public class EntityToroNpc extends EntityCreature
 			return null;
 		}
 	}
+	
+	//==================================================== Return To Post ===========================================================
+
+	public boolean returnToPost()
+	{
+		if ( this.hasPath() || this.getAttackTarget() != null )
+		{
+			return false;
+		}
+		
+		int raid_y = this.getRaidLocationY();
+		
+		if ( raid_y == 0 )
+		{
+			return false;
+		}
+		
+		int raid_x = this.getRaidLocationX();
+		int raid_z = this.getRaidLocationZ();
+		
+		if ( raid_y > 0 && this.getNavigator().tryMoveToXYZ(raid_x, raid_y, raid_z, 0.6D) ) // try moving directly
+		{
+            AIHelper.faceEntitySmart(this, raid_x, raid_z);
+			return true;
+		}
+		
+		double x = raid_x - this.posX;
+		double z = raid_z - this.posZ;
+		
+		double xz = Math.abs(x) + Math.abs(z);
+		
+		if ( xz <= 3 ) // if near post, do nothing
+		{
+			if ( raid_y > 0 && Math.abs(this.posY-raid_y) >= 3 ) // unless too far from y
+			{
+				BlockPos moveTo = EntityAIRaid.findValidSurface(this.world, new BlockPos(raid_x, this.posY, raid_z), 8);
+				
+				if ( moveTo != null )
+				{
+					if ( this.getNavigator().tryMoveToXYZ(moveTo.getX(), moveTo.getY(), moveTo.getZ(), 0.6D) )
+					{
+			            AIHelper.faceEntitySmart(this, moveTo.getX(), moveTo.getZ());
+						return true;
+					}
+				}
+			}
+			return this.returningToPost = false;
+		}
+		
+		x = x/xz * 16 + this.posX;
+		z = z/xz * 16 + this.posZ;
+		
+		BlockPos moveTo = EntityAIRaid.findValidSurface(this.world, new BlockPos(x, this.posY, z), 8);
+		
+		if ( moveTo != null )
+		{
+			if ( this.getNavigator().tryMoveToXYZ(moveTo.getX(), moveTo.getY(), moveTo.getZ(), 0.6D) )
+			{
+	            AIHelper.faceEntitySmart(this, moveTo.getX(), moveTo.getZ());
+				return true;
+			}
+		}
+				
+		Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this, 16, 8, new Vec3d(x,this.posY,z));
+		
+		if ( vec3d == null || !this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.6D) )
+        {
+			vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this, 8, 8, new Vec3d(x,this.posY,z));
+			
+			if ( vec3d == null || !this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.6D ) )
+			{
+				vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this, 20, 8, new Vec3d(x,this.posY,z));
+				
+				if ( vec3d == null || !this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.6D ) )
+				{
+					return false;
+				}
+			}
+        }
+		
+        AIHelper.faceEntitySmart(this, (int)vec3d.x, (int)vec3d.z);
+		return true;
+	}
+	
 	// ===================================================================
 	
 	// ============================ PROVINCE =============================
-	public static DataParameter<String> PROV = EntityDataManager.<String>createKey(EntityToroNpc.class, DataSerializers.STRING);
-
-	public void setProvince(String prov)
-	{
-		if ( prov == null )
-		{
-			return;
-		}
-		this.dataManager.set(PROV, prov.toString());
-		this.dataManager.setDirty(PROV);
-	}
-	
-	public String getProvince()
-	{
-		return (this.dataManager.get(PROV));
-	}
+//	public static DataParameter<String> PROV = EntityDataManager.<String>createKey(EntityToroNpc.class, DataSerializers.STRING);
+//
+//	public void setProvince( @Nullable String prov )
+//	{
+//		if ( prov == null )
+//		{
+//			this.getDataManager().set(PROV, "");
+//		}
+//		else
+//		{
+//			this.getDataManager().set(PROV, prov.toString());
+//		}
+//		this.getDataManager().setDirty(PROV);
+//	}
+//	
+//	public String getProvince()
+//	{
+//		return (this.getDataManager().get(PROV));
+//	}
 	// ===================================================================
 
 	@Override
@@ -465,20 +582,13 @@ public class EntityToroNpc extends EntityCreature
 	@Override
 	public boolean hasHome()
 	{
-		return ( this.raidX != null && this.raidZ != null );
+		return false;
 	}
 	
 	@Override
 	public BlockPos getHomePosition()
     {
-		if ( this.raidX != null && this.raidZ != null )
-		{
-			return new BlockPos(this.raidX,this.posY,this.raidZ);
-		}
-		else
-		{
-			return this.getPosition();
-		}
+		return null;
     }
 	
 	@Override
@@ -598,45 +708,36 @@ public class EntityToroNpc extends EntityCreature
         }
     }
 	
-	@Override
-	public boolean attackEntityFrom(DamageSource source, float amount)
-	{
-		if ( super.attackEntityFrom(source, amount) )
-		{
-			if ( ToroQuestConfiguration.enableBloodParticles )
-			{
-				int a = (int)MathHelper.clamp(Math.sqrt(amount-1), 0, 8);
-				if ( a > 0 ) this.spawnHitParticles(a);
-			}
-			return true;
-		}
-		return false;
-	}
+//	@Override
+//	public boolean attackEntityFrom(DamageSource source, float amount)
+//	{
+//		if ( super.attackEntityFrom(source, amount) )
+//		{
+//			if ( ToroQuestConfiguration.enableBloodParticles )
+//			{
+//				int a = (int)MathHelper.clamp(Math.sqrt(amount-1), 0, 8);
+//				if ( a > 0 ) this.spawnHitParticles(a);
+//			}
+//			return true;
+//		}
+//		return false;
+//	}
 	
-	public void spawnHitParticles( int amount )
-	{
-		double xx = this.posX + -MathHelper.sin(this.rotationYaw * 0.017453292F)/16.0D;
-		double yy = this.posY + 0.5D + this.height * 0.5D;
-		double zz = this.posZ + MathHelper.cos(this.rotationYaw * 0.017453292F)/16.0D;
-
-		if (this.world instanceof WorldServer)
-		{
-			for ( int i = (int)amount; i > 0; i-- )
-			{
-				((WorldServer) this.world).spawnParticle(EnumParticleTypes.REDSTONE, xx+this.rand.nextGaussian()/10.0D, yy-this.rand.nextDouble()/4.0D, zz+this.rand.nextGaussian()/10.0D, 0, 0, 0, 0, 0.4D, new int[0]);
-			}
-		}
-	}
+//	public void spawnHitParticles( int amount )
+//	{
+//		double xx = this.posX + -MathHelper.sin(this.rotationYaw * 0.017453292F)/16.0D;
+//		double yy = this.posY + 0.5D + this.height * 0.5D;
+//		double zz = this.posZ + MathHelper.cos(this.rotationYaw * 0.017453292F)/16.0D;
+//
+//		if (this.world instanceof WorldServer)
+//		{
+//			for ( int i = (int)amount; i > 0; i-- )
+//			{
+//				((WorldServer) this.world).spawnParticle(EnumParticleTypes.REDSTONE, xx+this.rand.nextGaussian()/10.0D, yy-this.rand.nextDouble()/4.0D, zz+this.rand.nextGaussian()/10.0D, 0, 0, 0, 0, 0.4D, new int[0]);
+//			}
+//		}
+//	}
 	
-	public void setRaidLocation(Integer x, Integer z)
-	{
-		if ( this.posY != 0 && x != null && z != null )
-		{
-			this.raidX = x;
-			this.raidZ = z;
-			this.writeEntityToNBT(new NBTTagCompound());
-		}
-	}
 	// ===================================================================
 	
 	@Override

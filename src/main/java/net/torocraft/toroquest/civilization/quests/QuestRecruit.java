@@ -103,7 +103,7 @@ public class QuestRecruit extends QuestBase implements Quest
 		if ( !quest.getData().getCompleted() )
 		{
 			quest.setCurrentAmount(quest.getCurrentAmount() + 1);
-			quest.getData().getPlayer().sendStatusMessage( new TextComponentString(MathHelper.clamp(quest.getCurrentAmount(), 0, quest.getTargetAmount())+"/"+quest.getTargetAmount()), true);
+			quest.getData().getPlayer().sendStatusMessage( new TextComponentString("Recruited " + MathHelper.clamp(quest.getCurrentAmount(), 0, quest.getTargetAmount())+"/"+quest.getTargetAmount()+" Guards"), true);
 			
 			if (quest.getCurrentAmount() >= quest.getTargetAmount())
 			{

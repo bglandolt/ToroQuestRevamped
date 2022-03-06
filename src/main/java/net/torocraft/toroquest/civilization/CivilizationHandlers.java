@@ -50,10 +50,10 @@ import net.minecraft.block.BlockStone;
 import net.minecraft.block.BlockTNT;
 import net.minecraft.block.BlockTrapDoor;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityHusk;
 import net.minecraft.entity.monster.EntityMob;
@@ -89,6 +89,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.village.Village;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
@@ -133,8 +134,7 @@ import net.torocraft.toroquest.entities.EntityVillageLord;
 import net.torocraft.toroquest.entities.EntityWolfRaider;
 import net.torocraft.toroquest.entities.EntityZombieRaider;
 import net.torocraft.toroquest.entities.EntityZombieVillagerRaider;
-import net.torocraft.toroquest.entities.ai.EntityAIDespawnGuard;
-import net.torocraft.toroquest.entities.ai.EntityAIRaid;
+import net.torocraft.toroquest.entities.ai.EntityAIRaidDespawn;
 import net.torocraft.toroquest.util.TaskRunner;
 
 public class CivilizationHandlers
@@ -144,31 +144,43 @@ public class CivilizationHandlers
 	public static int MIN_SPAWN_HEIGHT = ToroQuestConfiguration.minSpawnHeight;
 	public static int SPAWN_RANGE = MAX_SPAWN_HEIGHT-MIN_SPAWN_HEIGHT;
 	
+	public static final int timeFadeIn = 18;
+	public static final int displayTime = 38;
+	public static final int timeFadeOut = 8;
+	public static final int displayWait = 0;
+	public static int displayCapture = 200;
+
+	// private static final ResourceLocation guiTexture = new ResourceLocation("toroquest:textures/gui/lord_gui.png");
+
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void handleEnterProvince(CivilizationEvent.Enter event)
 	{
 		if ( event.getEntityPlayer() != null && event.getEntityPlayer().dimension == 0 && ToroQuestConfiguration.showProvinceEnterLeaveMessage )
 		{
-			TextComponentString message = enteringMessage(event.getEntityPlayer(),event.province);
+			if ( event.getEntityPlayer().ticksExisted - displayCapture >= displayWait )
 			{
-				event.getEntityPlayer().sendStatusMessage(message, true);
+				displayCapture = event.getEntityPlayer().ticksExisted;
+				String subTitle = "House " + event.province.getCiv().getLocalizedName();
+				Minecraft.getMinecraft().ingameGUI.displayTitle(null, TextFormatting.ITALIC + subTitle, 0, 0, 0);
+				Minecraft.getMinecraft().ingameGUI.displayTitle(TextFormatting.BOLD + event.province.getName(), subTitle, timeFadeIn, displayTime, timeFadeOut); // with TextFormatting
+				// Minecraft.getMinecraft().ingameGUI.displayTitle(TextFormatting.BOLD + event.province.getName() + TextFormatting.UNDERLINE, subTitle, timeFadeIn, displayTime, timeFadeOut); // with TextFormatting
 			}
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	@SubscribeEvent
-	public void handleLeaveProvince(CivilizationEvent.Leave event)
-	{
-		if ( event.getEntityPlayer() != null && event.getEntityPlayer().dimension == 0 && ToroQuestConfiguration.showProvinceEnterLeaveMessage )
-		{
-			TextComponentString message = leavingMessage(event.getEntityPlayer(),event.province);
-			{
-				event.getEntityPlayer().sendStatusMessage(message, true);
-			}
-		}
-	}
+//	@SideOnly(Side.CLIENT)
+//	@SubscribeEvent
+//	public void handleLeaveProvince(CivilizationEvent.Leave event)
+//	{
+//		if ( event.getEntityPlayer() != null && event.getEntityPlayer().dimension == 0 && ToroQuestConfiguration.showProvinceEnterLeaveMessage )
+//		{
+//			TextComponentString message = leavingMessage(event.getEntityPlayer(),event.province);
+//			{
+//				event.getEntityPlayer().sendStatusMessage(message, true);
+//			}
+//		}
+//	}
 
 	@SubscribeEvent
 	public void onDeath(PlayerEvent.Clone event)
@@ -227,28 +239,41 @@ public class CivilizationHandlers
 	public void onLoad(PlayerEvent.LoadFromFile event)
 	{
 		// rrmote
-		if (event.getEntityPlayer().getEntityWorld().isRemote) 
+		if ( event.getEntityPlayer() == null || event.getEntityPlayer().getEntityWorld().isRemote ) 
 		{
 			return;
 		}
 
 		PlayerCivilizationCapability cap = PlayerCivilizationCapabilityImpl.get(event.getEntityPlayer());
 		
-		if (cap == null)
+		if ( cap == null )
 		{
 			return;
 		}
 
 		NBTTagCompound c = event.getEntityPlayer().getEntityData().getCompoundTag(ToroQuest.MODID + ".playerCivilization");
 
-		if (c == null)
-		{
-			// System.out.println("******************Missing civ data on load");
-		}
-		else
-		{
-			// System.out.println("LOAD: " + c.toString());
-		}
+//		if ( ToroQuestConfiguration.showProvinceEnterLeaveMessage )
+//		{
+//			Province province = CivilizationUtil.getProvinceAt(event.getEntityPlayer().getEntityWorld(), event.getEntityPlayer().chunkCoordX, event.getEntityPlayer().chunkCoordZ);
+//			
+//			if ( province != null && event.getEntityPlayer().ticksExisted <= displayWait )
+//			{
+//				displayCapture = event.getEntityPlayer().ticksExisted;
+//				String subTitle = "House " + province.getCiv().getLocalizedName();
+//				Minecraft.getMinecraft().ingameGUI.displayTitle(null, TextFormatting.ITALIC + subTitle, 0, 0, 0);
+//				Minecraft.getMinecraft().ingameGUI.displayTitle(TextFormatting.UNDERLINE + province.getName(), subTitle, timeFadeIn, displayTime, timeFadeOut); // with TextFormatting
+//			}
+//		}
+		
+//		if (c == null)
+//		{
+//			// System.out.println("******************Missing civ data on load");
+//		}
+//		else
+//		{
+//			// System.out.println("LOAD: " + c.toString());
+//		}
 
 		cap.readNBT(c);
 	}
@@ -329,6 +354,7 @@ public class CivilizationHandlers
 		{
 			return;
 		}
+		
 		if ( value < 0 )
 		{
 			//if ( !player.world.isRemote ) // SERVER
@@ -421,14 +447,14 @@ public class CivilizationHandlers
 	public void checkKillInCivilization(LivingDeathEvent event)
 	{
 		DamageSource source = event.getSource();
-		
+
 		if ( source == null )
 		{
 			return;
 		}
 		
 		Entity s = source.getTrueSource();
-		
+
 		if ( !(s instanceof EntityPlayer) || s.world.isRemote )
 		{
 			return;
@@ -437,14 +463,14 @@ public class CivilizationHandlers
 		EntityPlayer player = (EntityPlayer) s;
 		
 		Entity e = event.getEntity();
-		
+
 		if ( e == null || !( e instanceof EntityLivingBase ) )
 		{
 			return;
 		}
 		
 		EntityLivingBase victim = (EntityLivingBase) e;
-		
+
 		if (victim instanceof EntityMule && e instanceof EntityPlayer)
 		{
 			List<EntityCaravan> caravans = victim.getEntityWorld().getEntitiesWithinAABB(EntityCaravan.class, victim.getEntityBoundingBox().grow(16, 16, 16));
@@ -458,7 +484,7 @@ public class CivilizationHandlers
 		}
 		
 		Province province = PlayerCivilizationCapabilityImpl.get(player).getInCivilization();
-				
+
 		if ( province == null || province.civilization == null )
 		{
 			return;
@@ -466,13 +492,36 @@ public class CivilizationHandlers
 		
 		if ( victim instanceof IMob || victim instanceof EntityMob )
 		{
-			adjustPlayerRep( player, province.civilization, ToroQuestConfiguration.killMobRepGain );
+			// 25 / 50
+			float hpr = victim.getMaxHealth() / ToroQuestConfiguration.healthOfMobNeededToGainOneRep;
+			
+			// System.out.println(hpr);
+
+			if ( hpr < 1.0F )
+			{
+				if ( rand.nextFloat() < hpr )
+				{
+					adjustPlayerRep( player, province.civilization, 1 );
+				}
+			}
+			else
+			{
+				if ( rand.nextFloat() < hpr % 1 )
+				{
+					hpr++;
+				}
+				else
+				{
+					
+				}
+				adjustPlayerRep( player, province.civilization, (int)hpr );
+			}
 		}		
 		else if ( victim instanceof EntityVillager || victim instanceof EntityGuard )
 	    {
 			World world = victim.world;
 			
-			reportCrimeRep( player, province, -100 );
+			reportCrimeRep( player, province, -ToroQuestConfiguration.murderRepLoss );
 			
 			List<EntityToroNpc> guards = world.getEntitiesWithinAABB(EntityToroNpc.class, new AxisAlignedBB(player.getPosition()).grow(20, 16, 20), new Predicate<EntityToroNpc>()
 			{
@@ -563,11 +612,11 @@ public class CivilizationHandlers
 	{
 		int rep = PlayerCivilizationCapabilityImpl.get(player).getReputation(province.civilization);
 		String s;
-		if (rep >= 50) 
+		if ( rep >= 50 ) 
 		{
 			s = province.civilization.getFriendlyLeavingMessage(province);
 		}
-		else if (rep <= -10)
+		else if ( rep <= -10 )
 		{
 			s = province.civilization.getHostileLeavingMessage(province);
 		}
@@ -1169,7 +1218,7 @@ public class CivilizationHandlers
 		
 		if ( isCrop(event.getState().getBlock()) )
 		{
-			List<EntityPlayer> players = event.getWorld().getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(event.getPos()).grow(6.5, 6.5, 6.5));
+			List<EntityPlayer> players = event.getWorld().getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(event.getPos()).grow(6, 3, 6));
 			
 			for (EntityPlayer player : players)
 			{
@@ -1178,15 +1227,6 @@ public class CivilizationHandlers
 				if ( province == null || province.civilization == null )
 				{
 					continue;
-				}
-				
-				try
-				{
-	            	QuestFarm.INSTANCE.destroyedCrop(player);
-				}
-				catch ( Exception e )
-				{
-					
 				}
 				
 				List<EntityVillager> villagers = event.getWorld().getEntitiesWithinAABB(EntityVillager.class, new AxisAlignedBB(event.getPos()).grow(1.25, 1.25, 1.25), new Predicate<EntityVillager>()
@@ -1199,7 +1239,16 @@ public class CivilizationHandlers
 				
 				if ( !villagers.isEmpty() )
 				{
-					return;
+					continue;
+				}
+				
+				try
+				{
+	            	QuestFarm.INSTANCE.destroyedCrop(player);
+				}
+				catch ( Exception e )
+				{
+					
 				}
 								
 				int rep = PlayerCivilizationCapabilityImpl.get(player).getReputation(province.civilization);
@@ -1544,7 +1593,7 @@ public class CivilizationHandlers
 		{
 			return;
 		}
-
+	    
 		for ( EntityPlayer p : event.world.playerEntities )
 		{
 			Province province = PlayerCivilizationCapabilityImpl.get(p).getInCivilization();
@@ -1781,12 +1830,13 @@ public class CivilizationHandlers
 						EntityCaravan e = new EntityCaravan(world);
 						e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
 						world.spawnEntity(e);
+						e.velocityChanged = true;
 						
 						if ( rand.nextBoolean() )
 						{
 							if ( rand.nextBoolean() )
 							{
-								EntityGuard g = new EntityGuard(world, province, true);
+								EntityGuard g = new EntityGuard(world, province);
 								g.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
 								g.setHeldItem(EnumHand.MAIN_HAND, new ItemStack(Items.IRON_SWORD, 1));
 								ItemStack istack = new ItemStack(Item.getByNameOrId("spartanshields:shield_tower_wood"));
@@ -1798,8 +1848,8 @@ public class CivilizationHandlers
 								{
 									g.setHeldItem(EnumHand.OFF_HAND, new ItemStack(Items.SHIELD, 1));
 								}
-					    		g.tasks.addTask(0, new EntityAIDespawnGuard(g));
 								world.spawnEntity(g);
+								g.velocityChanged = true;
 								g.getNavigator().tryMoveToEntityLiving(player, 0.6);
 								g.setAttackTarget(player);
 								g.setAttackTarget(null);
@@ -1903,7 +1953,7 @@ public class CivilizationHandlers
 					
 					// float difficulty = world.getDifficultyForLocation(banditSpawnPos).getAdditionalDifficulty();
 					
-					int amountToSpawn = rand.nextInt(MathHelper.clamp((int)MathHelper.sqrt(player.experienceLevel), 1, 7))+1;
+					int amountToSpawn = rand.nextInt((int)MathHelper.clamp(MathHelper.sqrt(player.experienceLevel), 1, 7))+1;
 					
 					if ( ToroQuestConfiguration.orcsAreNeutral || rand.nextBoolean() )
 					{
@@ -1911,19 +1961,30 @@ public class CivilizationHandlers
 
 						for ( int i = amountToSpawn; i > 0; i-- )
 						{
-							EntitySentry e = new EntitySentry(world);
-							e.despawnTimer-=10;
-							e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-							e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData) null);
-							world.spawnEntity(e);
-							e.setAttackTarget(player);
-							if ( cavalry && world.canSeeSky(e.getPosition()) )
+							if ( cavalry && world.canSeeSky(banditSpawnPos) )
 							{
+								EntitySentry e = new EntitySentry(world);
+								e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
+								//ForgeChunkManager.forceChunk(//ForgeChunkManager.requestTicket(ToroQuest.INSTANCE, world, Type.ENTITY), new ChunkPos(e.chunkCoordX, e.chunkCoordZ));
+								world.spawnEntity(e);
+
+								e.despawnTick();
+								e.velocityChanged = true;
+								e.setAttackTarget(player);
 								e.setMount();
+						        e.writeEntityToNBT(new NBTTagCompound());
 							}
-							else // if ( raiders )
+							else
 							{
-								e.setRaidLocation(playerPosX*2-banditSpawnPos.getX(), playerPosZ*2-banditSpawnPos.getZ());
+								EntitySentry e = new EntitySentry(world, playerPosX*2-banditSpawnPos.getX(), playerPosZ*2-banditSpawnPos.getZ());
+								e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
+								//ForgeChunkManager.forceChunk(//ForgeChunkManager.requestTicket(ToroQuest.INSTANCE, world, Type.ENTITY), new ChunkPos(e.chunkCoordX, e.chunkCoordZ));
+								world.spawnEntity(e);
+
+								e.despawnTick();
+								e.velocityChanged = true;
+								e.setAttackTarget(player);
+						        e.writeEntityToNBT(new NBTTagCompound());
 							}
 						}
 					}
@@ -1933,19 +1994,28 @@ public class CivilizationHandlers
 
 						for ( int i = amountToSpawn; i > 0; i-- )
 						{
-							EntityOrc e = new EntityOrc(world);
-							e.despawnTimer-=10;
-							e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-							e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData) null);
-							world.spawnEntity(e);
-							e.setAttackTarget(player);
-							if ( cavalry && world.canSeeSky(e.getPosition()) )
+							if ( cavalry && world.canSeeSky(banditSpawnPos) )
 							{
+								EntityOrc e = new EntityOrc(world);
+								e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
+								//ForgeChunkManager.forceChunk(//ForgeChunkManager.requestTicket(ToroQuest.INSTANCE, world, Type.ENTITY), new ChunkPos(e.chunkCoordX, e.chunkCoordZ));
+								world.spawnEntity(e);
+
+								e.despawnTick();
+								e.velocityChanged = true;
+								e.setAttackTarget(player);
 								e.setMount();
 							}
-							else // if ( raiders )
+							else
 							{
-								e.setRaidLocation(playerPosX*2-banditSpawnPos.getX(), playerPosZ*2-banditSpawnPos.getZ());
+								EntityOrc e = new EntityOrc(world, playerPosX*2-banditSpawnPos.getX(), playerPosZ*2-banditSpawnPos.getZ());
+								e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
+								//ForgeChunkManager.forceChunk(//ForgeChunkManager.requestTicket(ToroQuest.INSTANCE, world, Type.ENTITY), new ChunkPos(e.chunkCoordX, e.chunkCoordZ));
+								world.spawnEntity(e);
+
+								e.despawnTick();
+								e.velocityChanged = true;
+								e.setAttackTarget(player);
 							}
 						}
 					}
@@ -1962,6 +2032,14 @@ public class CivilizationHandlers
 	
 	// =-=-=-=-=-=-=-=-=-=-=-=-= Spawns RAIDERS to attack a PROVINCE =-=-=-=-=-=-=-=-=-=-=-=-=
 
+	private int RAIDER_DISTANCE = ToroQuestConfiguration.disableMobSpawningNearVillage+2 < 76 ? 76 : ToroQuestConfiguration.disableMobSpawningNearVillage+2;
+	
+	private int getRandomRaiderDistance()
+	{
+		// 208 is province distance
+		return rand.nextInt(105)-52;
+	}
+	
 	protected void spawnRaiders( World world )
 	{
 		if ( world.isRemote )
@@ -1992,11 +2070,20 @@ public class CivilizationHandlers
 						continue;
 					}
 					
-					int xdif = (int) (player.posX - province.getCenterX());
-					int zdif = (int) (player.posZ - province.getCenterZ());
+					int xdif = player.getPosition().getX() - province.getCenterX();
+					int zdif = player.getPosition().getZ() - province.getCenterZ();
 					
-					int x = province.upperVillageBoundX;
-					int z = province.upperVillageBoundZ;
+//					System.out.println("x --- " + province.getCenterX());
+//					System.out.println("z --- " + province.getCenterZ());
+					
+					int x = province.getCenterX();
+					int z = province.getCenterZ();
+					
+					//  _______
+					// |   |   |
+					// |_2_|_1_|
+					// |   |   |
+					// |_3_|_4_|					
 					
 					if ( xdif > 0 )
 					{
@@ -2005,13 +2092,13 @@ public class CivilizationHandlers
 							// QUAD 1
 							if ( rand.nextBoolean() )
 							{
-								x -= rand.nextInt(88);
-								z = province.lowerVillageBoundZ;
+								x -= getRandomRaiderDistance();
+								z -= RAIDER_DISTANCE;
 							}
 							else
 							{
-								x = province.lowerVillageBoundX;
-								z -= rand.nextInt(88);
+								x -= RAIDER_DISTANCE;
+								z -= getRandomRaiderDistance();
 							}
 						}
 						else
@@ -2019,12 +2106,13 @@ public class CivilizationHandlers
 							// QUAD 4
 							if ( rand.nextBoolean() )
 							{
-								x = province.lowerVillageBoundX;
-								z = province.lowerVillageBoundZ+rand.nextInt(88);
+								x -= RAIDER_DISTANCE;
+								z += getRandomRaiderDistance();
 							}
 							else
 							{
-								x -= rand.nextInt(88);
+								x -= getRandomRaiderDistance();
+								z += RAIDER_DISTANCE;
 							}
 						}
 					}
@@ -2035,12 +2123,13 @@ public class CivilizationHandlers
 							// QUAD 2
 							if ( rand.nextBoolean() )
 							{
-								x = province.lowerVillageBoundX+rand.nextInt(88);
-								z = province.lowerVillageBoundZ;
+								x += getRandomRaiderDistance();
+								z -= RAIDER_DISTANCE;
 							}
 							else
 							{
-								z -= rand.nextInt(88);
+								x += RAIDER_DISTANCE;
+								z -= getRandomRaiderDistance();
 							}
 						}
 						else
@@ -2048,19 +2137,28 @@ public class CivilizationHandlers
 							// QUAD 3
 							if ( rand.nextBoolean() )
 							{
-								x = province.lowerVillageBoundX+rand.nextInt(88);
+								x += getRandomRaiderDistance();
+								z += RAIDER_DISTANCE;
 							}
 							else
 							{
-								z = province.lowerVillageBoundZ+rand.nextInt(88);
+								x += RAIDER_DISTANCE;
+								z += getRandomRaiderDistance();
 							}
 						}
 					}
 					
+//					System.out.println("x" + x);
+//					System.out.println("z" + z);
+					
 					BlockPos loc = new BlockPos(x,MAX_SPAWN_HEIGHT,z);
 					
+					// System.out.println("loc" + loc);
+
 					BlockPos banditSpawnPos = findSpawnLocationFrom(world, loc);
 					
+					// System.out.println("bsp" + banditSpawnPos);
+										
 					if ( banditSpawnPos == null )
 					{
 						continue;
@@ -2075,281 +2173,142 @@ public class CivilizationHandlers
 					
 					boolean isNightTime = world.getWorldTime() >= 13000 && world.getWorldTime() <= 21000;
 					
+//					System.out.println(banditSpawnPos); // XXX
+//					spawnWitches( world, banditSpawnPos, rep, player, province );
+//					spawnWitches( world, banditSpawnPos, rep, player, province );
+//					spawnWitches( world, banditSpawnPos, rep, player, province );
+
 					switch ( province.getCiv() )
 					{
 						case FIRE:
 						{
-							if ( rand.nextInt(100) < ToroQuestConfiguration.raiderSiegeChance && !spawnRaider(ToroQuestConfiguration.raiderList_RED_BRIAR, rep, banditSpawnPos, province.getCenterX(), province.getCenterZ(), player, world, isNightTime))
+							if ( rand.nextInt(100) < ToroQuestConfiguration.configRaiderSiegeChance )
 							{
-								// BACKUP
-								for ( int i = (rand.nextInt(MathHelper.clamp((int)((Math.abs(rep)+500)/200),2,9))+3); i > 0; i-- )
+								if ( !spawnRaider(ToroQuestConfiguration.raiderList_RED_BRIAR, rep, banditSpawnPos, province, player, world, isNightTime ) )
 								{
-									EntityWolfRaider e = new EntityWolfRaider(world);
-									e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-									e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData) null);
-									world.spawnEntity(e);
-									e.setAttackTarget(player);
-									e.setRaidLocation(province.getCenterX(), province.getCenterZ());
+									// WOLVES
+									spawnWolves( world, banditSpawnPos, rep, player, province );
 								}
 							}
-							else if ( isNightTime && rand.nextInt(3) != 0 )
+							else if ( isNightTime && rand.nextBoolean() )
 							{
 								// ZOMBIE RAIDERS
-								for ( int i = (rand.nextInt(MathHelper.clamp((int)((rep+350)/100),4,8))+5); i > 0; i-- )
-								{
-									if ( ToroQuestConfiguration.zombieRaiderVillagerChance > rand.nextInt(100) )
-									{
-										EntityZombieVillagerRaider e = new EntityZombieVillagerRaider(world, province.getCenterX(), province.getCenterZ());
-										e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-										e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData)null);
-										world.spawnEntity(e);
-										e.setAttackTarget(player);
-									}
-									else
-									{
-										EntityZombieRaider e = new EntityZombieRaider(world, province.getCenterX(), province.getCenterZ());
-										e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-										e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData)null);
-										world.spawnEntity(e);
-										e.setAttackTarget(player);
-									}
-								}
+								spawnZombies( world, banditSpawnPos, rep, player, province );
 							}
 							else
 							{
 								// BANDITS
-								spawnBandits(world, banditSpawnPos, province.getCenterX(), province.getCenterZ(), player, province);
+								spawnBandits( world, banditSpawnPos, province, player );
 							}
 							return;
 						}
 						case EARTH:
 						{
-							if ( rand.nextInt(100) < ToroQuestConfiguration.raiderSiegeChance && !spawnRaider(ToroQuestConfiguration.raiderList_GREEN_WILD, rep, banditSpawnPos, province.getCenterX(), province.getCenterZ(), player, world, isNightTime))
-							{	
-								// BACKUP
-								for ( int i = (rand.nextInt(MathHelper.clamp((int)((Math.abs(rep)+500)/200),2,9))+3); i > 0; i-- )
+							if ( rand.nextInt(100) < ToroQuestConfiguration.configRaiderSiegeChance )
+							{
+								if ( !spawnRaider(ToroQuestConfiguration.raiderList_GREEN_WILD, rep, banditSpawnPos, province, player, world, isNightTime ) )
 								{
-									EntityWolfRaider e = new EntityWolfRaider(world);
-									e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-									e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData) null);
-									world.spawnEntity(e);
-									e.setAttackTarget(player);
-									e.setRaidLocation(province.getCenterX(), province.getCenterZ());
+									// WOLVES
+									spawnWolves( world, banditSpawnPos, rep, player, province );
 								}
 							}
-							else if ( isNightTime && rand.nextInt(3) != 0 )
+							else if ( isNightTime && rand.nextBoolean() )
 							{
 								// ZOMBIE RAIDERS
-								for ( int i = (rand.nextInt(MathHelper.clamp((int)((rep+350)/100),4,8))+5); i > 0; i-- )
-								{
-									if ( ToroQuestConfiguration.zombieRaiderVillagerChance > rand.nextInt(100) )
-									{
-										EntityZombieVillagerRaider e = new EntityZombieVillagerRaider(world, province.getCenterX(), province.getCenterZ());
-										e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-										e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData)null);
-										world.spawnEntity(e);
-										e.setAttackTarget(player);
-									}
-									else
-									{
-										EntityZombieRaider e = new EntityZombieRaider(world, province.getCenterX(), province.getCenterZ());
-										e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-										e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData)null);
-										world.spawnEntity(e);
-										e.setAttackTarget(player);
-									}
-								}
+								spawnZombies( world, banditSpawnPos, rep, player, province );
 							}
 							else
 							{
 								// BANDITS
-								spawnBandits(world, banditSpawnPos, province.getCenterX(), province.getCenterZ(), player, province);
+								spawnBandits( world, banditSpawnPos, province, player );
 							}
 							return;
 						}
 						case MOON:
 						{
-							if ( rand.nextInt(100) < ToroQuestConfiguration.raiderSiegeChance && !spawnRaider(ToroQuestConfiguration.raiderList_BLACK_MOOR, rep, banditSpawnPos, province.getCenterX(), province.getCenterZ(), player, world, isNightTime))
-							{	
-								// BACKUP
-								for ( int i = (rand.nextInt( MathHelper.clamp((int)((Math.abs(rep)+500)/200), 2, 6) ) + 3); i > 0; i-- )
+							if ( rand.nextInt(100) < ToroQuestConfiguration.configRaiderSiegeChance )
+							{
+								if ( !spawnRaider(ToroQuestConfiguration.raiderList_BLACK_MOOR, rep, banditSpawnPos, province, player, world, isNightTime) )
 								{
-									EntityWitch e = new EntityWitch(world);
-									e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-									e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData) null);
-									world.spawnEntity(e);
-									EntityAIRaid task = new EntityAIRaid(e, 1.0D, 16, 32);
-									task.setCenter(province.getCenterX(), province.getCenterZ());
-									world.spawnEntity(e);
-									e.setAttackTarget(player);
-									e.tasks.addTask(1, task);
+									// WITCHES
+									spawnWitches( world, banditSpawnPos, rep, player, province );
 								}
 							}
-							else if ( isNightTime && rand.nextInt(3) != 0 )
+							else if ( isNightTime && rand.nextBoolean() )
 							{
 								// ZOMBIE RAIDERS
-								for ( int i = (rand.nextInt(MathHelper.clamp((int)((rep+350)/100),4,8))+5); i > 0; i-- )
-								{
-									if ( ToroQuestConfiguration.zombieRaiderVillagerChance > rand.nextInt(100) )
-									{
-										EntityZombieVillagerRaider e = new EntityZombieVillagerRaider(world, province.getCenterX(), province.getCenterZ());
-										e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-										e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData)null);
-										world.spawnEntity(e);
-										e.setAttackTarget(player);
-									}
-									else
-									{
-										EntityZombieRaider e = new EntityZombieRaider(world, province.getCenterX(), province.getCenterZ());
-										e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-										e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData)null);
-										world.spawnEntity(e);
-										e.setAttackTarget(player);
-									}
-								}
+								spawnZombies( world, banditSpawnPos, rep, player, province );
 							}
 							else
 							{
 								// BANDITS
-								spawnBandits(world, banditSpawnPos, province.getCenterX(), province.getCenterZ(), player, province);
+								spawnBandits( world, banditSpawnPos, province, player );
 							}
 							return;
 						}
 						case SUN:
 						{
-							if ( rand.nextInt(100) < ToroQuestConfiguration.raiderSiegeChance && !spawnRaider(ToroQuestConfiguration.raiderList_YELLOW_DAWN, rep, banditSpawnPos, province.getCenterX(), province.getCenterZ(), player, world, isNightTime))
-							{	
-								// BACKUP
-								for ( int i = (rand.nextInt(MathHelper.clamp((int)((rep+350)/100),4,8))+5); i > 0; i-- )
+							if ( rand.nextInt(100) < ToroQuestConfiguration.configRaiderSiegeChance )
+							{
+								if ( !spawnRaider(ToroQuestConfiguration.raiderList_YELLOW_DAWN, rep, banditSpawnPos, province, player, world, isNightTime) )
 								{
-									EntityHusk e = new EntityHusk(world);
-									e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-									e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData) null);
-									world.spawnEntity(e);
-									EntityAIRaid task = new EntityAIRaid(e, 1.0D, 16, 32);
-									task.setCenter(province.getCenterX(), province.getCenterZ());
-									world.spawnEntity(e);
-									e.setAttackTarget(player);
-									e.tasks.addTask(1, task);
+									// HUSKS
+									spawnHusks( world, banditSpawnPos, rep, player, province );
 								}
 							}
-							else if ( isNightTime && rand.nextInt(3) != 0 )
+							else if ( rand.nextBoolean() )
 							{
-								// ZOMBIE RAIDERS
-								for ( int i = (rand.nextInt(MathHelper.clamp((int)((rep+350)/100),4,8))+5); i > 0; i-- )
-								{
-									if ( ToroQuestConfiguration.zombieRaiderVillagerChance > rand.nextInt(100) )
-									{
-										EntityZombieVillagerRaider e = new EntityZombieVillagerRaider(world, province.getCenterX(), province.getCenterZ());
-										e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-										e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData)null);
-										world.spawnEntity(e);
-										e.setAttackTarget(player);
-									}
-									else
-									{
-										EntityZombieRaider e = new EntityZombieRaider(world, province.getCenterX(), province.getCenterZ());
-										e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-										e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData)null);
-										world.spawnEntity(e);
-										e.setAttackTarget(player);
-									}
-								}
+								// HUSKS
+								spawnHusks( world, banditSpawnPos, rep, player, province );
 							}
 							else
 							{
 								// BANDITS
-								spawnBandits(world, banditSpawnPos, province.getCenterX(), province.getCenterZ(), player, province);
+								spawnBandits( world, banditSpawnPos, province, player );
 							}
 							return;
 						}
 						case WIND:
 						{
-							if ( rand.nextInt(100) < ToroQuestConfiguration.raiderSiegeChance && !spawnRaider(ToroQuestConfiguration.raiderList_BROWN_MITHRIL, rep, banditSpawnPos, province.getCenterX(), province.getCenterZ(), player, world, isNightTime))
-							{	
-								// BACKUP
-								for ( int i = (rand.nextInt(MathHelper.clamp((int)((Math.abs(rep)+500)/200),2,9))+3); i > 0; i-- )
+							if ( rand.nextInt(100) < ToroQuestConfiguration.configRaiderSiegeChance )
+							{
+								if ( !spawnRaider(ToroQuestConfiguration.raiderList_BROWN_MITHRIL, rep, banditSpawnPos, province, player, world, isNightTime ) )
 								{
-									EntityWolfRaider e = new EntityWolfRaider(world);
-									e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-									e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData) null);
-									world.spawnEntity(e);
-									e.setAttackTarget(player);
-									e.setRaidLocation(province.getCenterX(), province.getCenterZ());
+									// WOLVES
+									spawnWolves( world, banditSpawnPos, rep, player, province );
 								}
 							}
-							else if ( isNightTime && rand.nextInt(3) != 0 )
+							else if ( isNightTime && rand.nextBoolean() )
 							{
 								// ZOMBIE RAIDERS
-								for ( int i = (rand.nextInt(MathHelper.clamp((int)((rep+350)/100),4,8))+5); i > 0; i-- )
-								{
-									if ( ToroQuestConfiguration.zombieRaiderVillagerChance > rand.nextInt(100) )
-									{
-										EntityZombieVillagerRaider e = new EntityZombieVillagerRaider(world, province.getCenterX(), province.getCenterZ());
-										e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-										e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData)null);
-										world.spawnEntity(e);
-										e.setAttackTarget(player);
-									}
-									else
-									{
-										EntityZombieRaider e = new EntityZombieRaider(world, province.getCenterX(), province.getCenterZ());
-										e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-										e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData)null);
-										world.spawnEntity(e);
-										e.setAttackTarget(player);
-									}
-								}
+								spawnZombies( world, banditSpawnPos, rep, player, province );
 							}
 							else
 							{
 								// BANDITS
-								spawnBandits(world, banditSpawnPos, province.getCenterX(), province.getCenterZ(), player, province);
+								spawnBandits( world, banditSpawnPos, province, player );
 							}
 							return;
 						}
 						case WATER:
 						{
-							if ( rand.nextInt(100) < ToroQuestConfiguration.raiderSiegeChance && !spawnRaider(ToroQuestConfiguration.raiderList_BLUE_GLACIER, rep, banditSpawnPos, province.getCenterX(), province.getCenterZ(), player, world, isNightTime))
-							{	
-								// BACKUP
-								for ( int i = (rand.nextInt(MathHelper.clamp((int)((Math.abs(rep)+500)/200),2,9))+3); i > 0; i-- )
+							if ( rand.nextInt(100) < ToroQuestConfiguration.configRaiderSiegeChance )
+							{
+								if ( !spawnRaider(ToroQuestConfiguration.raiderList_BLUE_GLACIER, rep, banditSpawnPos, province, player, world, isNightTime) )
 								{
-									EntityWolfRaider e = new EntityWolfRaider(world);
-									e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-									e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData) null);
-									world.spawnEntity(e);
-									e.setAttackTarget(player);
-									e.setRaidLocation(province.getCenterX(), province.getCenterZ());
+									// WOLVES
+									spawnWolves( world, banditSpawnPos, rep, player, province );
 								}
 							}
-							else if ( isNightTime && rand.nextInt(3) != 0 )
+							else if ( isNightTime && rand.nextBoolean() )
 							{
 								// ZOMBIE RAIDERS
-								for ( int i = (rand.nextInt(MathHelper.clamp((int)((rep+350)/100),4,8))+5); i > 0; i-- )
-								{
-									if ( ToroQuestConfiguration.zombieRaiderVillagerChance > rand.nextInt(100) )
-									{
-										EntityZombieVillagerRaider e = new EntityZombieVillagerRaider(world, province.getCenterX(), province.getCenterZ());
-										e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-										e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData)null);
-										world.spawnEntity(e);
-										e.setAttackTarget(player);
-									}
-									else
-									{
-										EntityZombieRaider e = new EntityZombieRaider(world, province.getCenterX(), province.getCenterZ());
-										e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-										e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData)null);
-										world.spawnEntity(e);
-										e.setAttackTarget(player);
-									}
-								}
+								spawnZombies( world, banditSpawnPos, rep, player, province );
 							}
 							else
 							{
 								// BANDITS
-								spawnBandits(world, banditSpawnPos, province.getCenterX(), province.getCenterZ(), player, province);
+								spawnBandits( world, banditSpawnPos, province, player );
 							}
 							return;
 						}
@@ -2364,45 +2323,152 @@ public class CivilizationHandlers
 		}
 	}
 	
-	public void spawnBandits(World world, BlockPos banditSpawnPos, int villageCenterX, int villageCenterZ, EntityPlayer player, Province province )
+	public void spawnBandits( World world, BlockPos banditSpawnPos, Province province, EntityPlayer player )
 	{
-		if ( world.getEntitiesWithinAABB(EntityToroMob.class, new AxisAlignedBB(banditSpawnPos).grow(32, 32, 32)).size() >= 5 )
+		if ( world.getEntitiesWithinAABB(EntityToroMob.class, new AxisAlignedBB(banditSpawnPos).grow(32, 16, 32)).size() > 3 )
 		{
 			return;
 		}	
 	
 		int rep = Math.abs(PlayerCivilizationCapabilityImpl.get(player).getReputation(province.civilization));
-		int count = ( rand.nextInt( MathHelper.clamp( (int)((rep+700)/200), 3, 9) ) + 1 );
+		int count = ( rand.nextInt( MathHelper.clamp( ((rep+700)/200), 3, 9) ) + 1 );
 	
 		if ( ToroQuestConfiguration.orcsAreNeutral || rand.nextBoolean() )
 		{
 			for ( int i = count; i > 0; i-- )
 			{
-				EntitySentry e = new EntitySentry(world);
-				e.despawnTimer-=10;
-				e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-				e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData) null);
-				world.spawnEntity(e);
+				EntitySentry e = new EntitySentry(world, (province.getCenterX()+player.getPosition().getX())/2, (province.getCenterZ()+player.getPosition().getZ())/2);
+				
+				e.despawnTick();
+				e.velocityChanged = true;
 				e.setAttackTarget(player);
-				e.setRaidLocation(villageCenterX, villageCenterZ);
+				
+				e.setPosition( banditSpawnPos.getX() + 0.5, banditSpawnPos.getY() + 0.1, banditSpawnPos.getZ() + 0.5 );
+				world.spawnEntity(e);
+				e.addedToChunk = true;
+				
+		        e.writeEntityToNBT(new NBTTagCompound());
 			}
 		}
 		else
 		{
 			for ( int i = count; i > 0; i-- )
 			{
-				EntityOrc e = new EntityOrc(world);
-				e.despawnTimer-=10;
-				e.setPosition(banditSpawnPos.getX() + 0.5,banditSpawnPos.getY()+0.1, banditSpawnPos.getZ() + 0.5 );
-				e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData) null);
-				world.spawnEntity(e);
+				EntityOrc e = new EntityOrc(world, (province.getCenterX()+player.getPosition().getX())/2, (province.getCenterZ()+player.getPosition().getZ())/2);
+				
+				e.despawnTick();
+				e.velocityChanged = true;
 				e.setAttackTarget(player);
-				e.setRaidLocation(villageCenterX, villageCenterZ);
+				
+				e.setPosition( banditSpawnPos.getX() + 0.5, banditSpawnPos.getY() + 0.1, banditSpawnPos.getZ() + 0.5 );
+				world.spawnEntity(e);
+				e.addedToChunk = true;
+				
+		        e.writeEntityToNBT(new NBTTagCompound());
 			}
 		}
 	}
 	
-	public boolean spawnRaider(ArrayList<Raider> r, int rep, BlockPos bsp, int vx, int vz, EntityPlayer p, World w, boolean isNightTime)
+	public void spawnZombies( World world, BlockPos banditSpawnPos, int rep, EntityPlayer player, Province province )
+	{
+		for ( int i = (rand.nextInt(MathHelper.clamp(((rep+350)/100),4,8))+5); i > 0; i-- )
+		{
+			if ( ToroQuestConfiguration.zombieRaiderVillagerChance > rand.nextInt(100) )
+			{
+				EntityZombieVillagerRaider e = new EntityZombieVillagerRaider(world, (province.getCenterX()+player.getPosition().getX())/2, (province.getCenterZ()+player.getPosition().getZ())/2);
+				
+				e.velocityChanged = true;
+				e.setAttackTarget(player);
+				
+				e.setPosition( banditSpawnPos.getX() + 0.5, banditSpawnPos.getY() + 0.1, banditSpawnPos.getZ() + 0.5 );
+				//e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData)null);
+				e.addedToChunk = true;
+				world.spawnEntity(e);
+			}
+			else
+			{
+				EntityZombieRaider e = new EntityZombieRaider(world, (province.getCenterX()+player.getPosition().getX())/2, (province.getCenterZ()+player.getPosition().getZ())/2);
+				
+				e.velocityChanged = true;
+				e.setAttackTarget(player);
+				
+				e.setPosition( banditSpawnPos.getX() + 0.5, banditSpawnPos.getY() + 0.1, banditSpawnPos.getZ() + 0.5 );
+				//e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData)null);
+				e.addedToChunk = true;
+				world.spawnEntity(e);
+			}
+		}
+	}
+	
+	public void spawnHusks( World w, BlockPos bsp, int rep, EntityPlayer p, Province province )
+	{
+		for ( int i = (rand.nextInt(MathHelper.clamp(((rep+350)/100),4,8))+5); i > 0; i-- )
+		{
+			EntityHusk creature = new EntityHusk(w);
+			
+			
+			creature.tasks.addTask(3, new EntityAIRaidDespawn(creature, (province.getCenterX()+p.getPosition().getX())/2, (province.getCenterZ()+p.getPosition().getZ())/2, 1.0F));
+			creature.enablePersistence();
+			
+			creature.getEntityData().setInteger("despawnTimer", 100);
+			creature.getEntityData().setFloat("raidSpeed", 1.0F);
+			creature.getEntityData().setInteger("raidX", province.getCenterX()+rand.nextInt(33)-16);
+			creature.getEntityData().setInteger("raidZ", province.getCenterZ()+rand.nextInt(33)-16);
+			creature.velocityChanged = true;
+			creature.setAttackTarget(p);
+			
+			creature.setPosition( bsp.getX() + 0.5, bsp.getY() + 0.1, bsp.getZ() + 0.5 );
+			w.spawnEntity(creature);
+			creature.addedToChunk = true;
+
+			creature.writeEntityToNBT(new NBTTagCompound());
+		}
+	}
+	
+	public void spawnWitches( World w, BlockPos bsp, int rep, EntityPlayer p, Province province )
+	{
+		for ( int i = (rand.nextInt( MathHelper.clamp(((Math.abs(rep)+500)/200), 2, 6) ) + 3); i > 0; i-- )
+		{
+			EntityWitch creature = new EntityWitch(w);
+			
+			creature.tasks.addTask(3, new EntityAIRaidDespawn(creature, (province.getCenterX()+p.getPosition().getX())/2, (province.getCenterZ()+p.getPosition().getZ())/2, 1.0F));
+			creature.enablePersistence();
+			
+			creature.getEntityData().setInteger("despawnTimer", 100);
+			creature.getEntityData().setFloat("raidSpeed", 1.0F);
+			creature.getEntityData().setInteger("raidX", province.getCenterX()+rand.nextInt(33)-16);
+			creature.getEntityData().setInteger("raidZ", province.getCenterZ()+rand.nextInt(33)-16);
+			creature.velocityChanged = true;
+			creature.setAttackTarget(p);
+			
+			creature.setPosition( bsp.getX() + 0.5, bsp.getY() + 0.1, bsp.getZ() + 0.5 );
+			w.spawnEntity(creature);
+			creature.addedToChunk = true;
+
+			creature.writeEntityToNBT(new NBTTagCompound());
+		}
+	}
+	
+	public void spawnWolves( World w, BlockPos banditSpawnPos, int rep, EntityPlayer player, Province province )
+	{
+		for ( int i = (rand.nextInt(MathHelper.clamp(((Math.abs(rep)+500)/200),2,9))+3); i > 0; i-- )
+		{
+			EntityWolfRaider creature = new EntityWolfRaider(w, (province.getCenterX()+player.getPosition().getX())/2, (province.getCenterZ()+player.getPosition().getZ())/2);
+			
+			creature.getEntityData().setInteger("despawnTimer", 100);
+			creature.getEntityData().setFloat("raidSpeed", 1.0F);
+			creature.getEntityData().setInteger("raidX", province.getCenterX()+rand.nextInt(33)-16);
+			creature.getEntityData().setInteger("raidZ", province.getCenterZ()+rand.nextInt(33)-16);
+			creature.velocityChanged = true;
+			creature.setAttackTarget(player);
+			
+			creature.setPosition( banditSpawnPos.getX() + 0.5, banditSpawnPos.getY() + 0.1, banditSpawnPos.getZ() + 0.5 );
+			w.spawnEntity(creature);
+			creature.addedToChunk = true;
+		}
+	}
+	
+	public boolean spawnRaider(ArrayList<Raider> r, int rep, BlockPos bsp, Province province, EntityPlayer p, World w, boolean isNightTime)
 	{
 		ArrayList<Raider> raiderList = r;
 		Collections.shuffle(raiderList);
@@ -2420,18 +2486,28 @@ public class CivilizationHandlers
 					try
 					{
 						EntityCreature creature = (EntityCreature) Class.forName(className).getConstructor(new Class[] {World.class}).newInstance(new Object[] {w});
-						creature.setPosition(bsp.getX() + 0.5,bsp.getY()+0.1, bsp.getZ() + 0.5 );
-						creature.onInitialSpawn(w.getDifficultyForLocation(new BlockPos(creature)), (IEntityLivingData) null);
-						EntityAIRaid task = new EntityAIRaid(creature, raider.raidSpeed, 16, 32);
-						task.setCenter(vx, vz);
-						w.spawnEntity(creature);
+						
+						
+						creature.tasks.addTask(3, new EntityAIRaidDespawn(creature, (province.getCenterX()+p.getPosition().getX())/2, (province.getCenterZ()+p.getPosition().getZ())/2, 1.0F));
+						creature.enablePersistence();
+						
+						creature.getEntityData().setInteger("despawnTimer", 100);
+						creature.getEntityData().setFloat("raidSpeed", 1.0F);
+						creature.getEntityData().setInteger("raidX", province.getCenterX()+rand.nextInt(33)-16);
+						creature.getEntityData().setInteger("raidZ", province.getCenterZ()+rand.nextInt(33)-16);
+						creature.velocityChanged = true;
 						creature.setAttackTarget(p);
-						creature.tasks.addTask(1, task);
+						
+						creature.setPosition( bsp.getX() + 0.5, bsp.getY() + 0.1, bsp.getZ() + 0.5 );
+						w.spawnEntity(creature);
+						creature.addedToChunk = true;
+						
+						creature.writeEntityToNBT(new NBTTagCompound());
 					}
 					catch ( Exception error )
 					{
 						System.err.println("Incorrect raider resource name: " + className);
-						return true;
+						return false;
 					}
 				}
 				return true;
@@ -2623,6 +2699,7 @@ public class CivilizationHandlers
 		EntityFugitive e = new EntityFugitive(world);
 		e.setPosition(spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5);
 		world.spawnEntity(e);
+		e.velocityChanged = true;
 		e.setAttackTarget(player);
 	}
 	

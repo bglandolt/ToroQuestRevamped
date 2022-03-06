@@ -233,10 +233,10 @@ public class SpiderLairGenerator extends WorldGenerator
 		}
 		else
 		{
-			EntitySpiderLord e = new EntitySpiderLord(world);
+			EntitySpiderLord e = new EntitySpiderLord(world, blockpos.getX(), blockpos.getY(), blockpos.getZ());
 			e.setPosition(blockpos.getX() + 0.5, blockpos.getY() + 1, blockpos.getZ() + 0.5);
 			e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData) null);
-			e.setRaidLocation(blockpos.getX(), blockpos.getY(), blockpos.getZ());
+			// e.setRaidLocation(blockpos.getX(), blockpos.getY(), blockpos.getZ());
 			world.spawnEntity(e);
 			System.out.println("tile entity is missing");
 		}

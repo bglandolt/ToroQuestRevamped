@@ -108,8 +108,6 @@ public class EntityFugitive extends EntityVillager
 	protected void initEntityAI()
 	{
 		this.tasks.addTask(0, new EntityAISwimming(this));
-//		this.tasks.addTask(4, new EntityAIAvoidEntity<EntityToroMob>(this, EntityToroMob.class, 8.0F, 0.5D, 0.7D));
-//		this.tasks.addTask(5, new EntityAIAvoidEntity<EntityMob>(this, EntityMob.class, 8.0F, 0.5D, 0.7D));
 		this.tasks.addTask(1, new EntityAIPanic(this, 0.7D)
 		{
 			

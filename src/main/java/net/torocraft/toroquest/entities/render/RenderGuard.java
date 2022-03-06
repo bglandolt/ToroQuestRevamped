@@ -4,24 +4,24 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.layers.LayerArrow;
-import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
-import net.minecraft.client.renderer.entity.layers.LayerHeldItem;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.torocraft.toroquest.ToroQuest;
 import net.torocraft.toroquest.civilization.CivilizationType;
+import net.torocraft.toroquest.config.ToroQuestConfiguration;
 import net.torocraft.toroquest.entities.EntityGuard;
 import net.torocraft.toroquest.entities.model.ModelGuard;
 
 @SideOnly(Side.CLIENT)
 public class RenderGuard extends RenderBiped<EntityGuard>
 {
-
+	private final ModelGuard defaultModel = (ModelGuard) mainModel;
+	
+	// private final List<LayerRenderer<EntityGuard>> defaultLayers;
+	
 	private static final ResourceLocation DEFAULT = new ResourceLocation(ToroQuest.MODID + ":textures/entity/guard/guard_null.png");
 	private static final ResourceLocation TEXTURES_SUN = new ResourceLocation(ToroQuest.MODID + ":textures/entity/guard/guard_sun.png");
 	private static final ResourceLocation TEXTURES_MOON = new ResourceLocation(ToroQuest.MODID + ":textures/entity/guard/guard_moon.png");
@@ -29,10 +29,6 @@ public class RenderGuard extends RenderBiped<EntityGuard>
 	private static final ResourceLocation TEXTURES_WIND = new ResourceLocation(ToroQuest.MODID + ":textures/entity/guard/guard_wind.png");
 	private static final ResourceLocation TEXTURES_FIRE = new ResourceLocation(ToroQuest.MODID + ":textures/entity/guard/guard_fire.png");
 	private static final ResourceLocation TEXTURES_WATER = new ResourceLocation(ToroQuest.MODID + ":textures/entity/guard/guard_water.png");
-	
-	private final ModelGuard defaultModel = (ModelGuard) mainModel;
-	
-	// private final List<LayerRenderer<EntityGuard>> defaultLayers;
 
 	public RenderGuard(RenderManager renderManagerIn)
 	{
@@ -45,7 +41,11 @@ public class RenderGuard extends RenderBiped<EntityGuard>
 
 		// this.addLayer(new LayerHeldItem(this));
 		// this.addLayer(new LayerHeldItem(this));
-        this.addLayer(new LayerArrow(this));
+		
+		if ( ToroQuestConfiguration.renderArrowLayer )
+		{
+	        this.addLayer(new LayerArrow(this));
+		}
 
 //		LayerBipedArmor layerbipedarmor = new LayerBipedArmor(this)
 //		{
@@ -157,12 +157,17 @@ public class RenderGuard extends RenderBiped<EntityGuard>
 	 * unless you call Render.bindEntityTexture.
 	 */
 	
-	CivilizationType civ = null;
+	ResourceLocation R;
 	
 	@Override
 	protected ResourceLocation getEntityTexture(EntityGuard entity)
 	{
-		civ = entity.getCivilization();
+		if ( R != null )
+		{
+			return R;
+		}
+		
+		CivilizationType civ = entity.getCivilization();
 		
 		if ( civ == null )
 		{
@@ -173,31 +178,31 @@ public class RenderGuard extends RenderBiped<EntityGuard>
 		{
 			case FIRE:
 			{
-				return TEXTURES_FIRE;
+				return R = TEXTURES_FIRE;
 			}
 			case EARTH:
 			{
-				return TEXTURES_EARTH;
+				return R = TEXTURES_EARTH;
 			}
 			case MOON:
 			{
-				return TEXTURES_MOON;
+				return R = TEXTURES_MOON;
 			}
 			case SUN:
 			{
-				return TEXTURES_SUN;
+				return R = TEXTURES_SUN;
 			}
 			case WIND:
 			{
-				return TEXTURES_WIND;
+				return R = TEXTURES_WIND;
 			}
 			case WATER:
 			{
-				return TEXTURES_WATER;
+				return R = TEXTURES_WATER;
 			}
 			default:
 			{
-				return DEFAULT;
+				return R;
 			}
 		}
 	}

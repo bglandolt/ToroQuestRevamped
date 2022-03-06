@@ -110,31 +110,14 @@ public class EntityBanditLord extends EntitySentry implements IRangedAttackMob, 
 	{
 		super(world);
 		this.setSize(0.95F, 2.7F);
-        this.setCombatTask();
-		this.stepHeight = 3.05F;
-
+		this.stepHeight = 3.05F;		
+        this.setCustomNameTag("...");
+		this.setAlwaysRenderNameTag(false);
 		this.experienceValue = 240;
         this.isImmuneToFire = true;
-        
     	Arrays.fill(inventoryArmorDropChances, 0.0F);
     	Arrays.fill(inventoryHandsDropChances, 0.0F);
-    	
-    	this.inCombat = false;
-    	this.blocking = false;
-    	this.blockingTimer = 0;
-    	this.setAttackTarget(null);
-    	this.setRevengeTarget(null);
-    	this.resetActiveHand();
-    	this.setActiveHand(EnumHand.MAIN_HAND);
-    	this.activeItemStackUseCount = 0;
     	this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(100.0D);
-    	this.strafeVer = 0;
-    	this.strafeHor = 0;
-    	this.getMoveHelper().strafe( 0.0F, 0.0F );
-    	this.getNavigator().clearPath();
-    	
-    	((PathNavigateGround)this.getNavigator()).setBreakDoors(true);
-        this.setCanPickUpLoot(false);
 	}
 	
 	@Override
@@ -150,7 +133,7 @@ public class EntityBanditLord extends EntitySentry implements IRangedAttackMob, 
     	this.setLeftHanded(false);
 		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.4D);
 		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(200.0D * ToroQuestConfiguration.bossHealthMultiplier);
-		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0D * ToroQuestConfiguration.bossAttackDamageMultiplier);
+		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(ToroQuestConfiguration.banditAttackDamage * 1.5D * ToroQuestConfiguration.bossAttackDamageMultiplier);
 		this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(40.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(10.0D);
@@ -318,9 +301,6 @@ public class EntityBanditLord extends EntitySentry implements IRangedAttackMob, 
 	    }
 
     	protected final AIArcher<EntityBanditLord> aiArrowAttack = new AIArcher<EntityBanditLord>(this, 0.4D, 20, 40.0F);
-        protected double randPosX;
-        protected double randPosY;
-        protected double randPosZ;
         protected int stance = (rand.nextInt(6)+5);
     	protected float strafeVer = 0;
     	protected float strafeHor = 0;
@@ -347,72 +327,15 @@ public class EntityBanditLord extends EntitySentry implements IRangedAttackMob, 
     			return;
     		}
     		
-    		// ======================================
-           	if ( this.ticksExisted % 100 == 0 )
-        	{
-        		this.setSprinting(false);
-           		           		       		
-           		if ( this.getHealth() >= this.getMaxHealth() )
-    			{
-           			
-    			}
-           		else this.heal(1.0f);
-           		        		
-        		if ( !this.inCombat )
-        		{
-        	        this.setSprinting(false);
-        			ItemStack iStack = this.getHeldItemMainhand();
-        			
-        			if ( this.getAttackTarget() == null )
-        			{
-    	    			if ( this.lastTargetY < 4 && iStack != null && (iStack.getItem() instanceof ItemBow) )
-    					{
-    						this.resetActiveHand();
-    			        	this.playSound(SoundEvents.ITEM_ARMOR_EQUIP_IRON, 1.0F, 0.8F + rand.nextFloat()/5.0F );
-    			        	if ( !this.world.isRemote )
-    						{
-    			        		this.setMeleeWeapon();
-    			        		if ( this.world.canSeeSky(this.getPosition()) && this.world.getWorldTime() >= 12500 && this.world.getWorldTime() <= 23500 )
-    			        		{
-    			        			this.setHeldItem(EnumHand.MAIN_HAND, new ItemStack(Blocks.TORCH, 1));
-    			        		}
-    						}
-    						this.blockingTimer = 0;
-    					}
-    	    			else if ( this.world.canSeeSky(this.getPosition()) && !(iStack.getItem() instanceof ItemBow) && this.world.getWorldTime() >= 12500 && this.world.getWorldTime() <= 23500 )
-    	        		{
-    	    				if ( !(iStack.getItem() == Item.getItemFromBlock(Blocks.TORCH)) )
-    	    				{
-    							this.resetActiveHand();
-    				        	this.playSound(SoundEvents.ITEM_ARMOR_EQUIP_IRON, 1.0F, 0.8F + rand.nextFloat()/5.0F );
-    				        	if ( !this.world.isRemote )
-    				        	{
-    				        		this.setHeldItem(EnumHand.MAIN_HAND, new ItemStack(Blocks.TORCH, 1));
-    				        	}
-    							this.blockingTimer = 0;
-    	    				}
-    	        		}
-    	    			else if ( iStack.getItem() == Item.getItemFromBlock(Blocks.TORCH) )
-    	    			{
-    						this.resetActiveHand();
-    			        	this.playSound(SoundEvents.ITEM_ARMOR_EQUIP_IRON, 1.0F, 0.8F + rand.nextFloat()/5.0F );
-    			        	if ( !this.world.isRemote )
-    			        	{
-    			        		this.setMeleeWeapon();
-    			        	}
-    	    			}
-        				this.canShieldPush = true;
-        			}
-        		}
-        		else if ( this.getAttackTarget() != null )
-        		{
-    	    		this.callForHelp( this.getAttackTarget() );
-        		}
-        		else
-        		{
-    	    		this.inCombat = false;
-        		}
-        	}
+    					// ======================================
+    		
+    		if ( this.ticksExisted % 25 == 0 )
+    		{
+    			
+    			this.heal(ToroQuestConfiguration.bossHealthMultiplier);
+    	        this.bossInfo.setPercent(this.getHealth()/this.getMaxHealth());
+    		
+    		}
            	
             if ( this.isRiding() )
             {
@@ -431,9 +354,9 @@ public class EntityBanditLord extends EntitySentry implements IRangedAttackMob, 
     			}
     			else
     			{
-    				this.faceEntity(this.getAttackTarget(), 20.0F, 20.0F);
+    				this.faceEntity(this.getAttackTarget(), 30.0F, 30.0F);
     			}
-        		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 20.0F, 20.0F);
+        		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 30.0F, 30.0F);
     			
     			List<EntityArrow> arrows = this.world.getEntitiesWithinAABB(EntityArrow.class, new AxisAlignedBB(this.getPosition()).grow(8, 8, 8), new Predicate<EntityArrow>()
     			{
@@ -548,7 +471,7 @@ public class EntityBanditLord extends EntitySentry implements IRangedAttackMob, 
     				if ( this.blocking && this.blockingTimer <= 0 )
     				{
     					this.blocking = false;
-    					this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.25D);
+    					this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(ToroQuestConfiguration.guardKnockBackResistance);
     					this.stance = rand.nextInt(8)+3;
     		    		AIHelper.faceEntitySmart(this, this.getAttackTarget());
     		        	this.canShieldPush = true;
@@ -573,16 +496,20 @@ public class EntityBanditLord extends EntitySentry implements IRangedAttackMob, 
     					
     					if ( this.stance < 5 )
     					{
+    						// BACKPEDDLE
     						this.setSprinting(false);
-    						if ( dist <= 30 )
+    						if ( dist <= 32 && dist > 2 )
     						{
     							if ( this.onGround )
     							{
-    					    		AIHelper.faceEntitySmart(this, this.getAttackTarget());
+    					    		//AIHelper.faceEntitySmart(this, this.getAttackTarget());
     								Vec3d velocityVector = new Vec3d(this.posX - this.getAttackTarget().posX, 0, this.posZ - this.getAttackTarget().posZ);
-    								double push = (1.0D+4.0D*dist);
+    								if ( velocityVector != null )
+    								{
+    								double push = (1.0D+3.7D*dist);
     								this.addVelocity((velocityVector.x)/push, -0.002D, (velocityVector.z)/push);
     			                	this.velocityChanged = true;
+    								}
     							}
     							this.getNavigator().tryMoveToEntityLiving(this.getAttackTarget(), 0.4F); // bau
     							this.getMoveHelper().strafe( -1.0F, this.getStrafe(this.stance) );
@@ -594,26 +521,6 @@ public class EntityBanditLord extends EntitySentry implements IRangedAttackMob, 
     					    	this.getMoveHelper().strafe( 0.0F, 0.0F );
     						}
     						if ( this.rand.nextBoolean() ) this.blockingTimer--;
-//    						if ( dist <= 30 )
-//    						{
-//    							if ( this.onGround )
-//    							{
-//    								this.faceEntitySmart(this.getAttackTarget());
-//    								Vec3d velocityVector = new Vec3d(this.posX - this.getAttackTarget().posX, 0, this.posZ - this.getAttackTarget().posZ);
-//    								double push = (1.0D+dist*dist);
-//    								this.addVelocity((velocityVector.x)/push, -0.002D, (velocityVector.z)/push);
-//    			                	this.velocityChanged = true;
-//    							}
-//    							this.getMoveHelper().strafe( this.strafeVer, this.getStrafe(this.stance)*1.25F );
-//    						}
-//    						else
-//    						{
-//    							this.stance = rand.nextInt(6)+5;
-//    							this.getNavigator().clearPath();
-//    		        			this.faceEntitySmart(this.getAttackTarget());
-//    					    	this.getMoveHelper().strafe( 0.0F, 0.0F );
-//    						}
-//    						this.blockingTimer--;
     						return;
     					}
     					else if ( dist <= 2 )
@@ -622,17 +529,17 @@ public class EntityBanditLord extends EntitySentry implements IRangedAttackMob, 
     					}
     					else if ( dist <= 4 )
     					{
-    						this.strafeVer = 0.7F;
+    						this.strafeVer = 0.8F;
     						strafeMod = 0.9F;
     					}
     					else if ( dist <= 9 )
     					{
-    						this.strafeVer = 0.8F;
+    						this.strafeVer = 0.9F;
     						strafeMod = 0.8F;
     					}
     					else
     					{
-    						this.strafeVer = 0.9F;
+    						this.strafeVer = 1.0F;
     						strafeMod = 0.7F;
     					}
     								
@@ -642,14 +549,22 @@ public class EntityBanditLord extends EntitySentry implements IRangedAttackMob, 
     						{
     							this.blockingTimer--;
     						}
+    						else if ( dist <= 1.5 )
+    						{
+    							this.getMoveHelper().strafe( 0.0F, 0.0F );
+    							this.getNavigator().clearPath();
+    						}
     						else if ( dist <= 3 )
     						{
     							if ( this.onGround && !this.isSprinting() )
     							{
     								Vec3d velocityVector = new Vec3d(this.posX - this.getAttackTarget().posX, 0, this.posZ - this.getAttackTarget().posZ);
+    								if ( velocityVector != null )
+    								{
     								double push = (1.0D+dist*dist);
     								this.addVelocity((velocityVector.x)/push, 0.0D, (velocityVector.z)/push);
     			                	this.velocityChanged = true;
+    								}
     							}
     						}
     						
@@ -670,34 +585,20 @@ public class EntityBanditLord extends EntitySentry implements IRangedAttackMob, 
     					else
     					{
     						this.getMoveHelper().strafe( 0.0F, 0.0F );
-
-//    						Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 12, 6, this.getAttackTarget().getPositionVector());
-//    			            if ( vec3d != null && this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.5D) )
-//    			            {
-//    			            	this.blocking = false;
-//    							this.blockingTimer = -200;
-//    							return;
-//    			            }
-//    						if ( this.posY + 1.5D < this.getAttackTarget().posY )
-//    						{
-//    							this.getMoveHelper().strafe( this.strafeVer*0.5F, 0.0F );
-//    						}
-//    						else
-//    						{
-//    							this.getMoveHelper().strafe( this.strafeVer*0.5F, this.getStrafe(this.stance)*0.5F*strafeMod );
-//    						}
+    						if ( this.onGround && !this.isAirBorne ) this.getNavigator().clearPath();
     					}
     				}
-    				else // is blocking
+    				else /* is blocking */
     				{
     					if ( this.strafeVer < 0.4F )
     					{
     						if ( !this.world.isRemote && this.onGround )
     						{
     							Vec3d velocityVector = new Vec3d(this.posX - this.getAttackTarget().posX, 0, this.posZ - this.getAttackTarget().posZ);
-    							double push = (1.0D+dist*dist);
+    							if ( velocityVector != null )
+    							{double push = (1.0D+dist*dist);
     							this.addVelocity((velocityVector.x)/push, 0.0D, (velocityVector.z)/push);
-    		                	this.velocityChanged = true;
+    		                	this.velocityChanged = true;}
     						}
     					}
     					else if ( this.strafeVer > 0.4F )
@@ -725,7 +626,6 @@ public class EntityBanditLord extends EntitySentry implements IRangedAttackMob, 
     				}
     				this.blocking = false;
     				this.blockingTimer = -200;
-    		    	this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.25D);
     	        	this.canShieldPush = true;
     				this.resetActiveHand();
     				this.playSound(SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 1.0F, 0.9F + rand.nextFloat()/5.0F );
@@ -742,14 +642,6 @@ public class EntityBanditLord extends EntitySentry implements IRangedAttackMob, 
     		    	this.getNavigator().clearPath();
     			}
     			this.blockingTimer--;
-    			//if ( this.getAttackTarget() != null )
-    	    	//{
-    	    		//this.faceEntity(this.getAttackTarget(), 20.0F, 20.0F);
-    	    		//this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 20.0F, 20.0F);
-    	    		//this.prevRotationPitch = 0;
-    	    		//this.prevRotationYaw = 0;
-    	    		//this.newPosRotationIncrements = 0;
-    	    	//}
     		}
     		else if ( this.blocking || this.inCombat ) // end of combat
     		{
@@ -759,17 +651,12 @@ public class EntityBanditLord extends EntitySentry implements IRangedAttackMob, 
             	this.canShieldPush = true;
     			this.resetActiveHand();
     			this.activeItemStackUseCount = 0;
-    	    	this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.25D);
+    	    	this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(ToroQuestConfiguration.guardKnockBackResistance);
     	    	this.stance = 0;
     	    	this.getMoveHelper().strafe( 0.0F, 0.0F );
     	    	this.getNavigator().clearPath();
+    	    	this.aggroTimer = 0;
     		}
-    		
-    		//if ( this.getAttackTarget() != null && Math.abs(this.motionX*this.motionZ) > 0.01 )
-//    		else if ( this.getAttackTarget() == null && this.hasPath() )
-//    		{
-//    			this.faceMovingDirection();
-//    		}
     	}
     	
         public boolean isOnLadder()

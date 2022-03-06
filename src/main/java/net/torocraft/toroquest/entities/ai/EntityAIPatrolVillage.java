@@ -1,5 +1,6 @@
 package net.torocraft.toroquest.entities.ai;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -27,7 +28,7 @@ public class EntityAIPatrolVillage extends EntityAIBase
     private Random rand = new Random();
 
     private Village village = null;
-
+    
     public EntityAIPatrolVillage(EntityGuard entityIn, double movementSpeedIn)
     {
         this.entity = entityIn;
@@ -40,130 +41,145 @@ public class EntityAIPatrolVillage extends EntityAIBase
 //        }
     }
 
+    private boolean hasPath = false;
     /**
      * Returns whether the EntityAIBase should begin execution.
      */
     public boolean shouldExecute()
     {
-    	if ( this.entity.isInWater() && !this.entity.hasPath() )
+    	this.hasPath = this.entity.hasPath();
+    	
+    	if ( this.entity.isInWater() && !this.hasPath )
     	{
-    		Vec3d vec3d = RandomPositionGenerator.getLandPos(this.entity, 12, 5);
+    		Vec3d vec3d = RandomPositionGenerator.getLandPos(this.entity, 12, 6);
             if ( vec3d != null )
             {
-		        if ( this.entity.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.65D) )
-		        {
-		        	return false;
-		        }
+            	this.path = this.entity.getNavigator().getPathToXYZ(vec3d.x, vec3d.y, vec3d.z);
+            	if ( path == null )
+            	{
+            		return false;
+            	}
+            	else
+            	{
+                	AIHelper.faceEntitySmart(this.entity, (int)vec3d.x, (int)vec3d.z);
+                	return true;
+            	}
             }
     	}
     	
-    	if ( this.entity.getAttackTarget() != null || this.rand.nextInt((this.entity.hasPath()?32:96)) != 0 ) // increase chance to path again if have a path
+    	if ( this.rand.nextInt((this.hasPath?32:128)) != 0 )
     	{
     		return false;
     	}
 
-    	if ( this.entity.actionTimer > 3 )
+    	if ( this.entity.actionTimer > 3 || this.entity.isAnnoyed() )
     	{
     		return false;
-    	}
-
-    	if ( this.entity.returnToPost )
-    	{
-    		return this.entity.returnToPost = false;
-    	}
-
-    	if ( this.entity.raidX != null && this.entity.raidZ != null && this.entity.getDistance(this.entity.raidX, this.entity.posY, this.entity.raidZ) > 32 )
-    	{
-    		if ( this.entity.returnToPost() )
-    		{
-    			return !(this.entity.returnToPost = true);
-    		}
     	}
     	
-    	if ( this.entity.isAnnoyed() )
+    	if ( this.entity.getRaidLocationX() != 0 && this.entity.getRaidLocationZ() != 0 )
     	{
-    		return false;
+        	int d = (int) this.entity.getDistance(this.entity.getRaidLocationX(), this.entity.posY, this.entity.getRaidLocationZ());
+        	
+        	if ( this.entity.returningToPost || this.rand.nextInt(32)+4 < d )
+        	{
+        		if ( this.entity.returningToPost = this.entity.returnToPost() )
+        		{
+        			return false;
+        		}
+        		else
+        		{
+        			return true;
+        		}
+        	}
     	}
 
-    	//if ( rand.nextInt(3) == 0 )
+    	if ( rand.nextInt(3) == 0 )
     	{
-    		Vec3d vec3d = RandomPositionGenerator.getLandPos(this.entity, 12, 8);
+    		Vec3d vec3d = RandomPositionGenerator.getLandPos(this.entity, 12, 6);
+    		
             if ( vec3d != null )
             {
-		        if ( this.entity.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.65D) )
-		        {
-		        	return false;
-		        }
+            	if ( path == null )
+            	{
+            		return false;
+            	}
+            	else
+            	{
+                	AIHelper.faceEntitySmart(this.entity, (int)vec3d.x, (int)vec3d.z);
+                	return true;
+            	}
             }
     	}
-    	// else
+    	else
     	{
-	        this.resizeDoorList();
-	        {
-	            if ( this.village == null )
-	            {
-	                this.village = this.entity.world.getVillageCollection().getNearestVillage(new BlockPos(this.entity), 88);
-	                return false;
-	            }
-	            else
-	            {
-	                // this.village = this.entity.world.getVillageCollection().getNearestVillage(new BlockPos(this.entity), 88);
-	                
-	                this.doorInfo = this.findNearestDoor(village);
-	
-	                if (this.doorInfo == null)
-	                {
-	                    return false;
-	                }
-	                else
-	                {
-	                    PathNavigateGround pathnavigateground = (PathNavigateGround)this.entity.getNavigator();
-	                    boolean flag = pathnavigateground.getEnterDoors();
-	                    pathnavigateground.setBreakDoors(false);
-	                    this.path = pathnavigateground.getPathToPos(this.doorInfo.getDoorBlockPos());
-	                    pathnavigateground.setBreakDoors(flag);
-	
-	                    if (this.path != null)
-	                    {
-	                        return true;
-	                    }
-	                    else
-	                    {
-	                        Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this.entity, 16, 12, new Vec3d((double)this.doorInfo.getDoorBlockPos().getX(), (double)this.doorInfo.getDoorBlockPos().getY(), (double)this.doorInfo.getDoorBlockPos().getZ()));
-	
-	                        if (vec3d == null)
-	                        {
-	                            return false;
-	                        }
-	                        else
-	                        {
-	                            pathnavigateground.setBreakDoors(false);
-	                            this.path = this.entity.getNavigator().getPathToXYZ(vec3d.x, vec3d.y, vec3d.z);
-	                            pathnavigateground.setBreakDoors(flag);
-	                            return this.path != null;
-	                        }
-	                    }
-	                }
-	            }
-	        }
+            if ( this.village == null )
+            {
+                this.village = this.entity.world.getVillageCollection().getNearestVillage(new BlockPos(this.entity), 16);
+                
+                if ( this.village == null )
+                {
+                	return false;
+                }
+            }
+            
+            int i = this.rand.nextInt(this.village.getVillageDoorInfoList().size());
+            
+            if ( i > 0 )
+            {
+            	this.doorInfo = this.village.getVillageDoorInfoList().get(i);
+            }
+            
+            if ( this.doorInfo == null )
+            {
+            	return false;
+            }
+            
+            PathNavigateGround pathnavigateground = (PathNavigateGround)this.entity.getNavigator();
+            boolean flag = pathnavigateground.getEnterDoors();
+            pathnavigateground.setBreakDoors(false);
+            this.path = pathnavigateground.getPathToPos(this.doorInfo.getDoorBlockPos());
+            pathnavigateground.setBreakDoors(flag);
+
+            if (this.path != null)
+            {
+                return true;
+            }
+            else
+            {
+                Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this.entity, 16, 8, new Vec3d((double)this.doorInfo.getDoorBlockPos().getX(), (double)this.doorInfo.getDoorBlockPos().getY(), (double)this.doorInfo.getDoorBlockPos().getZ()));
+
+                if (vec3d == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    pathnavigateground.setBreakDoors(false);
+                    this.path = this.entity.getNavigator().getPathToXYZ(vec3d.x, vec3d.y, vec3d.z);
+                    pathnavigateground.setBreakDoors(flag);
+                    return this.path != null;
+                }
+            }
     	}
+		return false;
     }
 
     /**
      * Returns whether an in-progress EntityAIBase should continue executing
      */
-    public boolean shouldContinueExecuting()
-    {
-        if (this.entity.getNavigator().noPath())
-        {
-            return false;
-        }
-        else
-        {
-			float f = this.entity.width + 4.0F;
-            return this.entity.getDistanceSq(this.doorInfo.getDoorBlockPos()) > (double)(f * f);
-        }
-    }
+//    public boolean shouldContinueExecuting()
+//    {
+//        if (this.entity.getNavigator().noPath())
+//        {
+//            return false;
+//        }
+//        else
+//        {
+//			float f = this.entity.width + 4.0F;
+//            return this.entity.getDistanceSq(this.doorInfo.getDoorBlockPos()) > (double)(f * f);
+//        }
+//    }
 
     /**
      * Execute a one shot task or start executing a continuous task
@@ -178,49 +194,50 @@ public class EntityAIPatrolVillage extends EntityAIBase
      */
     public void resetTask()
     {
-        if (this.entity.getNavigator().noPath() || this.entity.getDistanceSq(this.doorInfo.getDoorBlockPos()) < 16.0D)
-        {
-            this.doorList.add(this.doorInfo);
-        }
+//        if (this.entity.getNavigator().noPath() || this.entity.getDistanceSq(this.doorInfo.getDoorBlockPos()) < 16.0D)
+//        {
+//            this.doorList.add(this.doorInfo);
+//        }
     }
 
-    private VillageDoorInfo findNearestDoor(Village villageIn)
-    {
-        VillageDoorInfo villagedoorinfo = null;
-        int i = Integer.MAX_VALUE;
+//    private List<VillageDoorInfo> findNearestDoor(Village villageIn)
+//    {
+//    	ArrayList<VillageDoorInfo> villagedoorinfo = new ArrayList<VillageDoorInfo>();
+//        
+//        int i = Integer.MAX_VALUE;
+//
+//        for ( VillageDoorInfo v : villageIn.getVillageDoorInfoList() )
+//        {
+//            int j = v.getDistanceSquared(MathHelper.floor(this.entity.posX), MathHelper.floor(this.entity.posY), MathHelper.floor(this.entity.posZ));
+//
+//            if ( j < i && !this.doesDoorListContain(v) )
+//            {
+//                villagedoorinfo.add(v);
+//                i = j;
+//            }
+//        }
+//
+//        return villagedoorinfo;
+//    }
 
-        for (VillageDoorInfo villagedoorinfo1 : villageIn.getVillageDoorInfoList())
-        {
-            int j = villagedoorinfo1.getDistanceSquared(MathHelper.floor(this.entity.posX), MathHelper.floor(this.entity.posY), MathHelper.floor(this.entity.posZ));
+//    private boolean doesDoorListContain(VillageDoorInfo doorInfoIn)
+//    {
+//        for (VillageDoorInfo villagedoorinfo : this.doorList)
+//        {
+//            if (doorInfoIn.getDoorBlockPos().equals(villagedoorinfo.getDoorBlockPos()))
+//            {
+//                return true;
+//            }
+//        }
+//
+//        return false;
+//    }
 
-            if (j < i && !this.doesDoorListContain(villagedoorinfo1))
-            {
-                villagedoorinfo = villagedoorinfo1;
-                i = j;
-            }
-        }
-
-        return villagedoorinfo;
-    }
-
-    private boolean doesDoorListContain(VillageDoorInfo doorInfoIn)
-    {
-        for (VillageDoorInfo villagedoorinfo : this.doorList)
-        {
-            if (doorInfoIn.getDoorBlockPos().equals(villagedoorinfo.getDoorBlockPos()))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private void resizeDoorList()
-    {
-        if (this.doorList.size() > 15)
-        {
-            this.doorList.remove(0);
-        }
-    }
+//    private void resizeDoorList()
+//    {
+//        if (this.doorList.size() > 15)
+//        {
+//            this.doorList.remove(0);
+//        }
+//    }
 }

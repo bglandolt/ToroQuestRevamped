@@ -4,9 +4,7 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.entity.layers.LayerArrow;
 import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
-import net.minecraft.client.renderer.entity.layers.LayerHeldItem;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -15,7 +13,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.torocraft.toroquest.entities.EntityBanditLord;
 import net.torocraft.toroquest.entities.EntitySentry;
 import net.torocraft.toroquest.entities.model.Model64Layer;
-import net.torocraft.toroquest.entities.model.ModelGuard;
 
 @SideOnly(Side.CLIENT)
 public class RenderBanditLord extends RenderBiped<EntityBanditLord>
@@ -37,10 +34,6 @@ public class RenderBanditLord extends RenderBiped<EntityBanditLord>
 			}
 		};
 		this.addLayer(layerbipedarmor);
-		
-        this.addLayer(new LayerArrow(this));
-		
-		// this.defaultLayers = Lists.newArrayList(this.layerRenderers);
 	}
 
 	/**

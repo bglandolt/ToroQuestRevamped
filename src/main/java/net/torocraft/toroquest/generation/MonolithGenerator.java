@@ -141,9 +141,8 @@ public class MonolithGenerator extends WorldGenerator
 		}
 		else
 		{
-			EntityMonolithEye e = new EntityMonolithEye(world);
-			e.setRaidLocation(blockpos.getX(), blockpos.getY(), blockpos.getZ());
-			e.setPosition(blockpos.getX()+0.5,blockpos.getY()+0.5,blockpos.getZ()+0.5);
+			EntityMonolithEye e = new EntityMonolithEye(world, blockpos.getX(), blockpos.getY(), blockpos.getZ());
+			e.setPosition(blockpos.getX(),blockpos.getY(),blockpos.getZ());
 			world.spawnEntity(e);
 			System.out.println("tile entity is missing");
 		}

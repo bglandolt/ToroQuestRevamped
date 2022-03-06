@@ -1,7 +1,6 @@
 package net.torocraft.toroquest.entities;
 
 import java.util.List;
-import java.util.Random;
 
 import javax.annotation.Nullable;
 
@@ -19,11 +18,9 @@ import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
-import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityCaveSpider;
 import net.minecraft.entity.monster.IMob;
@@ -61,12 +58,72 @@ import net.torocraft.toroquest.entities.ai.AIHelper;
 import net.torocraft.toroquest.entities.ai.EntityAIRaid;
 import net.torocraft.toroquest.entities.ai.EntityAIThrow;
 import net.torocraft.toroquest.entities.render.RenderSpiderLord;
+import net.torocraft.toroquest.generation.WorldGenPlacer;
 
 public class EntitySpiderLord extends EntityCaveSpider implements IMob
 {
-	
+	// ========================== DATA MANAGER ==========================
+
     private static final DataParameter<Integer> STATE = EntityDataManager.<Integer>createKey(EntitySpiderLord.class, DataSerializers.VARINT);
 
+	// ============================================================================================================================
+	
+    public static DataParameter<Integer> RAID_X = EntityDataManager.<Integer>createKey(EntitySpiderLord.class, DataSerializers.VARINT);
+ 	public static DataParameter<Integer> RAID_Y = EntityDataManager.<Integer>createKey(EntitySpiderLord.class, DataSerializers.VARINT);
+ 	public static DataParameter<Integer> RAID_Z = EntityDataManager.<Integer>createKey(EntitySpiderLord.class, DataSerializers.VARINT);
+
+	@Override
+	protected void entityInit()
+	{
+		super.entityInit();
+		
+		this.getDataManager().register(RAID_X, Integer.valueOf(0));
+		this.getDataManager().register(RAID_Y, Integer.valueOf(0));
+		this.getDataManager().register(RAID_Z, Integer.valueOf(0));
+	}
+	
+    @Override
+    public void writeEntityToNBT(NBTTagCompound compound)
+    {
+        super.writeEntityToNBT(compound);
+        
+        compound.setInteger("raidX", this.getRaidLocationX());
+        compound.setInteger("raidY", this.getRaidLocationY());
+        compound.setInteger("raidZ", this.getRaidLocationZ());
+    }
+
+    @Override
+    public void readEntityFromNBT(NBTTagCompound compound)
+    {
+        super.readEntityFromNBT(compound);
+        
+        this.setRaidLocation(compound.getInteger("raidX"), compound.getInteger("raidY"), compound.getInteger("raidZ"));
+    }
+	
+	protected void setRaidLocation(int x, int y, int z)
+	{
+		this.getDataManager().set(RAID_X, x);
+		this.getDataManager().set(RAID_Y, y);
+		this.getDataManager().set(RAID_Z, z);
+	}
+	
+	public Integer getRaidLocationX()
+	{
+		return this.getDataManager().get(RAID_X).intValue();
+	}
+	
+	public Integer getRaidLocationY()
+	{
+		return this.getDataManager().get(RAID_Y).intValue();
+	}
+	
+	public Integer getRaidLocationZ()
+	{
+		return this.getDataManager().get(RAID_Z).intValue();
+	}
+		
+	// ============================================================================================================================
+ 	
 	public static String NAME = "spider_lord";
 	private int combatTimer = 2;
 
@@ -143,10 +200,24 @@ public class EntitySpiderLord extends EntityCaveSpider implements IMob
 				true, 0xffffff, 0x909090);
 	}
 	
-	
 	public EntitySpiderLord(World world)
 	{
 		super(world);
+		this.setUpEntity();
+
+		int x = this.getRaidLocationX();
+		int y = this.getRaidLocationY();
+	    int z = this.getRaidLocationZ();
+	    
+	    if ( y != 0 )
+	    {
+			this.tasks.addTask(4, new EntityAIRaid(this, x, z, 0.8D));
+	    }
+	}
+	
+	private void setUpEntity()
+	{
+		this.enablePersistence();
         this.dataManager.register(STATE, Integer.valueOf(-1));
         this.lastActiveTime = 0;
         this.timeSinceIgnited = 0;
@@ -157,6 +228,15 @@ public class EntitySpiderLord extends EntityCaveSpider implements IMob
 		this.setRealSize(3.9F, 1.9F);
 		this.experienceValue = 400;
 		this.stepHeight = 4.05F;
+	}
+	
+	public EntitySpiderLord(World world, int x, int y, int z)
+	{
+		super(world);
+		this.setUpEntity();
+
+		this.setRaidLocation(x, y, z);
+		this.tasks.addTask(4, new EntityAIRaid(this, x, z, 0.8D));
 	}
 
 	@Override
@@ -186,8 +266,14 @@ public class EntitySpiderLord extends EntityCaveSpider implements IMob
 	@Nullable
 	public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
 	{
+		WorldGenPlacer.clearTrees(this.world, new BlockPos((int)this.posX, (int)this.posY, (int)this.posZ), 32);
 		livingdata = super.onInitialSpawn(difficulty, livingdata);
-		this.setRaidLocation( (int)this.posX, (int)this.posZ, (int)this.posY );
+		
+		if ( (int)this.posY != 0 && this.getRaidLocationY() == 0 )
+		{
+			this.setRaidLocation((int)this.posX, (int)this.posY, (int)this.posZ);
+		}
+		
 		return livingdata;
 	}
 
@@ -207,8 +293,7 @@ public class EntitySpiderLord extends EntityCaveSpider implements IMob
 		this.tasks.addTask(1, new EntityAISwimming(this));		
 		this.tasks.addTask(2, new EntityAIThrow(this, 0.5D, false, true));
         this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 0.8D));
-        //this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-        //this.tasks.addTask(6, new EntityAILookIdle(this));
+	    // this.tasks.addTask(7, new EntityAIRaid(this, 0.5D, 16, 32));
         this.targetTasks.addTask(0, new EntityAIHurtByTarget(this, false, new Class[0]));
 		this.targetTasks.addTask(1, new EntityAINearestAttackableTarget<EntityPlayer>(this, EntityPlayer.class, true));
 	}
@@ -407,24 +492,9 @@ public class EntitySpiderLord extends EntityCaveSpider implements IMob
             double x = MathHelper.sqrt(i/16.0D) * 1.0D;
             double y = MathHelper.sqrt((16.0D-i)/16.0D) * 1.0D;
             this.world.spawnParticle(enumparticletypes, this.posX + this.width/2.0F, this.posY + 0.2F, this.posZ + this.width/2.0F, x, 0, y);
-        }
-        for (int i = 0; i <= 16; i++)
-        {
-            double x = MathHelper.sqrt(i/16.0D) * 1.0D;
-            double y = -MathHelper.sqrt((16.0D-i)/16.0D) * 1.0D;
-            this.world.spawnParticle(enumparticletypes, this.posX + this.width/2.0F, this.posY + 0.2F, this.posZ + this.width/2.0F, x, 0, y);
-        }
-        for (int i = 0; i <= 16; i++)
-        {
-            double x = -MathHelper.sqrt(i/16.0D) * 1.0D;
-            double y = MathHelper.sqrt((16.0D-i)/16.0D) * 1.0D;
-            this.world.spawnParticle(enumparticletypes, this.posX + this.width/2.0F, this.posY + 0.2F, this.posZ + this.width/2.0F, x, 0, y);
-        }
-        for (int i = 0; i <= 16; i++)
-        {
-            double x = -MathHelper.sqrt(i/16.0D) * 1.0D;
-            double y = -MathHelper.sqrt((16.0D-i)/16.0D) * 1.0D;
-            this.world.spawnParticle(enumparticletypes, this.posX + this.width/2.0F, this.posY + 0.2F, this.posZ + this.width/2.0F, x, 0, y);
+            this.world.spawnParticle(enumparticletypes, this.posX + this.width/2.0F, this.posY + 0.2F, this.posZ + this.width/2.0F, -x, 0, y);
+            this.world.spawnParticle(enumparticletypes, this.posX + this.width/2.0F, this.posY + 0.2F, this.posZ + this.width/2.0F, x, 0, -y);
+            this.world.spawnParticle(enumparticletypes, this.posX + this.width/2.0F, this.posY + 0.2F, this.posZ + this.width/2.0F, -x, 0, -y);
         }
     }
     
@@ -433,38 +503,6 @@ public class EntitySpiderLord extends EntityCaveSpider implements IMob
     {
         return false;
     }
-    
-//    private void deadSpidersCreateWebs(EntityLivingBase spider)
-//    {
-//    	double x = spider.posX;
-//    	double y = spider.posY;
-//    	double z = spider.posZ;
-//    	Block block = this.world.getBlockState(new BlockPos(x,y,z)).getBlock(); 
-//		if ((block instanceof BlockBush) || block instanceof BlockAir)
-//		{
-//			this.world.setBlockState(new BlockPos(x,y,z), Blocks.WEB.getDefaultState());
-//		}
-//		block = this.world.getBlockState(new BlockPos(x-1,y,z)).getBlock(); 
-//		if ((block instanceof BlockBush) || block instanceof BlockAir)
-//		{
-//			this.world.setBlockState(new BlockPos(x-1,y,z), Blocks.WEB.getDefaultState());
-//		}
-//		block = this.world.getBlockState(new BlockPos(x+1,y,z)).getBlock(); 
-//		if ((block instanceof BlockBush) || block instanceof BlockAir)
-//		{
-//			this.world.setBlockState(new BlockPos(x+1,y,z), Blocks.WEB.getDefaultState());
-//		}
-//		block = this.world.getBlockState(new BlockPos(x,y,z-1)).getBlock(); 
-//		if ((block instanceof BlockBush) || block instanceof BlockAir)
-//		{
-//			this.world.setBlockState(new BlockPos(x,y,z-1), Blocks.WEB.getDefaultState());
-//		}
-//		block = this.world.getBlockState(new BlockPos(x,y,z+1)).getBlock(); 
-//		if ((block instanceof BlockBush) || block instanceof BlockAir)
-//		{
-//			this.world.setBlockState(new BlockPos(x,y,z+1), Blocks.WEB.getDefaultState());
-//		}
-//    }
     
     @Override
     public boolean attackEntityAsMob(Entity entityIn)
@@ -594,92 +632,36 @@ public class EntitySpiderLord extends EntityCaveSpider implements IMob
 		return super.attackEntityFrom(source, amount);
 	}
 	
-//	protected void attackDistantAttackerWithPigs(DamageSource source)
-//	{
-//		if (!(source.getTrueSource() instanceof EntityLivingBase)) {
-//			return;
-//		}
-//		EntityLivingBase distantAttacker = (EntityLivingBase) source.getTrueSource();
-//		spawnPigs(distantAttacker);
-//	}
-
-
-	public Integer raidX = null;
-	public Integer raidZ = null;
-	public Integer raidY = null;
-	protected Random rand = new Random();
-	protected final EntityAIRaid areaAI = new EntityAIRaid(this, 0.7D, 16, 16);
-	
-	@Override
-	public void readEntityFromNBT(NBTTagCompound compound)
-	{
-	    if ( compound.hasKey("raidX") && compound.hasKey("raidZ") && compound.hasKey("raidY") )
-	    {
-	    	this.raidX = compound.getInteger("raidX");
-	    	this.raidZ = compound.getInteger("raidZ");
-	    	this.raidY = compound.getInteger("raidY");
-	    	this.setRaidLocation( compound.getInteger("raidX"), compound.getInteger("raidZ"), compound.getInteger("raidY") );
-	    }
-	    super.readEntityFromNBT(compound);
-	}
-	
-	@Override
-	public void writeEntityToNBT(NBTTagCompound compound)
-	{
-		if ( this.raidX != null && this.raidZ != null && this.raidY != null )
-		{
-			compound.setInteger("raidX", this.raidX);
-			compound.setInteger("raidZ", this.raidZ);
-			compound.setInteger("raidY", this.raidY);
-		}
-		super.writeEntityToNBT(compound);
-	}
-	
-	/* Set the direction for bandits to move to */
-	public void setRaidLocation(Integer x, Integer z, Integer y)
-	{
-		this.tasks.removeTask(this.areaAI);
-		if ( x != null && z != null && y != null )
-		{
-			this.raidX = x;
-			this.raidZ = z;
-			this.raidY = y;
-			this.tasks.addTask(7, this.areaAI);
-			this.areaAI.setCenter(x, z);
-			NBTTagCompound nbt = new NBTTagCompound();
-			this.writeEntityToNBT(nbt);
-		}
-	}
-	
 	@Override
 	public void onDeath(DamageSource cause)
 	{
 		super.onDeath(cause);
-		if (!this.world.isRemote)
+		
+		if ( !this.world.isRemote )
 		{
-			dropLoot();
-			// quest
+			this.dropLoot();
 			
-			if ( this.raidX == null || this.raidZ == null || this.raidY == null )
+			int x = this.getRaidLocationX();
+			int y = this.getRaidLocationY();
+			int z = this.getRaidLocationZ();
+			
+			if ( y == 0 )
 			{
-				return;
+				x = this.getPosition().getX();
+				y = this.getPosition().getY();
+				z = this.getPosition().getZ();
 			}
 			
-			int x = this.raidX;
-			int z = this.raidZ;
-			int y = this.raidY;
+			int range = 64;
 			
-			int range = 128;
-			for ( int xx = -range/2; xx < range; xx++ )
+			for ( int xx = -range; xx < range; xx++ )
 			{
-				for ( int yy = -range/2; yy < range; yy++ )
+				for ( int yy = -32; yy < 32; yy++ )
 				{
-					for ( int zz = -range/2; zz < range; zz++ )
+					for ( int zz = -range; zz < range; zz++ )
 					{
-						BlockPos pos = new BlockPos(x+xx-16,y+yy-4,z+zz-16);
-						IBlockState block = world.getBlockState(pos);
-						if ( block != null )
-							
+						BlockPos pos = new BlockPos(x+xx,y+yy,z+zz);
+						IBlockState block = world.getBlockState(pos);							
 						if ( block == Blocks.WEB.getDefaultState() )
 						{
 							world.setBlockToAir(pos);

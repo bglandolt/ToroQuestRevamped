@@ -13,7 +13,6 @@ import net.minecraft.block.BlockBed;
 import net.minecraft.block.BlockChest;
 import net.minecraft.block.BlockColored;
 import net.minecraft.block.BlockDoor;
-import net.minecraft.block.BlockFenceGate;
 import net.minecraft.block.BlockFurnace;
 import net.minecraft.block.BlockLog;
 import net.minecraft.block.BlockLog.EnumAxis;
@@ -29,11 +28,9 @@ import net.minecraft.block.BlockStoneSlab.EnumType;
 import net.minecraft.block.BlockTorch;
 import net.minecraft.block.BlockTrapDoor;
 import net.minecraft.block.BlockTrapDoor.DoorHalf;
-import net.minecraft.block.BlockWoodSlab;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemBanner;
 import net.minecraft.item.ItemStack;
@@ -44,7 +41,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.BossInfo.Color;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureVillagePieces;
 import net.torocraft.toroquest.block.BlockSmartBanner;
@@ -121,19 +117,82 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
 		DEFAULT_PALLETTE.put("Wp", Blocks.WOODEN_PRESSURE_PLATE.getDefaultState());
 		DEFAULT_PALLETTE.put("Fw", Blocks.OAK_FENCE.getDefaultState());
 		
-		
 		DEFAULT_PALLETTE.put("F<", Blocks.LIT_FURNACE.getDefaultState().withProperty(BlockFurnace.FACING, EnumFacing.WEST));
 		
 		DEFAULT_PALLETTE.put("CT", Block.getBlockFromName(ToroQuestConfiguration.craftingTableResourceName).getDefaultState());
 		DEFAULT_PALLETTE.put("CA", Blocks.CAULDRON.getDefaultState());
 		
+		// CHAIRS
+		IBlockState CHAIR_NORTH = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH);
+		IBlockState CHAIR_SOUTH = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.SOUTH);
+		IBlockState CHAIR_EAST = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.EAST);
+		IBlockState CHAIR_WEST = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.WEST);
+		
+		try
+		{
+			CHAIR_NORTH = Block.getBlockFromName(ToroQuestConfiguration.chairResourceName).getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH);
+			CHAIR_SOUTH = Block.getBlockFromName(ToroQuestConfiguration.chairResourceName).getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.SOUTH);
+			CHAIR_EAST = Block.getBlockFromName(ToroQuestConfiguration.chairResourceName).getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.EAST);
+			CHAIR_WEST = Block.getBlockFromName(ToroQuestConfiguration.chairResourceName).getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.WEST);
+		}
+		catch ( Exception e )
+		{
+			
+		}
+		
+		DEFAULT_PALLETTE.put("!v", CHAIR_NORTH);
+		DEFAULT_PALLETTE.put("!^", CHAIR_SOUTH);
+		DEFAULT_PALLETTE.put("!>", CHAIR_EAST);
+		DEFAULT_PALLETTE.put("!<", CHAIR_WEST);
+		// =====
+		
 		IBlockState LA = Blocks.AIR.getDefaultState();
-		try {LA = Block.getBlockFromName(ToroQuestConfiguration.lanternResourceName).getDefaultState();}catch(Exception e){}
+		
+		try
+		{
+			LA = Block.getBlockFromName(ToroQuestConfiguration.lanternResourceName).getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.byName("up"));
+		}
+		catch ( Exception e )
+		{
+			try
+			{
+				LA = Block.getBlockFromName(ToroQuestConfiguration.lanternResourceName).getDefaultState();
+			}
+			catch ( Exception ee )
+			{
+				LA = Blocks.GLOWSTONE.getDefaultState();
+			}
+		}
+		
 		DEFAULT_PALLETTE.put("LA", LA);
+		
 		IBlockState CH = Blocks.AIR.getDefaultState();
-		try {CH = Block.getBlockFromName(ToroQuestConfiguration.chainResourceName).getDefaultState();}catch(Exception e){}
+		try
+		{
+			CH = Block.getBlockFromName(ToroQuestConfiguration.chainResourceName).getDefaultState();
+		}
+		catch(Exception e)
+		{
+			CH = Blocks.IRON_BARS.getDefaultState();
+		}
 		DEFAULT_PALLETTE.put("CH", CH);
 
+		IBlockState CHICKEN = Blocks.CAKE.getDefaultState();
+		try {CHICKEN = Block.getBlockFromName(ToroQuestConfiguration.turkeyBlockResourceName).getDefaultState();}catch(Exception e){}
+		DEFAULT_PALLETTE.put("!C", CHICKEN);
+		
+		IBlockState CAKE = Blocks.CAKE.getDefaultState();
+		try {CAKE = Block.getBlockFromName(ToroQuestConfiguration.cakeBlockResourceName).getDefaultState();}catch(Exception e){}
+		DEFAULT_PALLETTE.put("!D", CAKE);
+		
+		IBlockState TABLE = Blocks.WOODEN_SLAB.getDefaultState().withProperty(BlockSlab.HALF, EnumBlockHalf.TOP);
+		try {TABLE = Block.getBlockFromName(ToroQuestConfiguration.tableResourceName).getDefaultState();}catch(Exception e){}
+		DEFAULT_PALLETTE.put("!T", TABLE);
+		
+		IBlockState CHANDELIER = Blocks.GLOWSTONE.getDefaultState();
+		try {CHANDELIER = Block.getBlockFromName(ToroQuestConfiguration.chandelierResourceName).getDefaultState();}catch(Exception e){}
+		DEFAULT_PALLETTE.put("!A", CHANDELIER);
+		
 		// l
 		DEFAULT_PALLETTE.put("l^", Blocks.LADDER.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH));
 		DEFAULT_PALLETTE.put("lv", Blocks.LADDER.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.SOUTH));
@@ -313,10 +372,12 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
 		}
 
 		BlockPos blockpos = new BlockPos(this.getXWithOffset(x, z), this.getYWithOffset(y), this.getZWithOffset(x, z));
+		
 		if (boundingBox.isVecInside(blockpos))
 		{
 			addToroSpawner(world, blockpos, entities);
 		}
+		
 		return true;
 	}
 
@@ -328,8 +389,10 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
 			TileEntity tileentity = world.getTileEntity(blockpos);
 			if (tileentity instanceof TileEntityToroSpawner)
 			{
-				((TileEntityToroSpawner) tileentity).setTriggerDistance(80);
-				((TileEntityToroSpawner) tileentity).setEntityIds(entities);
+				TileEntityToroSpawner spawner = (TileEntityToroSpawner) tileentity;
+				spawner.setTriggerDistance(80);
+				spawner.setEntityIds(entities);
+				spawner.setExtra(-1);
 			}
 		}
 		catch(Exception e)
@@ -966,45 +1029,40 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
 	public static ItemStack getBlueBanner()
 	{
 		NBTTagCompound nbttagcompound = new NBTTagCompound();
-		nbttagcompound.setInteger("Base", 4);
+		nbttagcompound.setInteger("Base", 15);
 		
     	NBTTagCompound patterntag = new NBTTagCompound();
         NBTTagList nbttaglist = new NBTTagList();
 
-        //
-        patterntag.setString("Pattern", "cbo");
+        // BLUE LINE LEFT
+        patterntag.setString("Pattern", "ls");
         patterntag.setInteger("Color", 4);
         nbttaglist.appendTag(patterntag);
-        //
+        // WHITE TOP THIRD
         patterntag = new NBTTagCompound();
-        patterntag.setString("Pattern", "bo");
-        patterntag.setInteger("Color", 4);
+        patterntag.setString("Pattern", "ts");
+        patterntag.setInteger("Color", 15);
         nbttaglist.appendTag(patterntag);
-        //
+        // CYAN MOJANG
         patterntag = new NBTTagCompound();
-        patterntag.setString("Pattern", "rud");
-        patterntag.setInteger("Color", 12);
+        patterntag.setString("Pattern", "moj");
+        patterntag.setInteger("Color", 6);
         nbttaglist.appendTag(patterntag);
-        //
+        // BLUE MOJANG
         patterntag = new NBTTagCompound();
         patterntag.setString("Pattern", "moj");
         patterntag.setInteger("Color", 4);
         nbttaglist.appendTag(patterntag);
-        //
+        // BLUE BOTTOM THIRD
         patterntag = new NBTTagCompound();
         patterntag.setString("Pattern", "bs");
         patterntag.setInteger("Color", 4);
         nbttaglist.appendTag(patterntag);
-        //
+        // TOP GRADIENT
         patterntag = new NBTTagCompound();
-        patterntag.setString("Pattern", "ts");
-        patterntag.setInteger("Color", 12);
+        patterntag.setString("Pattern", "gra");
+        patterntag.setInteger("Color", 6);
         nbttaglist.appendTag(patterntag);
-        // GRADIENT WHITE
-//        patterntag = new NBTTagCompound();
-//        patterntag.setString("Pattern", "gra");
-//        patterntag.setInteger("Color", 15);
-//        nbttaglist.appendTag(patterntag);
 
         nbttagcompound.setTag("Patterns", nbttaglist);
                 

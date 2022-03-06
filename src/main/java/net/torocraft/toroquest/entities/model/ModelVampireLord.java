@@ -408,6 +408,7 @@ public class ModelVampireLord extends ModelBase
 	
 	public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
     {
+		float s = 0.08F * limbSwingAmount;
 		this.right_arm.rotateAngleX = -1.25F * limbSwingAmount;
 		this.right_arm.rotateAngleY = 0.2F * limbSwingAmount;
         this.right_arm.rotateAngleZ = -0.2F * limbSwingAmount;
@@ -416,22 +417,29 @@ public class ModelVampireLord extends ModelBase
         this.left_arm.rotateAngleY = 0.1F * limbSwingAmount;
         
         this.right_wing_r1.rotateAngleZ = -0.5F * limbSwingAmount;
+        this.right_wing_r1.rotateAngleY = -s;
         this.left_wing_r1.rotateAngleZ = 0.5F * limbSwingAmount;
-        
+        this.left_wing_r1.rotateAngleY = s;
+
         this.body.rotateAngleZ = 0.1F * limbSwingAmount;
-        this.body_r1.rotateAngleZ = -0.05F * limbSwingAmount + 0.05F;
-        this.body_r2.rotateAngleZ = -0.05F * limbSwingAmount + 0.05F;
+        this.body.rotateAngleX = s;
+        this.body.rotateAngleY = -s;
         
-        this.head.rotateAngleZ = 0.05F * limbSwingAmount - 0.05F;
+        this.body_r1.rotateAngleZ = -s + 0.08F;
+        this.body_r2.rotateAngleY = s;
+        this.body_r1.rotateAngleX = s - 0.08F;
+
+        this.body_r2.rotateAngleZ = s * 0.5F + 0.08F;
+        this.body_r2.rotateAngleZ = -s;
+        this.body_r2.rotateAngleX = -s * 0.5F - 0.08F;
+
+        this.head.rotateAngleZ = s - 0.08F;
         this.head.rotateAngleY = -0.1F * limbSwingAmount;
         this.bot_jaw.rotateAngleX = 0.15F * limbSwingAmount - 0.15F;
-        //this.bot_jaw.rotateAngleZ = 0.01F * limbSwingAmount - 0.01F;
-        this.left_r15.rotateAngleZ = -0.05F * limbSwingAmount + 0.05F;
+        this.left_r15.rotateAngleZ = -0.05F * limbSwingAmount + 0.08F;
 
         this.right_leg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * limbSwingAmount;
         this.left_leg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * limbSwingAmount;
-//        this.right_leg.rotateAngleX = -limbSwingAmount;
-//        this.left_leg.rotateAngleX = limbSwingAmount;
         
         this.head.rotateAngleY = netHeadYaw * 0.017453292F;
         this.head.rotateAngleX = headPitch * 0.017453292F;

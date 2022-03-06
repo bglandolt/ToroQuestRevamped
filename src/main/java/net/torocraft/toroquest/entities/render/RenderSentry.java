@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.torocraft.toroquest.config.ToroQuestConfiguration;
 import net.torocraft.toroquest.entities.EntitySentry;
 import net.torocraft.toroquest.entities.model.Model64Layer;
 
@@ -35,8 +36,10 @@ public class RenderSentry extends RenderBiped<EntitySentry>
 //			};
 //			this.addLayer(layerbipedarmor);
 //		}
-        this.addLayer(new LayerArrow(this));
-		
+		if ( ToroQuestConfiguration.renderArrowLayer )
+		{
+	        this.addLayer(new LayerArrow(this));
+		}
 		// this.defaultLayers = Lists.newArrayList(this.layerRenderers);
 	}
 
@@ -98,7 +101,6 @@ public class RenderSentry extends RenderBiped<EntitySentry>
 		{
 			modelbiped$armpose1 = Model64Layer.ArmPose.BOW_AND_ARROW;
 		}
-
 //		if (entity.getPrimaryHand() == EnumHandSide.RIGHT)
 		{
 			defaultModel.rightArmPose = modelbiped$armpose;
@@ -109,9 +111,13 @@ public class RenderSentry extends RenderBiped<EntitySentry>
 //			defaultModel.rightArmPose = modelbiped$armpose1;
 //			defaultModel.leftArmPose = modelbiped$armpose;
 //		}
+		
+		
+
 
 	}
 	
+
 	@Override
 	protected void preRenderCallback(EntitySentry entitylivingbaseIn, float partialTickTime)
 	{

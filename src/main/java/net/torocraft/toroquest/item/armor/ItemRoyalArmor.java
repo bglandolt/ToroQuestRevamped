@@ -101,7 +101,7 @@ public class ItemRoyalArmor extends ItemArmor {
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
     {
-		if ( playerIn == null || playerIn.world == null )
+		if ( playerIn == null || playerIn.world == null || worldIn.isRemote )
 		{
 			return super.onItemRightClick(worldIn, playerIn, handIn);
 		}
@@ -117,45 +117,51 @@ public class ItemRoyalArmor extends ItemArmor {
 				if ( !guards.isEmpty() )
 				{
 					Province provinceOn = CivilizationUtil.getProvinceAt(playerIn.world, playerIn.chunkCoordX, playerIn.chunkCoordZ);
+					
 					if ( provinceOn != null )
 					{
+//						if ( !worldIn.isRemote )
+//						{
+//			        		return super.onItemRightClick(worldIn, playerIn, handIn);
+//						}
+						
 						if ( provinceOn.hasLord )
 						{
 							playerIn.sendStatusMessage(new TextComponentString( "§oThis province already has a ruler!§r" ), true);
-			        		return super.onItemRightClick(worldIn, playerIn, handIn);
+							return new ActionResult<ItemStack>(EnumActionResult.FAIL, i);
 						}
 						else
 						{
 							for ( EntityGuard guard : guards )
 							{
-				            	EntityVillageLord vl = new EntityVillageLord(worldIn);
-					            if( !worldIn.isRemote )
+					            
+								EntityVillageLord vl = new EntityVillageLord(guard.getEntityWorld(), guard.getPosition().getX(), guard.getPosition().getY(), guard.getPosition().getZ());
+
+								guard.setHealth(0);
+								guard.setDead();
+								
+								//if ( !worldIn.isRemote )
 					            {
 									vl.setPosition(guard.posX,guard.posY,guard.posZ);
 									vl.addArmor();
-									guard.setDead();
-									guard.setHealth(0);
 									worldIn.spawnEntity(vl);
 									vl.playTameEffect((byte) 6);
 									worldIn.setEntityState(vl, (byte)6);
 									vl.playSound(SoundEvents.ITEM_ARMOR_EQUIP_GOLD, 1.0F, 0.8F);
 									vl.playSound(SoundEvents.BLOCK_ANVIL_USE, 0.8F, 0.8F);
 									vl.playSound(SoundEvents.ENTITY_EVOCATION_ILLAGER_AMBIENT, 1.0F, 1.0F);
+									
 									for ( EntityPlayer player : worldIn.playerEntities )
 									{
-										{
-											player.sendMessage(new TextComponentString("§lA new Lord has been crowned!§r"));
-										}
+										player.sendMessage(new TextComponentString("§l" + provinceOn.getName() + " has been founded!§r"));
 									}
 					            }
-					            if ( provinceOn != null )
-								{
-									vl.setCivilization(provinceOn.civilization);
-									provinceOn.hasLord = true;
-								}
+					            
+								vl.pledgeAllegianceTo(provinceOn);
+					            
 								return new ActionResult<ItemStack>(EnumActionResult.FAIL, ItemStack.EMPTY);
 							}
-							return super.onItemRightClick(worldIn, playerIn, handIn);
+							return new ActionResult<ItemStack>(EnumActionResult.FAIL, i);
 						}
 					}
 					else
@@ -173,51 +179,53 @@ public class ItemRoyalArmor extends ItemArmor {
 						if ( provinceNear != null )
 						{
 							playerIn.sendStatusMessage(new TextComponentString( "§oToo close to another province!§r" ), true);
-			        		return super.onItemRightClick(worldIn, playerIn, handIn);
+							return new ActionResult<ItemStack>(EnumActionResult.FAIL, i);
 						}
 						
 						for ( EntityGuard guard : guards )
 						{
 							if ( CivilizationUtil.getProvinceAt(worldIn, playerIn.chunkCoordX, playerIn.chunkCoordZ) == null )
 							{
-					            EntityVillageLord vl = new EntityVillageLord(guard.getEntityWorld());
+					            EntityVillageLord vl = new EntityVillageLord(guard.getEntityWorld(), guard.getPosition().getX(), guard.getPosition().getY(), guard.getPosition().getZ());
 								CivilizationsWorldSaveData.get(worldIn).register(playerIn.chunkCoordX, playerIn.chunkCoordZ, false);
 								provinceOn = CivilizationUtil.getProvinceAt(worldIn, guard.chunkCoordX, guard.chunkCoordZ);
-								if ( provinceOn != null )
+								
+								//if ( provinceOn != null )
 								{
-									vl.setCivilization(provinceOn.civilization);
-									provinceOn.hasLord = true;
-									if( !worldIn.isRemote )
+									guard.setDead();
+									guard.setHealth(0);
+									
+									if ( !worldIn.isRemote )
 						            {
 										vl.setPosition(guard.posX,guard.posY,guard.posZ);
 										vl.addArmor();
-										guard.setDead();
-										guard.setHealth(0);
 										worldIn.spawnEntity(vl);
 										vl.playTameEffect((byte) 6);
 										worldIn.setEntityState(vl, (byte)6);
 										vl.playSound(SoundEvents.ITEM_ARMOR_EQUIP_GOLD, 1.0F, 0.8F);
 										vl.playSound(SoundEvents.BLOCK_ANVIL_USE, 0.8F, 0.8F);
 										vl.playSound(SoundEvents.ENTITY_EVOCATION_ILLAGER_AMBIENT, 1.0F, 0.9F);
-										playerIn.sendStatusMessage(new TextComponentString( "§oProvince founded!§r" ), true);
+										// playerIn.sendStatusMessage(new TextComponentString( "§oProvince founded!§r" ), true);
+										
 										for ( EntityPlayer player : worldIn.playerEntities )
 										{
-											{
-												player.sendMessage(new TextComponentString("§lA new Lord has been crowned!§r"));
-											}
+											player.sendMessage(new TextComponentString("§l" + provinceOn.getName() + " has been founded!§r"));
 										}
+										
+										vl.pledgeAllegianceTo(provinceOn);
 						            }
+
 									return new ActionResult<ItemStack>(EnumActionResult.FAIL, ItemStack.EMPTY);
 								}
 							}
-							return super.onItemRightClick(worldIn, playerIn, handIn);
+							return new ActionResult<ItemStack>(EnumActionResult.FAIL, i);
 						}
-						return super.onItemRightClick(worldIn, playerIn, handIn);
+						return new ActionResult<ItemStack>(EnumActionResult.FAIL, i);
 					}
 				}
 			}
 		}
-		return super.onItemRightClick(worldIn, playerIn, handIn);
+		return new ActionResult<ItemStack>(EnumActionResult.FAIL, i);
     }
 
 }

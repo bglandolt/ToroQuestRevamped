@@ -105,7 +105,11 @@ public class QuestBuild extends QuestBase implements Quest
 		{
 			quest.setCurrentAmount(quest.getCurrentAmount() + 1);
 			
-			quest.getData().getPlayer().sendStatusMessage( new TextComponentString(MathHelper.clamp(quest.getCurrentAmount(), 0, quest.getTargetAmount())+"/"+quest.getTargetAmount()), true);
+			quest.getData().getPlayer().sendStatusMessage( new TextComponentString("Placed " + MathHelper.clamp(quest.getCurrentAmount(), 0, quest.getTargetAmount())+"/"+quest.getTargetAmount() + " Stone"), true);
+
+			// quest.getData().getPlayer().sendStatusMessage( new TextComponentString(MathHelper.clamp(quest.getCurrentAmount(), 0, quest.getTargetAmount())+"/"+quest.getTargetAmount()), true);
+
+			// quest.getData().getPlayer().sendStatusMessage( new TextComponentString("Placed " + MathHelper.clamp(quest.getCurrentAmount(), 0, quest.getTargetAmount())+" out of "+quest.getTargetAmount() + " stone"), true);
 			
 			if ( quest.getCurrentAmount() >= quest.getTargetAmount() )
 			{

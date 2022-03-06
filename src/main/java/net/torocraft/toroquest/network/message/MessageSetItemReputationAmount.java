@@ -82,10 +82,10 @@ public class MessageSetItemReputationAmount implements IMessage {
 			return false;
 		}
 
-		String sToProvinceId = stack.getTagCompound().getString("civilizationName");
+		String civName = stack.getTagCompound().getString("civilizationName");
 		Boolean isStolen = stack.getTagCompound().getBoolean("isStolen");
 
-		if (isEmpty(sToProvinceId))
+		if (isEmpty(civName))
 		{
 			return false;
 		}
@@ -94,8 +94,8 @@ public class MessageSetItemReputationAmount implements IMessage {
 		{
 			return false;
 		}
-
-		if (inProvince.civilization.name().toString().equals(sToProvinceId))
+		
+		if (inProvince.civilization.name().toString().equals(civName))
 		{
 			return true;
 		}

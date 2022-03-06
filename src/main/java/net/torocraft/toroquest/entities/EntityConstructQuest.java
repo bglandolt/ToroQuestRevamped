@@ -28,6 +28,7 @@ public class EntityConstructQuest extends EntityConstruct implements IMob
 	public EntityConstructQuest(World worldIn)
 	{
 		super(worldIn);
+		this.enablePersistence();
         this.setSize(1.35F, 2.9F);
         this.experienceValue = 300;
 	}
@@ -49,11 +50,6 @@ public class EntityConstructQuest extends EntityConstruct implements IMob
 	{
 		return false;
 	}
-	
-    public boolean isNonBoss()
-    {
-        return false;
-    }
 	
 	public static String NAME = "construct_quest";
 	

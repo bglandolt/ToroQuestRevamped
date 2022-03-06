@@ -32,15 +32,15 @@ S>CsCsCsCsCsCsCsS<
 ######################################
                 
   SbPwPwdvPwPwSb
-  PwXXXX--XXXXPw
+  Pwcvcv--cvcvPw
   Pw--*c*c*c--Pw
   d>--*c*c*c--d<
   Pwl<*c*c*cl>Pw
-  Pwc^c^--c^c^Pw
+  Pwc^c^xxc^c^Pw
   SbPwPw--PwPwSb
   Pw  b<--b>  Pw
   Pw  b<--b>  Pw
-  PwFw------FwPw
+  PwFw--xx--FwPw
   Pw  b<--b>  Pw
   Pw  b<--b>  Pw
   SbPwPwd^PwPwSb
@@ -50,7 +50,7 @@ S>CsCsCsCsCsCsCsS<
 @>An*C*C  *C*CAn@<
   *C----------*C
   *C----------*C
-    ----xx----  
+    ----------  
   *Cl<------l>*C
   *C----------*C
 @>An*C*C--*C*CAn@<

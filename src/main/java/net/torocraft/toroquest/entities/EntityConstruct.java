@@ -65,7 +65,7 @@ public class EntityConstruct extends EntityGolem implements IMob
 	
     // protected static final DataParameter<Byte> PLAYER_CREATED = EntityDataManager.<Byte>createKey(EntityConstruct.class, DataSerializers.BYTE);
 
-    private int attackTimerC;
+    private int attackTimer;
     
     public static String NAME = "construct";
 	
@@ -225,7 +225,6 @@ public class EntityConstruct extends EntityGolem implements IMob
     public boolean attackEntityAsMob(Entity entityIn)
     {
     	if ( this.leaping > 0 ) return false;
-        this.attackTimerC = 10;
         this.world.setEntityState(this, (byte)4);
         boolean flag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), (float)(this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getBaseValue()));
 
@@ -301,6 +300,11 @@ public class EntityConstruct extends EntityGolem implements IMob
 		}
     	return super.attackEntityFrom(source, amount);
     }
+    
+    public int getAttackTimer()
+    {
+        return this.attackTimer;
+    }
         
     // livingupdate
     
@@ -313,16 +317,25 @@ public class EntityConstruct extends EntityGolem implements IMob
     {
     	super.onLivingUpdate();
 		
-		if ( this.world.isRemote )
-		{
-			return;
-		}
-		
 		if ( this.getAttackTarget() != null )
     	{
     		AIHelper.faceEntitySmart(this, this.getAttackTarget());
     		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 20.0F, 20.0F);
+    		if ( !this.getAttackTarget().isEntityAlive() )
+			{
+				this.setAttackTarget(null);
+			}
     	}
+		
+	    if (this.attackTimer > 0)
+	    {
+	        --this.attackTimer;
+	    }
+		
+		if ( this.world.isRemote )
+		{
+			return;
+		}
 		
         if (this.motionX * this.motionX + this.motionZ * this.motionZ > 2D && this.rand.nextInt(5) == 0)
         {
@@ -343,11 +356,6 @@ public class EntityConstruct extends EntityGolem implements IMob
         // 8 = jump
         // 9 = stomp
         // 10 = death
-        
-        if (this.attackTimerC > 0)
-        {
-            --this.attackTimerC;
-        }
         
 //        if ( explodeOnDeath && this.getHealth() <= 0 )
 //        {
@@ -399,7 +407,7 @@ public class EntityConstruct extends EntityGolem implements IMob
 		    		if ( tt == 100 )
 		    		{
 		    			// Play jump effect
-		    			this.attackTimerC = 10;
+		    			this.attackTimer = 13;
 		    			this.playSound(SoundEvents.BLOCK_CLOTH_PLACE, 2.0F, 0.3F);
 		    			this.playSound(SoundEvents.BLOCK_SAND_FALL, 2.0F, 0.8F);
 		    	    	this.playSound(SoundEvents.BLOCK_PISTON_EXTEND, 1.5F, 0.8F + rand.nextFloat()/10.0F);
@@ -717,18 +725,17 @@ public class EntityConstruct extends EntityGolem implements IMob
     /**
      * Handler for {@link World#setEntityState} state state
      */
-    @SideOnly(Side.CLIENT)
     @Override
     public void handleStatusUpdate(byte id)
     {
 	    if (id == 4)
 	    {
-	        this.attackTimerC = 10;
+	        this.attackTimer = 13;
 	        this.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, 1.0F, 0.7F);
 	        this.playSound(SoundEvents.ENTITY_IRONGOLEM_ATTACK, 1.0F, 1.0F);
 	        this.playSound(SoundEvents.BLOCK_DISPENSER_LAUNCH, 1.0F, 0.7F + rand.nextFloat()/10.0F);
 	    }
-        if (id == 6)
+	    else if (id == 6)
         {
             this.playSteamEffect(true);
         }
@@ -738,7 +745,7 @@ public class EntityConstruct extends EntityGolem implements IMob
         }
         else if (id == 8)
         {
-			this.attackTimerC = 10;
+			this.attackTimer = 13;
             this.playJumpEffect();
         }
         else if (id == 9)
@@ -764,12 +771,6 @@ public class EntityConstruct extends EntityGolem implements IMob
         }
 
         super.collideWithEntity(entityIn);
-    }
-
-    @SideOnly(Side.CLIENT)
-    public int getAttackTimer()
-    {
-        return this.attackTimerC;
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn)

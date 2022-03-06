@@ -57,11 +57,11 @@ public class EntityAINearestAttackableBanditTarget extends EntityAITarget
 					return true;
 				}
 				
-				if ( !taskOwner.playerGuard.equals("") )
+				if ( !taskOwner.getPlayerGuard().equals("") )
 				{
 					if ( target.getAttackTarget() instanceof EntityPlayer )
 					{
-						if ( target.getAttackTarget().getName().equals(taskOwner.playerGuard) )
+						if ( target.getAttackTarget().getName().equals(taskOwner.getPlayerGuard()) )
 						{
 							return true;
 						}
@@ -69,7 +69,7 @@ public class EntityAINearestAttackableBanditTarget extends EntityAITarget
 					
 					if ( target.getRevengeTarget() instanceof EntityPlayer )
 					{
-						if ( target.getRevengeTarget().getName().equals(taskOwner.playerGuard) )
+						if ( target.getRevengeTarget().getName().equals(taskOwner.getPlayerGuard()) )
 						{
 							return true;
 						}
@@ -80,7 +80,7 @@ public class EntityAINearestAttackableBanditTarget extends EntityAITarget
 						if ( target instanceof EntitySentry && !(target instanceof EntityOrc) )
 						{
 							EntitySentry t = (EntitySentry)(target);
-							if ( t.getTame() || t.passiveTimer > 0 )
+							if ( t.getBribed() || t.passiveTimer > 0 )
 							{
 								return false;
 							}
@@ -89,7 +89,7 @@ public class EntityAINearestAttackableBanditTarget extends EntityAITarget
 								return true;
 							}
 						}
-						else if ( taskOwner.getDistance(target) <= 16 || (taskOwner.raidX != null && taskOwner.raidZ != null && taskOwner.getDistance(taskOwner.raidX, taskOwner.posY, taskOwner.raidZ) <= 24) )
+						else if ( taskOwner.getDistance(target) <= 16 || (taskOwner.getRaidLocationX() != null && taskOwner.getRaidLocationZ() != null && taskOwner.getDistance(taskOwner.getRaidLocationX(), taskOwner.posY, taskOwner.getRaidLocationZ()) <= 24) )
 						{
 							return true;
 						}
@@ -103,7 +103,7 @@ public class EntityAINearestAttackableBanditTarget extends EntityAITarget
 						{
 							return true;
 						}
-						if ( taskOwner.getDistance(target) <= 12 || (taskOwner.raidX != null && taskOwner.raidZ != null && taskOwner.getDistance(taskOwner.raidX, taskOwner.posY, taskOwner.raidZ) <= 24) )
+						if ( taskOwner.getDistance(target) <= 12 || (taskOwner.getRaidLocationX() != null && taskOwner.getRaidLocationZ() != null && taskOwner.getDistance(taskOwner.getRaidLocationX(), taskOwner.posY, taskOwner.getRaidLocationZ()) <= 24) )
 						{
 							return true;
 						}
@@ -120,6 +120,7 @@ public class EntityAINearestAttackableBanditTarget extends EntityAITarget
 						{
 							return !target.getEntityData().getBoolean("ModelDead");
 						}
+						
 						if ( target.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE) != null && target.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue() >= 1 )
 						{
 						    return true;
@@ -143,7 +144,7 @@ public class EntityAINearestAttackableBanditTarget extends EntityAITarget
 		
 		this.taskOwner.searchNextEnemy = false;
 		
-		List<EntityLiving> list = this.taskOwner.world.<EntityLiving>getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(this.taskOwner.getPosition()).grow(32, 16, 32), this.targetEntitySelector);
+		List<EntityLiving> list = this.taskOwner.world.<EntityLiving>getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(this.taskOwner.getPosition()).grow(25, 12, 25), this.targetEntitySelector);
 	
 		if ( list.isEmpty() )
 		{

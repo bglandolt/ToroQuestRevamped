@@ -38,7 +38,7 @@ import net.torocraft.toroquest.entities.render.RenderOrc;
 public class EntityOrc extends EntitySentry implements IRangedAttackMob, IMob
 {
 	
-	public double renderSizeXZ = 1.0D + (rand.nextDouble()/12.0D);
+	public double renderSizeXZ = 1.0D + (rand.nextDouble()/10.0D);
 	public double renderSizeY = renderSizeXZ * (1.025D + rand.nextGaussian()/16.0D);
 	
 	public static String NAME = "orc";
@@ -89,19 +89,31 @@ public class EntityOrc extends EntitySentry implements IRangedAttackMob, IMob
 		}
     }
     
-    private ResourceLocation banditSkin = new ResourceLocation(ToroQuest.MODID + ":textures/entity/orc/orc_" + rand.nextInt(ToroQuestConfiguration.orcSkins) + ".png");
+    private ResourceLocation banditSkin = new ResourceLocation(ToroQuest.MODID + ":textures/entity/orc/orc_" + this.getSkinID() + ".png");
 	
+    public int getSkinID()
+	{
+		int i = this.getDataManager().get(SKIN_ID);
+		if ( i < 1 )
+		{
+			i = 1 + this.rand.nextInt(ToroQuestConfiguration.orcSkins);
+			this.setSkinID(i);
+		}
+		return i;
+	}
+    
 	public ResourceLocation getSkin()
 	{
 		return this.banditSkin;
 	}
 	
+	@Override
 	public double getRenderSizeXZ()
 	{
 		return this.renderSizeXZ;
 	}
 	
-	
+	@Override
 	public double getRenderSizeY()
 	{
 		return this.renderSizeY;
@@ -110,7 +122,7 @@ public class EntityOrc extends EntitySentry implements IRangedAttackMob, IMob
 	public EntityOrc(World worldIn)
 	{
 		super(worldIn);
-        this.setSize(0.6F, 1.95F);
+        this.setSize(0.65F, 1.95F);
 		this.setAlwaysRenderNameTag(false);
 		this.experienceValue = 30;
 		this.splashPotionTimer = -1;
@@ -118,11 +130,30 @@ public class EntityOrc extends EntitySentry implements IRangedAttackMob, IMob
 	    this.limitPotions = -1;
 	}
 	
+	public EntityOrc(World worldIn, int x, int z)
+	{
+		this(worldIn);
+		this.setRaidLocation(x,z);
+		this.tasks.addTask(3, new EntityAIRaid(this, x, z, 0.675D));
+	}
+	
 //	@Override
 //	public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
 //	{
 //		return super.onInitialSpawn(difficulty, livingdata);
 //	}
+	
+	@Override
+	public void setBribed( boolean b )
+	{
+		this.getDataManager().set(BRIBED, false);
+	}
+	
+	@Override
+	public boolean getBribed()
+	{
+		return false;
+	}
 	
 	@Override
 	public boolean processInteract( EntityPlayer player, EnumHand hand )
@@ -141,7 +172,7 @@ public class EntityOrc extends EntitySentry implements IRangedAttackMob, IMob
     	this.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(ToroQuestConfiguration.orcArmorToughness);
 		this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(40.0D);
     	this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.393D+rand.nextDouble()/50.0D);
-    	this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.25D);
+    	this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(ToroQuestConfiguration.banditAndOrcKnockBackResistance);
     }
 	
 	@Override
@@ -369,6 +400,14 @@ public class EntityOrc extends EntitySentry implements IRangedAttackMob, IMob
 //			this.writeEntityToNBT(new NBTTagCompound());
 //		}
 //	}
+	
+	protected void playAttackSound()
+	{
+		if ( this.rand.nextInt(5) == 0 )
+        {
+			this.playSound( SoundEvents.ENTITY_ZOMBIE_PIG_AMBIENT, 0.9F, 0.55F + rand.nextFloat()/5.0F );
+        }
+	}
 	
 	@Override
 	protected void callForHelp(EntityLivingBase attacker)

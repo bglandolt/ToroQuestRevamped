@@ -24,7 +24,7 @@ import net.torocraft.toroquest.entities.EntityToroNpc;
 public class EntityAINearestAttackableCivTarget extends EntityAITarget {
 
 	protected final EntityAINearestAttackableTarget.Sorter theNearestAttackableTargetSorter;
-	protected final Predicate<EntityPlayer> targetEntitySelector;
+	// protected final Predicate<EntityPlayer> targetEntitySelector;
 	protected EntityPlayer targetEntity;
 
 	protected EntityGuard taskOwner;
@@ -36,30 +36,37 @@ public class EntityAINearestAttackableCivTarget extends EntityAITarget {
 		this.theNearestAttackableTargetSorter = new EntityAINearestAttackableTarget.Sorter(npc);
 		this.setMutexBits(1);
 		
-		this.targetEntitySelector = new Predicate<EntityPlayer>()
-		{
-			public boolean apply(@Nullable EntityPlayer target)
-			{
-				if ( !isSuitableTarget(taskOwner, target, false, true) )
-				{
-					return false;
-				}
-				
-				return shouldAttackPlayerBasedOnCivilization(target);
-			}
-		};
+//		this.targetEntitySelector = new Predicate<EntityPlayer>()
+//		{
+//			public boolean apply(@Nullable EntityPlayer target)
+//			{
+//				if ( !isSuitableTarget(taskOwner, target, false, true) )
+//				{
+//					return false;
+//				}
+//				
+//				return shouldAttackPlayerBasedOnCivilization(target);
+//			}
+//		};
 	}
 
 	protected boolean shouldAttackPlayerBasedOnCivilization(EntityPlayer player)
 	{
-		if ( !this.taskOwner.canEntityBeSeen( player ) || player.isInvisible() )
+		if ( player == null )
 		{
+			this.targetEntity = null;
 			return false;
 		}
 		
-		if ( !this.taskOwner.playerGuard.equals("") )
+		if ( !this.taskOwner.canEntityBeSeen( player ) || player.isInvisible() )
 		{
-			if ( player.getName().equals(this.taskOwner.playerGuard) )
+			this.targetEntity = null;
+			return false;
+		}
+		
+		if ( !this.taskOwner.getPlayerGuard().equals("") )
+		{
+			if ( player.getName().equals(this.taskOwner.getPlayerGuard()) )
 			{
 				if ( player.getRevengeTarget() != null )
 				{
@@ -69,15 +76,17 @@ public class EntityAINearestAttackableCivTarget extends EntityAITarget {
 					}
 					this.taskOwner.setAttackTarget(player.getRevengeTarget());
 				}
+				this.targetEntity = null;
 				return false;
 			}
-			else if ( player.getRevengeTarget() instanceof EntityPlayer && player.getRevengeTarget().getName().equals(this.taskOwner.playerGuard) )
+			else if ( player.getRevengeTarget() instanceof EntityPlayer && player.getRevengeTarget().getName().equals(this.taskOwner.getPlayerGuard()) )
 			{
 				if ( this.taskOwner.actionReady() )
 				{
 					this.taskOwner.insult(player);
 				}
 				//this.taskOwner.setAnnoyed(player);
+				this.targetEntity = player;
 				return true;
 			}
 		}
@@ -90,6 +99,7 @@ public class EntityAINearestAttackableCivTarget extends EntityAITarget {
 					this.taskOwner.chat(player, "bandit", null);
 				}
 				//this.taskOwner.setAnnoyed(player);
+				this.targetEntity = player;
 				return true;
 			}
 			else if ( itemStack.getItem().equals(Item.getByNameOrId("toroquest:royal_helmet") ) )
@@ -102,6 +112,7 @@ public class EntityAINearestAttackableCivTarget extends EntityAITarget {
 					{
 						this.taskOwner.chat(player, "falselord", prov.name);
 						//this.taskOwner.setAnnoyed(player);
+						this.targetEntity = player;
 						return true;
 					}
 					else
@@ -110,6 +121,7 @@ public class EntityAINearestAttackableCivTarget extends EntityAITarget {
 						{
 							this.taskOwner.chat(player, "lord", prov.name);
 						}
+						this.targetEntity = null;
 						return false;
 					}
 				}
@@ -120,6 +132,7 @@ public class EntityAINearestAttackableCivTarget extends EntityAITarget {
 
 		if ( civ == null )
 		{
+			this.targetEntity = null;
 			return false;
 		}
 		
@@ -132,11 +145,13 @@ public class EntityAINearestAttackableCivTarget extends EntityAITarget {
 				this.taskOwner.insult(player);
 			}
 			//this.taskOwner.setAnnoyed(player);
+			this.targetEntity = player;
 			return true;
 		}
 		
 		if ( rep > -50 )
 		{
+			this.targetEntity = null;
 			return false;
 		}
 		
@@ -149,6 +164,7 @@ public class EntityAINearestAttackableCivTarget extends EntityAITarget {
 				this.taskOwner.insult(player);
 			}
 			//this.taskOwner.setAnnoyed(player);
+			this.targetEntity = player;
 			return true;
 		}
 
@@ -159,9 +175,11 @@ public class EntityAINearestAttackableCivTarget extends EntityAITarget {
 				this.taskOwner.insult(player);
 			}
 			//this.taskOwner.setAnnoyed(player);
+			this.targetEntity = player;
 			return true;
 		}
 		
+		this.targetEntity = null;
 		return false;
 	}
 	
@@ -174,37 +192,9 @@ public class EntityAINearestAttackableCivTarget extends EntityAITarget {
         {
 			return false;
 	    }
-		
-//		if (this.taskOwner.getCivilization() == null)
-//		{
-//			return false;
-//		}
 
-//		if (shouldExecuteNonPlayer()) {
-//			return true;
-//		}
-
-		return this.shouldExecutePlayer();
+		return this.shouldAttackPlayerBasedOnCivilization(this.taskOwner.world.getNearestAttackablePlayer(this.taskOwner.posX, this.taskOwner.posY, this.taskOwner.posZ, 20, 12, null, null));
 	}
-	
-	protected boolean shouldExecutePlayer()
-	{
-		this.targetEntity = this.taskOwner.world.getNearestAttackablePlayer(this.taskOwner.posX, this.taskOwner.posY, this.taskOwner.posZ, 20, 10, null, this.targetEntitySelector);
-
-		if ( this.targetEntity != null )
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	
-//	protected AxisAlignedBB getTargetableArea(double targetDistance)
-//	{
-//		return this.taskOwner.getEntityBoundingBox().grow(targetDistance, 32, targetDistance);
-//	}
 
 	/**
 	 * Execute a one shot task or start executing a continuous task

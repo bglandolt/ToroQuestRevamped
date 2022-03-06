@@ -1,7 +1,5 @@
 package net.torocraft.toroquest.util;
 
-import com.google.common.base.Splitter;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -12,7 +10,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 
 public abstract class Hud {
 
-	private static final Splitter NEWLINE_SPLITTER = Splitter.on('\n');
+	// static final Splitter NEWLINE_SPLITTER = Splitter.on('\n');
 
 	protected final Minecraft mc;
 	protected RenderItem itemRender;

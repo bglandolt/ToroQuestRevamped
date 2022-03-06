@@ -21,6 +21,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraftforge.server.command.TextComponentHelper;
 import net.torocraft.toroquest.civilization.CivilizationType;
@@ -63,8 +64,13 @@ public class EntityAIBanditAttack extends EntityAITarget
 				
 				if ( target instanceof EntityGuard )
 				{
+					if ( taskOwner instanceof EntityOrc )
+					{
+						return true;
+					}
+					
 					EntityGuard g = (EntityGuard)target;
-					if ( !g.playerGuard.equals("") && g.spawnedNearBandits )
+					if ( !g.getPlayerGuard().equals("") && g.spawnedNearBandits )
 					{
 						return false;
 					}
@@ -112,6 +118,12 @@ public class EntityAIBanditAttack extends EntityAITarget
 		{
 			if ( !ToroQuestConfiguration.orcsDropMasks )
 			{
+				// PEACEFUL
+				if ( taskOwner.world.getDifficulty() == EnumDifficulty.PEACEFUL )
+				{
+					return false;
+				}
+				
 				return true;
 			}
 		}
@@ -146,12 +158,18 @@ public class EntityAIBanditAttack extends EntityAITarget
 				}
 			}
 			
-			if ( ((EntitySentry)(taskOwner)).getTame() || ((EntitySentry)(taskOwner)).passiveTimer > 0 )
+			if ( ((EntitySentry)(taskOwner)).getBribed() || ((EntitySentry)(taskOwner)).passiveTimer > 0 )
 			{
 				return false;
 			}
 			else if ( ((EntitySentry)(taskOwner)).passiveTimer == 0 )
 			{
+				// PEACEFUL
+				if ( taskOwner.world.getDifficulty() == EnumDifficulty.PEACEFUL )
+				{
+					return false;
+				}
+				
 				((EntitySentry)(taskOwner)).chat(player, "betray", null);
 				return true;
 			}
@@ -163,7 +181,7 @@ public class EntityAIBanditAttack extends EntityAITarget
 			totalRep += PlayerCivilizationCapabilityImpl.get(player).getReputation(CivilizationType.SUN);
 			totalRep += PlayerCivilizationCapabilityImpl.get(player).getReputation(CivilizationType.WIND);
 			
-			if ( totalRep <= -100 )
+			if ( totalRep <= -50 )
 			{
 				((EntitySentry)taskOwner).passiveTimer = 8;
 				List<EntitySentry> bandits = taskOwner.world.<EntitySentry>getEntitiesWithinAABB(EntitySentry.class, new AxisAlignedBB(taskOwner.getPosition()).grow(32, 16, 32));
@@ -230,6 +248,12 @@ public class EntityAIBanditAttack extends EntityAITarget
 				}
 			}
 		}
+		
+		// PEACEFUL
+		if ( taskOwner.world.getDifficulty() == EnumDifficulty.PEACEFUL )
+		{
+			return false;
+		}
 		return true;
     }
 	
@@ -245,7 +269,7 @@ public class EntityAIBanditAttack extends EntityAITarget
 			return false;
 	    }
 		
-		List<EntityLivingBase> list = this.taskOwner.world.<EntityLivingBase>getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(this.taskOwner.getPosition()).grow(30, 15, 30), this.targetEntitySelector);
+		List<EntityLivingBase> list = this.taskOwner.world.<EntityLivingBase>getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(this.taskOwner.getPosition()).grow(30, 12, 30), this.targetEntitySelector);
 		
 		if (list.isEmpty())
 		{
@@ -258,7 +282,7 @@ public class EntityAIBanditAttack extends EntityAITarget
 		{
 			if ( this.taskOwner.canEntityBeSeen(npc) && !npc.isInvisible() )
 			{
-				if ( npc instanceof EntityPlayer && ( !npc.isSprinting() && this.rand.nextInt((int)this.taskOwner.getDistance(npc)*2+16) > (npc.isSneaking()?8:16) ) )
+				if ( npc instanceof EntityPlayer && ( !npc.isSprinting() && this.rand.nextInt((int)this.taskOwner.getDistance(npc)+8) > (npc.isSneaking()?16:8) ) )
 				{
 					continue;
 				}
@@ -274,6 +298,7 @@ public class EntityAIBanditAttack extends EntityAITarget
 				return true;
 			}
 		}
+		targetEntity = null;
 		return false;
 	}
 

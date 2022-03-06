@@ -1,7 +1,6 @@
 package net.torocraft.toroquest.entities;
 
 import java.util.List;
-import java.util.Random;
 
 import javax.annotation.Nullable;
 
@@ -35,6 +34,9 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.pathfinding.PathPoint;
@@ -67,6 +69,65 @@ import net.torocraft.toroquest.generation.WorldGenPlacer;
 public class EntityPigLord extends EntityPigZombie implements IMob
 {
 
+ 	
+	// ============================================================================================================================
+	
+	protected static final DataParameter<Integer> RAID_X = EntityDataManager.<Integer>createKey(EntityPigLord.class, DataSerializers.VARINT);
+	protected static final DataParameter<Integer> RAID_Y = EntityDataManager.<Integer>createKey(EntityPigLord.class, DataSerializers.VARINT);
+	protected static final DataParameter<Integer> RAID_Z = EntityDataManager.<Integer>createKey(EntityPigLord.class, DataSerializers.VARINT);
+
+	@Override
+	protected void entityInit()
+	{
+		super.entityInit();
+		
+		this.getDataManager().register(RAID_X, Integer.valueOf(0));
+		this.getDataManager().register(RAID_Y, Integer.valueOf(0));
+		this.getDataManager().register(RAID_Z, Integer.valueOf(0));
+	}
+	
+    @Override
+    public void writeEntityToNBT(NBTTagCompound compound)
+    {
+        super.writeEntityToNBT(compound);
+        
+        compound.setInteger("raidX", this.getRaidLocationX());
+        compound.setInteger("raidY", this.getRaidLocationY());
+        compound.setInteger("raidZ", this.getRaidLocationZ());
+    }
+
+    @Override
+    public void readEntityFromNBT(NBTTagCompound compound)
+    {
+        super.readEntityFromNBT(compound);
+        
+        this.setRaidLocation(compound.getInteger("raidX"), compound.getInteger("raidY"), compound.getInteger("raidZ"));
+    }
+	
+	protected void setRaidLocation(int x, int y, int z)
+	{
+		this.getDataManager().set(RAID_X, x);
+		this.getDataManager().set(RAID_Y, y);
+		this.getDataManager().set(RAID_Z, z);
+	}
+	
+	public Integer getRaidLocationX()
+	{
+		return this.getDataManager().get(RAID_X).intValue();
+	}
+	
+	public Integer getRaidLocationY()
+	{
+		return this.getDataManager().get(RAID_Y).intValue();
+	}
+	
+	public Integer getRaidLocationZ()
+	{
+		return this.getDataManager().get(RAID_Z).intValue();
+	}
+		
+	// ============================================================================================================================
+ 	
 	public static String NAME = "pig_lord";
 
 	static
@@ -116,15 +177,42 @@ public class EntityPigLord extends EntityPigZombie implements IMob
 			}
 		});
 	}
-
-	public EntityPigLord(World world)
+	
+	public EntityPigLord( World worldIn, int x, int y, int z )
 	{
-		super(world);
+		super(worldIn);
+		
+		this.setUpEntity();
+		
+		this.setRaidLocation(x, y, z);
+		this.tasks.addTask(4, new EntityAIRaid(this, x, z, 0.75D));
+	}
+	
+	private void setUpEntity()
+	{
+        this.isImmuneToFire = true;
+		this.enablePersistence();
 		this.setChild(false);
 		this.setSize(1.9F, 5.9F);
 		this.setRealSize(1.9F, 5.9F);
 		this.experienceValue = 280;
 		this.stepHeight = 4.05F;
+	}
+	
+	public EntityPigLord(World worldIn)
+	{
+		super(worldIn);
+		
+		this.setUpEntity();
+		
+		int x = this.getRaidLocationX();
+		int y = this.getRaidLocationY();
+	    int z = this.getRaidLocationZ();
+	    
+	    if ( y != 0 )
+	    {
+			this.tasks.addTask(4, new EntityAIRaid(this, x, z, 0.75D));
+	    }
 	}
 	
 	// INCREASE RENDER DISTNACE
@@ -149,7 +237,7 @@ public class EntityPigLord extends EntityPigZombie implements IMob
 	protected void applyEntityAttributes()
 	{
 		super.applyEntityAttributes();
-		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.75D);
+		// this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.75D);
 		this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(200D * ToroQuestConfiguration.bossHealthMultiplier);
 		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(5D * ToroQuestConfiguration.bossAttackDamageMultiplier);
@@ -169,7 +257,12 @@ public class EntityPigLord extends EntityPigZombie implements IMob
 	{
 		WorldGenPlacer.clearTrees(this.world, new BlockPos((int)this.posX, (int)this.posY, (int)this.posZ), 32);
 		livingdata = super.onInitialSpawn(difficulty, livingdata);
-		this.setRaidLocation( (int)this.posX, (int)this.posZ, (int)this.posY );
+
+		if ( (int)this.posY != 0 && this.getRaidLocationY() == 0 )
+		{
+			this.setRaidLocation((int)this.posX, (int)this.posY, (int)this.posZ);
+		}
+		
 		return livingdata;
 	}
 
@@ -192,11 +285,11 @@ public class EntityPigLord extends EntityPigZombie implements IMob
 
 	protected void ai()
 	{
-		tasks.addTask(1, new EntityAISwimming(this));
-		tasks.addTask(2, new EntityAIThrow(this, 0.6D, true, 0.75, 40));
-		tasks.addTask(3, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-		tasks.addTask(3, new EntityAILookIdle(this));
-		targetTasks.addTask(1, new EntityAIHurtByTarget(this, false, new Class[0]));
+		this.tasks.addTask(1, new EntityAISwimming(this));
+		this.tasks.addTask(2, new EntityAIThrow(this, 1.2D, true, 0.75, 40));
+		this.tasks.addTask(3, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
+		this.tasks.addTask(4, new EntityAILookIdle(this));
+		this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false, new Class[0]));
 		// targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
 	}
 
@@ -327,7 +420,7 @@ public class EntityPigLord extends EntityPigZombie implements IMob
 		if ( this.getAttackTarget() != null )
     	{
     		AIHelper.faceEntitySmart(this, this.getAttackTarget());
-    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 20.0F, 20.0F);
+    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 30.0F, 30.0F);
     	}
 		
 		float health = this.getHealth()/this.getMaxHealth();
@@ -434,82 +527,36 @@ public class EntityPigLord extends EntityPigZombie implements IMob
 		return super.attackEntityFrom(source, amount);
 	}
 	
-	public Integer raidX = null;
-	public Integer raidZ = null;
-	public Integer raidY = null;
-	protected Random rand = new Random();
-	protected final EntityAIRaid areaAI = new EntityAIRaid(this, 0.7D, 16, 32);
-	
-	@Override
-	public void readEntityFromNBT(NBTTagCompound compound)
-	{
-	    if ( compound.hasKey("raidX") && compound.hasKey("raidZ") && compound.hasKey("raidY") )
-	    {
-	    	this.raidX = compound.getInteger("raidX");
-	    	this.raidZ = compound.getInteger("raidZ");
-	    	this.raidY = compound.getInteger("raidY");
-	    	this.setRaidLocation( compound.getInteger("raidX"), compound.getInteger("raidZ"), compound.getInteger("raidY") );
-	    }
-	    super.readEntityFromNBT(compound);
-	}
-	
-	@Override
-	public void writeEntityToNBT(NBTTagCompound compound)
-	{
-		if ( this.raidX != null && this.raidZ != null && this.raidY != null )
-		{
-			compound.setInteger("raidX", this.raidX);
-			compound.setInteger("raidZ", this.raidZ);
-			compound.setInteger("raidY", this.raidY);
-		}
-		super.writeEntityToNBT(compound);
-	}
-	
-	public void setRaidLocation(Integer x, Integer z, Integer y)
-	{
-		this.tasks.removeTask(this.areaAI);
-		if ( x != null && z != null && y != null )
-		{
-			this.raidX = x;
-			this.raidZ = z;
-			this.raidY = y;
-			this.tasks.addTask(7, this.areaAI);
-			this.areaAI.setCenter(x, z);
-			NBTTagCompound nbt = new NBTTagCompound();
-			this.writeEntityToNBT(nbt);
-		}
-	}
-
 	@Override
 	public void onDeath(DamageSource cause)
 	{
 		super.onDeath(cause);
-		if (!this.world.isRemote)
+		
+		if ( !this.world.isRemote )
 		{
-			dropBossLoot();
-			// quest
+			this.dropBossLoot();
 			
-			if ( this.raidX == null || this.raidZ == null || this.raidY == null )
+			int x = this.getRaidLocationX();
+			int y = this.getRaidLocationY();
+			int z = this.getRaidLocationZ();
+			
+			if ( y == 0 )
 			{
-				return;
+				x = this.getPosition().getX();
+				y = this.getPosition().getY();
+				z = this.getPosition().getZ();
 			}
-
-			int x = this.raidX;
-			int z = this.raidZ;
-			int y = this.raidY;
 			
-			int range = 96;
-			for ( int xx = -range/2; xx < range; xx++ )
+			int range = 64;
+			for ( int xx = -range; xx < range; xx++ )
 			{
-				for ( int yy = -range/2; yy < range; yy++ )
+				for ( int yy = -32; yy < 32; yy++ )
 				{
-					for ( int zz = -range/2; zz < range; zz++ )
+					for ( int zz = -range; zz < range; zz++ )
 					{
-						BlockPos pos = new BlockPos(x+xx-16,y+yy-4,z+zz-16);
+						BlockPos pos = new BlockPos(x+xx,y+yy,z+zz);
 						world.extinguishFire(null, pos, EnumFacing.UP);
-						IBlockState block = world.getBlockState(pos);
-						if ( block != null )
-							
+						IBlockState block = world.getBlockState(pos);							
 						if ( block == Blocks.OBSIDIAN.getDefaultState() || block == Blocks.NETHER_WART.getDefaultState() )
 						{
 							world.setBlockState(pos, Blocks.GRAVEL.getDefaultState() );

@@ -8,28 +8,33 @@ import net.torocraft.toroquest.configuration.ConfigurationHandler;
 import net.torocraft.toroquest.util.Hud;
 import net.torocraft.toroquest.util.ToroGuiUtils;
 
-public class CivilizationOverlayHandler extends Hud {
+public class CivilizationOverlayHandler extends Hud
+{
 
+	// ToroGuiUtils
+	
 	String displayPosition;
-	private final int PADDING_FROM_EDGE = 5;
+	public final int PADDING_FROM_EDGE_X = -8;
+	public final int PADDING_FROM_EDGE_Y = -8;
+
 	int screenWidth;
 	int screenHeight;
 
-	int badgeWidth = 20;
-	int badgeHeight = 25;
-
-	public CivilizationOverlayHandler(Minecraft mc) {
-		super(mc, 20, 10);
+	public CivilizationOverlayHandler(Minecraft mc)
+	{
+		super(mc, -ToroGuiUtils.DEFAULT_ICON_TEXTURE_WIDTH, -ToroGuiUtils.DEFAULT_ICON_TEXTURE_HEIGTH); // + PADDING_FROM_EDGE??
 	}
 
 	@Override
-	public void render(int screenWidth, int screenHeight) {
+	public void render(int screenWidth, int screenHeight)
+	{
 		this.screenWidth = screenWidth;
 		this.screenHeight = screenHeight;
 
 		EntityPlayerSP player = mc.player;
 
-		if (player.dimension != 0) {
+		if (player.dimension != 0)
+		{
 			return;
 		}
 
@@ -129,10 +134,10 @@ public class CivilizationOverlayHandler extends Hud {
 				break;
 			}
 		}
-		
+			
 		if (displayPosition.contains("RIGHT"))
 		{
-			textY -= 10;
+			//textY -= 20;
 			textX -= 10;
 			drawRightString("§lHouse " + civ.civilization.getLocalizedName(), textX, textY, 0xffffff);
 			textY += 10;
@@ -151,8 +156,12 @@ public class CivilizationOverlayHandler extends Hud {
 		}
 		else
 		{
-			textY -= 10;
-			textX += 10;
+			if (displayPosition.contains("TOP"))
+			{
+				textX += 10;
+			}
+			//textY -= 20;
+			textX += 12;
 			drawString("§lHouse " + civ.civilization.getLocalizedName(), textX, textY, 0xffffff);
 			textY += 10;
 			
@@ -179,8 +188,10 @@ public class CivilizationOverlayHandler extends Hud {
 		GlStateManager.disableDepth();
 		GlStateManager.enableBlend();
 		
-		ToroGuiUtils.drawOverlayIcon(mc, badgeX - 2, badgeY, 0, 96, 20, 27);
-		ToroGuiUtils.drawOverlayIcon(mc, badgeX, badgeY + 3, iconIndex(civType), 0);
+		// Minecraft mc, int x, int y, int textureX, int textureY, int width, int height)
+		// ToroGuiUtils.drawOverlayIcon(mc, badgeX - 2, badgeY, 0, 96, 20, 27);
+		ToroGuiUtils.drawOverlayIcon(mc, badgeX, badgeY, iconIndex(civType)*ToroGuiUtils.DEFAULT_ICON_TEXTURE_WIDTH, 0, ToroGuiUtils.DEFAULT_ICON_TEXTURE_WIDTH, ToroGuiUtils.DEFAULT_ICON_TEXTURE_HEIGTH);
+		// ToroGuiUtils
 		
 		GlStateManager.popAttrib();
 		GlStateManager.enableDepth();
@@ -189,16 +200,23 @@ public class CivilizationOverlayHandler extends Hud {
 
 	private int determineTextX()
 	{
-		int x = PADDING_FROM_EDGE + badgeWidth;
+		int x = PADDING_FROM_EDGE_X + ToroGuiUtils.DEFAULT_ICON_TEXTURE_WIDTH;
 
 		if (displayPosition.contains("RIGHT"))
 		{
-			x = screenWidth - PADDING_FROM_EDGE - badgeWidth;
+			x = screenWidth - PADDING_FROM_EDGE_X - ToroGuiUtils.DEFAULT_ICON_TEXTURE_WIDTH;
+		}
+		else
+		{
+			if (displayPosition.contains("TOP"))
+			{
+				x -= 10;
+			}
 		}
 
 		if (displayPosition.contains("CENTER"))
 		{
-			x = (screenWidth + badgeWidth + PADDING_FROM_EDGE) / 2;
+			x = (screenWidth + ToroGuiUtils.DEFAULT_ICON_TEXTURE_WIDTH + PADDING_FROM_EDGE_X) / 2;
 		}
 
 		return x + ConfigurationHandler.repDisplayX;
@@ -206,48 +224,77 @@ public class CivilizationOverlayHandler extends Hud {
 
 	private int determineBadgeX()
 	{
-		int x = PADDING_FROM_EDGE;
+		int x = PADDING_FROM_EDGE_X;
 
 		if (displayPosition.contains("RIGHT"))
 		{
-			x = screenWidth - badgeWidth;
+			x = screenWidth - ToroGuiUtils.DEFAULT_ICON_TEXTURE_WIDTH;
+//			if (displayPosition.contains("TOP"))
+//			{
+//				x -= 10;
+//			}
+		}
+		else
+		{
+			x += 10;
 		}
 
 		if (displayPosition.contains("CENTER"))
 		{
-			x = (screenWidth - badgeWidth) / 2;
+			x = (screenWidth - ToroGuiUtils.DEFAULT_ICON_TEXTURE_WIDTH) / 2;
 		}
 
 		return x + ConfigurationHandler.repDisplayX;
 	}
 
-	private int determineIconY() {
+	private int determineIconY()
+	{
+		int y = PADDING_FROM_EDGE_Y;
 
-		int y = PADDING_FROM_EDGE;
-
-		if (displayPosition.contains("BOTTOM")) {
-			y = screenHeight - PADDING_FROM_EDGE - badgeHeight;
+		if (displayPosition.contains("BOTTOM"))
+		{
+			y = screenHeight - ToroGuiUtils.DEFAULT_ICON_TEXTURE_HEIGTH;
 		}
-
+		else
+		{
+			y += 10;
+		}
+		
 		return y + ConfigurationHandler.repDisplayY;
 	}
 
-	private int iconIndex(CivilizationType civ) {
-		switch (civ) {
-		case EARTH:
-			return 0;
-		case FIRE:
-			return 5;
-		case MOON:
-			return 4;
-		case SUN:
-			return 1;
-		case WATER:
-			return 2;
-		case WIND:
-			return 3;
-		default:
-			return 0;
+	private int iconIndex(CivilizationType civ)
+	{
+		switch (civ)
+		{
+			case FIRE:
+			{
+				return 1;
+			}
+			case EARTH:
+			{
+				return 3;
+			}
+			case MOON:
+			{
+				return 2;
+			}
+			case SUN:
+			{
+				return 4;
+			}
+			case WIND:
+			{
+				return 5;
+			}
+			case WATER:
+			{
+				return 0;
+			}
+			default:
+			{
+				return 6;
+			}
 		}
 	}
 

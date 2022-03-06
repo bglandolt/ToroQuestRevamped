@@ -32,6 +32,10 @@ import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.pathfinding.PathPoint;
@@ -58,6 +62,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.torocraft.toroquest.ToroQuest;
 import net.torocraft.toroquest.config.ToroQuestConfiguration;
 import net.torocraft.toroquest.entities.ai.AIHelper;
+import net.torocraft.toroquest.entities.ai.EntityAIRaid;
 import net.torocraft.toroquest.entities.ai.EntityAIThrow;
 import net.torocraft.toroquest.entities.render.RenderGraveTitan;
 import net.torocraft.toroquest.generation.WorldGenPlacer;
@@ -130,22 +135,101 @@ public class EntityGraveTitan extends EntityZombie implements IMob
 
 	private float xsize = 4.5F;
 	private float ysize = 12.5F;
+	
+	// ============================================================================================================================
+	
+	protected static final DataParameter<Integer> RAID_X = EntityDataManager.<Integer>createKey(EntityGraveTitan.class, DataSerializers.VARINT);
+	protected static final DataParameter<Integer> RAID_Y = EntityDataManager.<Integer>createKey(EntityGraveTitan.class, DataSerializers.VARINT);
+	protected static final DataParameter<Integer> RAID_Z = EntityDataManager.<Integer>createKey(EntityGraveTitan.class, DataSerializers.VARINT);
+
+	@Override
+	protected void entityInit()
+	{
+		super.entityInit();
+		
+		this.getDataManager().register(RAID_X, Integer.valueOf(0));
+		this.getDataManager().register(RAID_Y, Integer.valueOf(0));
+		this.getDataManager().register(RAID_Z, Integer.valueOf(0));
+	}
+	
+    @Override
+    public void writeEntityToNBT(NBTTagCompound compound)
+    {
+        super.writeEntityToNBT(compound);
+        
+        compound.setInteger("raidX", this.getRaidLocationX());
+        compound.setInteger("raidY", this.getRaidLocationY());
+        compound.setInteger("raidZ", this.getRaidLocationZ());
+    }
+
+    @Override
+    public void readEntityFromNBT(NBTTagCompound compound)
+    {
+        super.readEntityFromNBT(compound);
+        
+        this.setRaidLocation(compound.getInteger("raidX"), compound.getInteger("raidY"), compound.getInteger("raidZ"));
+    }
+	
+	protected void setRaidLocation(int x, int y, int z)
+	{
+		this.getDataManager().set(RAID_X, x);
+		this.getDataManager().set(RAID_Y, y);
+		this.getDataManager().set(RAID_Z, z);
+	}
+	
+	public Integer getRaidLocationX()
+	{
+		return this.getDataManager().get(RAID_X).intValue();
+	}
+	
+	public Integer getRaidLocationY()
+	{
+		return this.getDataManager().get(RAID_Y).intValue();
+	}
+	
+	public Integer getRaidLocationZ()
+	{
+		return this.getDataManager().get(RAID_Z).intValue();
+	}
+		
+	// ============================================================================================================================
+ 	
+	
 	public EntityGraveTitan(World world)
 	{
 		super(world);
+		
+		int x = this.getRaidLocationX();
+		int y = this.getRaidLocationY();
+	    int z = this.getRaidLocationZ();
+	    
+	    if ( y != 0 )
+	    {
+			this.tasks.addTask(4, new EntityAIRaid(this, x, z, 1.0D));
+	    }
+	    
+	    this.setUpEntity();
+	}
+	
+	public void setUpEntity()
+	{
 		this.setChild(false);
-        
-		//this.adjustSize();
+		this.enablePersistence();
 		this.setRealSize( xsize, ysize);
 		this.setSize( xsize, ysize );
 		this.stepHeight = 4.05F;
-
-		//this.setRealSize(10, 26);
-		//AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
-        //this.setEntityBoundingBox(new AxisAlignedBB(axisalignedbb.minX, axisalignedbb.minY, axisalignedbb.minZ, axisalignedbb.minX + (double)this.width + 5, axisalignedbb.minY + (double)this.height + 20, axisalignedbb.minZ + (double)this.width + 5 ));
-
 		this.experienceValue = 200;
         this.isImmuneToFire = true;
+	}
+	
+	public EntityGraveTitan(World world, int x, int y, int z)
+	{
+		super(world);
+		
+		this.setRaidLocation(x, y, z);
+		this.tasks.addTask(4, new EntityAIRaid(this, x, z, 1.0D));
+		
+		this.setUpEntity();
 	}
 
 	@Override
@@ -297,20 +381,14 @@ public class EntityGraveTitan extends EntityZombie implements IMob
 			return;
 		}
 		
-		EntityZombieVillagerRaider mob = new EntityZombieVillagerRaider(this.world);
-		//mob.setChild(false);
-		mob.setImmuneFire();
-//		if ( rand.nextInt(8) == 0 )
-//		{
-//			mob.setHeldItem(EnumHand.OFF_HAND, new ItemStack(Item.getByNameOrId("minecraft:iron_sword")));
-//		}
-		double x = rand.nextInt(7) - 3 + 0.5;
-		double y = rand.nextInt(7) + 0.5;
-		double z = rand.nextInt(7) - 3 + 0.5;
+		EntityZombieVillagerRaider mob = new EntityZombieVillagerRaider(this.world, true);
+		double x = rand.nextInt(7) - 3.0D + 0.5D;
+		double y = rand.nextInt(7) + 0.5D;
+		double z = rand.nextInt(7) - 3.0D + 0.5D;
 		mob.setPosition(this.posX + x, this.posY + y, this.posZ + z);
 		mob.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(mob)), (IEntityLivingData) null);
-		Vec3d velocityVector = new Vec3d(mob.posX - this.posX, 0, mob.posZ - this.posZ);
-		mob.addVelocity(velocityVector.x/8, 0.2, velocityVector.z/8);
+		Vec3d velocityVector = new Vec3d(mob.posX - this.posX, 0.0D, mob.posZ - this.posZ);
+		mob.addVelocity(velocityVector.x/6.0D, 0.2D, velocityVector.z/6.0D);
 		this.world.spawnEntity(mob);
 	}
 	
@@ -626,23 +704,6 @@ public class EntityGraveTitan extends EntityZombie implements IMob
         super.removeTrackingPlayer(player);
         this.bossInfo.removePlayer(player);
     }
-
-
-//	private void adjustSize()
-//	{
-//		System.out.println("asize");
-//		if ( !this.world.isRemote )
-//		{
-//			return;
-//		}
-//		System.out.println("!remo asize");
-//		float maxHealth = this.getMaxHealth();
-//		if ( maxHealth <= 0 ) return;
-//		float healthPercentage = 0.25f + MathHelper.clamp( this.getHealth()/this.getMaxHealth(), 0F, 1F );
-//		float hsize = 5.0F * healthPercentage;
-//        float vsize = 15.0F * healthPercentage;
-//		this.setRealSize( hsize , vsize );
-//	}
 	
 	private void adjustSize( )
 	{

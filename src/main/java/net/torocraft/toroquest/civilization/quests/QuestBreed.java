@@ -122,7 +122,8 @@ public class QuestBreed extends QuestBase implements Quest
 		{
 			quest.setCurrentAmount(quest.getCurrentAmount() + 1);
 			quest.getData().getPlayer().sendStatusMessage( new TextComponentString(MathHelper.clamp(quest.getCurrentAmount(), 0, quest.getTargetAmount())+"/"+quest.getTargetAmount()), true);
-			
+			//quest.getData().getPlayer().sendStatusMessage( new TextComponentString("Bred " + MathHelper.clamp(quest.getCurrentAmount(), 0, quest.getTargetAmount())+" out of "+quest.getTargetAmount()+ " " + getAnimalName(quest.getData())), true);
+
 			if (quest.getCurrentAmount() >= quest.getTargetAmount())
 			{
 				quest.getData().setCompleted(true);
@@ -218,6 +219,37 @@ public class QuestBreed extends QuestBase implements Quest
 		}
 		this.setData(data);
 		return in;
+	}
+	
+	private String getAnimalName( QuestData d )
+	{
+		switch ( i(d.getiData().get("animalType")) )
+		{
+			case 0:
+			{
+				return "livestock";
+			}
+			case 1:
+			{
+				return "chickens";
+			}
+			case 2:
+			{
+				return "pigs";
+			}
+			case 3:
+			{
+				return "sheep";
+			}
+			case 4:
+			{
+				return "cows";
+			}
+			default:
+			{
+				return "livestock";
+			}
+		}
 	}
 
 	@Override

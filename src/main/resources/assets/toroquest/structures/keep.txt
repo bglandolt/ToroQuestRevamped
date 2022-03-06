@@ -35,11 +35,11 @@
   LzPwPwPwCs----------CsBSBSBSLz
   LzPwLzS^S^Sbd^Sbd^SbCA----BSLz
   LzPwLz--------------------BSLz
-  SbCsLz--------S^--------BSCsSb
-      Lz----pTpTpTpTpT----Lz
-      Lz--S<pTLgLgLgpTS>--Lz
-      Lz----pTpTpTpTpT----Lz
-  SbCsBS--------Sv--------LzCsSb
+  SbCsLz--------!^--------BSCsSb
+      Lz----!T!T!T!T!T----Lz
+      Lz--!<!TLgLgLg!T!>--Lz
+      Lz----!T!T!T!T!T----Lz
+  SbCsBS--------!v--------LzCsSb
   LzBS--------------------LzPwLz
   Lz--------SbdvSbdvSbSvSvLzPwLz  
   LzET--FwCs----------CsPwPwPwLz
@@ -53,7 +53,7 @@
   CsCspT--------------------BSCs
   SbCspT------------------BSCsSb
       Cs--------IP--------Cs
-      Cs----IP--FL--IP----Cs
+      Cs----IP!CFL!DIP----Cs
       Cs--------IP--------Cs
   SbCsBS------------------F<CsSb
   CsBS--------------------F<CsCs
@@ -69,7 +69,7 @@
   CsCsFL--------@^------------Cs
   SbCsc>--------------------CsSb
       Cs------------------Cs
-      ti------------------ti
+      ti--------!A--------ti
       Cs------------------Cs
   SbCs--------------------F<CsSb
   Cs------------@v--------F<CsCs
@@ -85,7 +85,7 @@
   CsSw>>--------T^------------Cs
   SbCs>>--------------------CsSb
       Cs------------------Cs
-  LA<<Cs--------LA--------Cs>>LA
+  LA<<Cs--------CH--------Cs>>LA
       Cs------------------Cs
   SbCs--------------------<<CsSb
   Cs------------Tv--------<<SwCs

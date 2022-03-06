@@ -1,22 +1,24 @@
 package net.torocraft.toroquest.util;
 
-import net.minecraft.client.renderer.BufferBuilder;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
-public class ToroGuiUtils {
+public class ToroGuiUtils
+{
+	// CivilizationOverlayHandler
+	
 	public static final ResourceLocation ICONS = new ResourceLocation("toroquest:textures/gui/icons.png");
 
-	public static final float TEXTURE_HEIGHT_SCALER = 1F / 256F;
-	public static final float TEXTURE_WIDTH_SCALER = 1F / 256F;
+	public static final float TEXTURE_HEIGHT_SCALER = 1.0F / 256.0F;
+	public static final float TEXTURE_WIDTH_SCALER = 1.0F / 256.0F;
 
-	public static final int DEFAULT_ICON_TEXTURE_WIDTH = 16;
-	public static final int DEFAULT_ICON_TEXTURE_HEIGTH = 20;
+	public static final int DEFAULT_ICON_TEXTURE_WIDTH = 32;
+	public static final int DEFAULT_ICON_TEXTURE_HEIGTH = 41;
 
 	public static void drawOverlayIcon(Minecraft mc, int left, int top, int horizontalIconIndex, int verrticalIconIndex) {
 		mc.getTextureManager().bindTexture(ICONS);

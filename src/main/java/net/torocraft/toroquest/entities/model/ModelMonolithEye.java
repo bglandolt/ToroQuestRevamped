@@ -42,15 +42,15 @@ public class ModelMonolithEye extends ModelBase
 //		//(float offX, float offY, float offZ, int width, int height, int depth)
 //		this.guardianEye.addBox(-3.5F, 11.5F, 0.0F, 9, 9, 1);
 		
-		this.frame0 = new ModelRenderer(this, 0, 0);
-		this.frame1 = new ModelRenderer(this, 0, 0);
-		this.frame2 = new ModelRenderer(this, 0, 0);
-		this.frame3 = new ModelRenderer(this, 0, 0);
-		this.frame4 = new ModelRenderer(this, 0, 0);
-		this.frame5 = new ModelRenderer(this, 0, 0);
-		this.frame6 = new ModelRenderer(this, 0, 0);
-		this.frame7 = new ModelRenderer(this, 0, 0);
-		this.frame8 = new ModelRenderer(this, 0, 0);
+		this.frame0 = new ModelRenderer(this, 44, 88);
+		this.frame1 = new ModelRenderer(this, 45, 88);
+		this.frame2 = new ModelRenderer(this, 46, 89);
+		this.frame3 = new ModelRenderer(this, 46, 90);
+		this.frame4 = new ModelRenderer(this, 45, 91);
+		this.frame5 = new ModelRenderer(this, 44, 91);
+		this.frame6 = new ModelRenderer(this, 43, 90);
+		this.frame7 = new ModelRenderer(this, 43, 89);
+		this.frame8 = new ModelRenderer(this, 44, 88);
 		
 		this.guardianBody.addChild(this.frame0);
 		this.guardianBody.addChild(this.frame1);
@@ -62,15 +62,15 @@ public class ModelMonolithEye extends ModelBase
 		this.guardianBody.addChild(this.frame7);
 		this.guardianBody.addChild(this.frame8);
 		
-		this.frame0.setTextureOffset(0, 0).addBox(-52.0F, -58.0F, -52.0F, 88, 88, 1, true);
-		this.frame1.setTextureOffset(88, 0).addBox(-52.0F, -58.0F, -52.0F, 88, 88, 1, true);
-		this.frame2.setTextureOffset(176, 0).addBox(-52.0F, -58.0F, -52.0F, 88, 88, 1, true);
-		this.frame3.setTextureOffset(0, 88).addBox(-52.0F, -58.0F, -52.0F, 88, 88, 1, true);
-		this.frame4.setTextureOffset(88, 88).addBox(-52.0F, -58.0F, -52.0F, 88, 88, 1, true);
-		this.frame5.setTextureOffset(176, 88).addBox(-52.0F, -58.0F, -52.0F, 88, 88, 1, true);
-		this.frame6.setTextureOffset(0, 176).addBox(-52.0F, -58.0F, -52.0F, 88, 88, 1, true);
-		this.frame7.setTextureOffset(88, 176).addBox(-52.0F, -58.0F, -52.0F, 88, 88, 1, true);
-		this.frame8.setTextureOffset(176, 176).addBox(-52.0F, -58.0F, -52.0F, 88, 88, 1, true);
+		this.frame0.setTextureOffset(0, 0).addBox(-44.0F, -44.0F, 22.0F, 88, 88, 1, true);
+		this.frame1.setTextureOffset(88, 0).addBox(-44.0F, -44.0F, 22.0F, 88, 88, 1, true);
+		this.frame2.setTextureOffset(176, 0).addBox(-44.0F, -44.0F,  22.0F, 88, 88, 1, true);
+		this.frame3.setTextureOffset(0, 88).addBox(-44.0F, -44.0F, 22.0F, 88, 88, 1, true);
+		this.frame4.setTextureOffset(88, 88).addBox(-44.0F, -44.0F, 22.0F, 88, 88, 1, true);
+		this.frame5.setTextureOffset(176, 88).addBox(-44.0F, -44.0F, 22.0F, 88, 88, 1, true);
+		this.frame6.setTextureOffset(0, 176).addBox(-44.0F, -44.0F, 22.0F, 88, 88, 1, true);
+		this.frame7.setTextureOffset(88, 176).addBox(-44.0F, -44.0F, 22.0F, 88, 88, 1, true);
+		this.frame8.setTextureOffset(176, 176).addBox(-44.0F, -44.0F, 22.0F, 88, 88, 1, true);
 
 		
 		

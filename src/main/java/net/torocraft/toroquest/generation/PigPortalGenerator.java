@@ -69,10 +69,10 @@ public class PigPortalGenerator extends WorldGenerator
 		}
 		else
 		{
-			EntityPigLord e = new EntityPigLord(world);
+			EntityPigLord e = new EntityPigLord(world, blockpos.getX(), blockpos.getY(), blockpos.getZ());
 			e.setPosition(blockpos.getX() + 0.5, blockpos.getY() + 1, blockpos.getZ() + 0.5);
 			e.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(e)), (IEntityLivingData) null);
-			e.setRaidLocation( blockpos.getX(), blockpos.getZ(), blockpos.getY() );
+			// e.setRaidLocation( blockpos.getX(), blockpos.getZ(), blockpos.getY() );
 			world.spawnEntity(e);
 			System.out.println("tile entity is missing");
 		}

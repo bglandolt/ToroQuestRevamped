@@ -46,7 +46,7 @@ item.toro_armor_leggings.name=Heavy Leather Leggings
 item.toro_armor_chestplate.name=Heavy Leather Chestplate
 
 item.bandit_helmet.name=Bandit Mask
-item.bandit_helmet.description=§rGive this item to a Village Lord for reputation §7[put this item in top-right box]§r, or disguise yourself as a Bandit.
+item.bandit_helmet.description=Give this item to a Village Lord for reputation [put this item in top-right box], or disguise yourself as a Bandit.
 item.city_key.name=Key to the City
 item.scroll_null.name=Blank Teleport Scroll
 item.recruitment_papers.name=Recruitment Papers
@@ -238,7 +238,7 @@ quests.capture_fugitives.title=§lBounty Hunter§r
 quests.capture_fugitives.description=§lCapture§r %s fugitives hiding in %s and turn them over to my guards. You have captured %s§lReward:§r %s%s Reputation
 quests.capture_fugitives.reject=Crime will continue to run rampant in our province then. That is most unfortunate.
 quests.capture_fugitives.incomplete=You haven't captured all the fugitives yet!
-quests.capture_fugitives.complete=You have done a great service for @e and the safety of it's people.
+quests.capture_fugitives.complete=You have done a great service for @e and the safety of its people.
 
 quests.capture_fugitives.accept=7
 quests.capture_fugitives.accept0=My guards have failed to keep crime under control. Do them a service, @p and show them how it's done.
@@ -821,7 +821,7 @@ entity.toroquest.guard.lowrep55=What brings you to @e?
 
 ################## GUARD MEDIUM REP ##################
 
-entity.toroquest.guard.mediumrep=37
+entity.toroquest.guard.mediumrep=38
 entity.toroquest.guard.mediumrep0=Please, stay awhile and enjoy your welcome.
 entity.toroquest.guard.mediumrep1=You're, @p, aren't you?
 entity.toroquest.guard.mediumrep2=You're making quite the name for yourself around here.
@@ -859,6 +859,7 @@ entity.toroquest.guard.mediumrep33=What troubles you?
 entity.toroquest.guard.mediumrep34=What can I help you with?
 entity.toroquest.guard.mediumrep35=Enjoying your stay here in @e?
 entity.toroquest.guard.mediumrep36=@p, is it? Good to meet you.
+entity.toroquest.guard.mediumrep37=How goes it?
 
 ################## GUARD HIGH REP ##################
 
@@ -909,9 +910,10 @@ entity.toroquest.guard.highrep42=@e would be in shambles without your help.
 entity.toroquest.guard.highrep43=You'll always have a place in @e.
 entity.toroquest.guard.highrep44=Thank you for keeping @e safe.
 entity.toroquest.guard.highrep45=@e will always have a place for you.
-entity.toroquest.guard.highrep46=Looking as strong as ever, @p.
-entity.toroquest.guard.highrep47=Aether watch over you.
+entity.toroquest.guard.highrep46=Looking as strong as ever!
+entity.toroquest.guard.highrep47=The people of @e adore you, @p.
 entity.toroquest.guard.highrep48=Aether's blessing to you.
+entity.toroquest.guard.highrep49=@p! Good to see you.
 entity.toroquest.guard.highrep50=Your command?
 entity.toroquest.guard.highrep51=May the Aether watch over you.
 entity.toroquest.guard.highrep52=Aether be with you.
@@ -1094,13 +1096,13 @@ entity.toroquest.guard.steal7=Stay where you are, thief!
 ################## GUARD CRIME BUTCHER ##################
 
 entity.toroquest.guard.butcher=8
-entity.toroquest.guard.butcher0=Kill our @es and we kill you!
-entity.toroquest.guard.butcher1=What did that @e ever do to you!?
+entity.toroquest.guard.butcher0=Kill our livestock and we kill you!
+entity.toroquest.guard.butcher1=What did that animal ever do to you!?
 entity.toroquest.guard.butcher2=@p is killing our livestock!
 entity.toroquest.guard.butcher3=You really shouldn't have done that...
 entity.toroquest.guard.butcher4=What are you doing!?
 entity.toroquest.guard.butcher5=You'll pay for that!
-entity.toroquest.guard.butcher6=Those aren't your @es!
+entity.toroquest.guard.butcher6=That isn't your livestock!
 entity.toroquest.guard.butcher7=Stop! What are you doing?!
 
 ################## GUARD CRIME CROPS ##################
@@ -1452,7 +1454,7 @@ entity.toroquest.bandit.moreemeralds0=How about you pay me first, then we'll tal
 entity.toroquest.bandit.moreemeralds1=Maybe. If you can pay well enough.
 entity.toroquest.bandit.moreemeralds2=Toss some emeralds my way and I'll consider it.
 entity.toroquest.bandit.moreemeralds3=Mercenary work? How about you pay first.
-entity.toroquest.bandit.moreemeralds4=Tough luck. You'll have to pay me before I agree to anything.
+entity.toroquest.bandit.moreemeralds4=Tough luck. You'll have to pay me before I agree to mercenary work.
 entity.toroquest.bandit.moreemeralds5=No emeralds? Get lost.
 entity.toroquest.bandit.moreemeralds6=I'd never work for a weakling like you.
 entity.toroquest.bandit.moreemeralds7=Why don't you toss some Ender Pearls in a fire? Now get lost.

@@ -14,6 +14,10 @@ public class SoundHandler
 	public static SoundEvent STEAM_STEP_1;
 	public static SoundEvent STEAM_AMBIENT;
 	
+//	public static SoundEvent GUARD_CHAT;
+//	public static SoundEvent GUARD_ANGRY;
+
+	
 	public static void registerSounds()
 	{
 		STEAM_0 = registerSound("entity.steam_0");

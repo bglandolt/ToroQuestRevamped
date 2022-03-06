@@ -1,12 +1,9 @@
 package net.torocraft.toroquest.entities;
 
-import java.util.Random;
-
 import javax.annotation.Nullable;
 
 import com.google.common.base.Predicate;
 
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
@@ -24,6 +21,9 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -36,98 +36,105 @@ import net.torocraft.toroquest.entities.ai.EntityAIRaid;
 
 public class EntityWolfRaider extends EntityWolf implements IMob
 {
-	protected boolean despawn = false;
-	public Integer raidX = null;
-	public Integer raidZ = null;
-	protected Random rand = new Random();
-	protected final EntityAIRaid areaAI = new EntityAIRaid(this, 1.2D, 16, 32);
-    public int despawnTimer = 100;
+
+	// ========================== DATA MANAGER ==========================
+
+	public static DataParameter<Integer> DESPAWN_TIMER = EntityDataManager.<Integer>createKey(EntityWolfRaider.class, DataSerializers.VARINT);
+	public static DataParameter<Integer> RAID_X = EntityDataManager.<Integer>createKey(EntityWolfRaider.class, DataSerializers.VARINT);
+	public static DataParameter<Integer> RAID_Z = EntityDataManager.<Integer>createKey(EntityWolfRaider.class, DataSerializers.VARINT);
+
+	@Override
+	protected void entityInit()
+	{
+		super.entityInit();
+		
+		this.getDataManager().register(DESPAWN_TIMER, Integer.valueOf(100));
+		this.getDataManager().register(RAID_X, Integer.valueOf(0));
+		this.getDataManager().register(RAID_Z, Integer.valueOf(0));
+	}
 	
-@Override
-public void readEntityFromNBT(NBTTagCompound compound)
-{
-    if ( compound.hasKey("raidX") && compound.hasKey("raidZ") )
+    @Override
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-    	this.raidX = compound.getInteger("raidX");
-    	this.raidZ = compound.getInteger("raidZ");
-    	this.setRaidLocation(this.raidX, this.raidZ);
+        super.writeEntityToNBT(compound);
+        
+        compound.setInteger("customDespawnTimer", this.despawnTimer());
+        compound.setInteger("raidX", this.getRaidLocationX());
+        compound.setInteger("raidZ", this.getRaidLocationZ());
     }
-    if ( compound.hasKey("despawnTimer") )
+
+    @Override
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-    	this.despawnTimer = compound.getInteger("despawnTimer");
+        super.readEntityFromNBT(compound);
+        
+        this.setDespawnTimer(compound.getInteger("customDespawnTimer"));
+        this.setRaidLocation(compound.getInteger("raidX"), compound.getInteger("raidZ"));
     }
-    super.readEntityFromNBT(compound);
-}
-
-@Override
-public void writeEntityToNBT(NBTTagCompound compound)
-{	
-	if ( this.raidX != null && this.raidZ != null )
+	
+	public Integer despawnTimer()
 	{
-		compound.setInteger("raidX", this.raidX);
-		compound.setInteger("raidZ", this.raidZ);
-		this.despawn = false;
+		return this.getDataManager().get(DESPAWN_TIMER);
 	}
-	else
+	
+	public Integer despawnTick()
 	{
-		this.despawn = true;
+		int d = this.despawnTimer()-1;
+		this.getDataManager().set(DESPAWN_TIMER, d);
+		return d;
 	}
-	compound.setInteger("despawnTimer", this.despawnTimer);
-	super.writeEntityToNBT(compound);
-}
-
-@Override
-protected void applyEntityAttributes()
-{
-	super.applyEntityAttributes();
-    this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(35.0D);
-}
-
-/* Set the direction for bandits to move to */
-public void setRaidLocation(Integer x, Integer z)
-{
-	this.tasks.removeTask(this.areaAI);
-	if ( x != null && z != null )
+	
+	public void setDespawnTimer( int i )
 	{
-		if ( x == 0 && z == 0 )
+		this.getDataManager().set(DESPAWN_TIMER, i);
+	}
+    
+	protected void setRaidLocation(Integer x, Integer z)
+	{
+		if ( x != null && z != null && ( x != 0 && z != 0 ) )
 		{
-			this.despawn = true;
-			return;
+			this.getDataManager().set(RAID_X, x);
+			this.getDataManager().set(RAID_Z, z);
+			this.tasks.addTask(3, new EntityAIRaid(this, x, z, 1.0D));
 		}
-		this.raidX = x;
-		this.raidZ = z;
-		this.areaAI.setCenter(x, z);
-		this.tasks.addTask(7, this.areaAI);
-		this.writeEntityToNBT(new NBTTagCompound());
-		this.despawn = false;
 	}
-	else
+	
+	public Integer getRaidLocationX()
 	{
-		this.despawn = true;
+		return this.getDataManager().get(RAID_X).intValue();
 	}
-//	this.tasks.removeTask(this.areaAI);
-//	if ( x != null && z != null )
-//	{
-//		this.raidX = x;
-//		this.raidZ = z;
-//		this.areaAI.setCenter(x, z);
-//		this.tasks.addTask(7, this.areaAI);
-//		NBTTagCompound nbt = new NBTTagCompound();
-//		this.writeEntityToNBT(nbt);
-//		this.despawn = false;
-//	}
-//	else
-//	{
-//		this.despawn = true;
-//	}
-}
+	
+	public Integer getRaidLocationZ()
+	{
+		return this.getDataManager().get(RAID_Z).intValue();
+	}
+	
+	// ==================================================================
+	
+	@Override
+	protected void applyEntityAttributes()
+	{
+		super.applyEntityAttributes();
+	    this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(35.0D);
+	}
 
 	public EntityWolfRaider(World worldIn)
 	{
 		super(worldIn);
 		this.setAngry(true);
 		this.setTamed(false);
-		//this.tasks.removeTask(this.areaAI);
+		
+		if ( this.getRaidLocationX() != 0 && this.getRaidLocationZ() != 0 ) 
+		{
+			this.tasks.addTask(7, new EntityAIRaid(this, this.getRaidLocationX(), this.getRaidLocationZ(), 1.0D));
+		}
+	}
+	
+	public EntityWolfRaider(World worldIn, int x, int z)
+	{
+		this(worldIn);
+		this.setRaidLocation(x+rand.nextInt(33)-16, z+rand.nextInt(33)-16);
+		this.tasks.addTask(7, new EntityAIRaid(this, x, z, 1.0D));
 	}
 	
 	@Override
@@ -137,61 +144,51 @@ public void setRaidLocation(Integer x, Integer z)
 	}
 	
 	@Override
+	protected boolean canDespawn()
+	{
+		return false;
+	}
+	
+	@Override
 	public void onLivingUpdate()
     {
 		super.onLivingUpdate();
 		
-		if ( this.world.isRemote )
+		if ( world.isRemote )
 		{
 			return;
-		}
-
-		if ( !this.isAngry() )
-		{
-			this.setAngry(true);
 		}
 		
 		if ( this.ticksExisted % 100 == 0 )
     	{
-    		if ( --this.despawnTimer < 0 )
+			if ( this.despawnTick() < 0 )
     		{
-				if ( world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(this.getPosition()).grow(25, 15, 25)).isEmpty() || this.despawnTimer < -60 )
+    			if ( this.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(this.getPosition()).grow(25, 15, 25)).isEmpty() || ( this.world.getWorldTime() == 22000 && this.despawnTimer() < -50 ) || ( this.despawnTimer() < -100 ) )
 				{
-					this.despawn = true;
-	    			this.setHealth( 0 );
+	    			this.setHealth(0);
 	    			this.setDead();
 	    			return;
 				}
     		}
-    		
-    		EntityLivingBase attacker = this.getAttackTarget();
-    		
-            if ( attacker == null )
+    		    		
+            if ( this.getAttackTarget() == null )
             {
             	return;
             }
-            
-            double dist = this.getDistanceSq(attacker);
-                		
-    		if ( dist < 64 && dist >= 4 && Math.pow(this.posY - attacker.posY,2) > Math.abs((this.posX - attacker.posX)*(this.posZ - attacker.posZ)) )
+                            		
+    		if ( this.getNavigator().getPathToEntityLiving(this.getAttackTarget()) == null )
     		{
-    			Vec3d vector3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 12, 6, attacker.getPositionVector());
+    			Vec3d vector3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 8, 8, this.getAttackTarget().getPositionVector());
     				
 			    if ( vector3d != null )
 			    {
 					this.setAttackTarget( null );
-			        this.getNavigator().tryMoveToXYZ(vector3d.x, vector3d.y, vector3d.z, 0.7D);
+					this.setRevengeTarget( null );
+			        this.getNavigator().tryMoveToXYZ(vector3d.x, vector3d.y, vector3d.z, 0.8D);
 			    }
     		}
     	}
-		
     }
-		
-	@Override
-	protected boolean canDespawn()
-	{
-		return this.despawn;
-	}
 
 	public static String NAME = "wolf_raider";
 	static
@@ -228,7 +225,7 @@ public void setRaidLocation(Integer x, Integer z)
         {
             public boolean apply(@Nullable EntityAnimal p_apply_1_)
             {
-                return ( despawnTimer < 80 && !( p_apply_1_ instanceof EntityWolf ) );
+                return ( despawnTimer() < 48 && !( p_apply_1_ instanceof EntityWolf ) );
             }
         }));
 		this.targetTasks.addTask(5, new EntityAINearestAttackableTarget<EntityVillager>(this, EntityVillager.class, 20, false, false, new Predicate<EntityVillager>()

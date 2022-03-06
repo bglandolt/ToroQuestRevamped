@@ -10,6 +10,9 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EntitySelectors;
@@ -19,6 +22,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.torocraft.toroquest.entities.EntitySentry;
 import net.torocraft.toroquest.entities.EntityVillageLord;
 
 public class TileEntityVillageSpawner extends TileEntity implements ITickable
@@ -49,11 +53,13 @@ public class TileEntityVillageSpawner extends TileEntity implements ITickable
 
 	public void update()
 	{
-		if (!world.isRemote && isRunTick() && withinRange())
+		if ( !world.isRemote && isRunTick() && withinRange() )
 		{
 			triggerSpawner();
 		}
 	}
+
+	// public static DataParameter<Boolean> BRIBED = EntityDataManager.<Boolean>createKey(TileEntityVillageSpawner.class, DataSerializers.BOOLEAN);
 
 	protected void triggerSpawner()
 	{
@@ -63,9 +69,12 @@ public class TileEntityVillageSpawner extends TileEntity implements ITickable
 
 	public void spawnCreature()
 	{
-		EntityVillageLord entity = new EntityVillageLord(world);
-
-		entity.setRaidLocation((int)entity.posX, (int)entity.posZ);
+		if ( this.pos.getY() == 0 )
+		{
+			return;
+		}
+		
+		EntityVillageLord entity = new EntityVillageLord(this.world, this.pos.getX(), this.pos.getY(), this.pos.getZ());
 		
 		spawnEntityLiving((EntityLiving) entity, findSuitableSpawnLocation());
 		

@@ -89,7 +89,7 @@ public class ItemRecruitmentPapers extends Item
 			}
 			else
 			{
-				tooltip.add("§9No form of recruiting Guards in config!");
+				tooltip.add("§7•§9Right-Click§7 a Guard to set their post\\n•§9Shift-Right-Click§7 a Guard to move them to the next highest y-block and set their post");
 			}
 		}
 	}
@@ -127,6 +127,7 @@ public class ItemRecruitmentPapers extends Item
 							newEntity.onInitialSpawn(v.world.getDifficultyForLocation(new BlockPos(v.getPosition())), (IEntityLivingData) null);
 							newEntity.actionTimer = 1;
 							v.setDead();
+							newEntity.copyLocationAndAnglesFrom(v);
 							v.world.spawnEntity(newEntity);
 		        			newEntity.playTameEffect(false);
 		                    newEntity.world.setEntityState(newEntity, (byte)6);

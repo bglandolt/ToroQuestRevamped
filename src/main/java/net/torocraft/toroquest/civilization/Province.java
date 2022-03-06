@@ -33,6 +33,7 @@ public class Province
 	public int chunkX;
 	public int chunkZ;
 
+	/* CHUNK */
 	public int lowerVillageBoundX;
 	public int upperVillageBoundX;
 	public int lowerVillageBoundZ;
@@ -41,7 +42,6 @@ public class Province
 	public int xLength;
 	public int zLength;
 	public int area;
-
 	
 	
 //	public EntityVillageLord getLord()
@@ -53,7 +53,6 @@ public class Province
 //	{
 //		this.lord = v;
 //	}
-	
 
 	
 	// =-=-=-=-=-=-= Trophy =-=-=-=-=-=-=-=-=
@@ -156,16 +155,26 @@ public class Province
 		}
 	}
 	
-	public int getCenterX()
+	public int getCenterX() // pos
 	{
-		return (this.lowerVillageBoundX+this.upperVillageBoundX)*8;
+		return chunkX*16;
 	}
 	
-	public int getCenterZ()
+	public int getCenterZ() // pos
 	{ 
-		return (this.lowerVillageBoundZ+this.upperVillageBoundZ)*8;
+		return chunkZ*16;
 	}
 
+	public int getChunk()
+	{
+		return chunkX;
+	}
+	
+	public int getChunkZ()
+	{ 
+		return chunkZ;
+	}
+	
 	public void addToBoundsAndRecenter(int newChunkX, int newChunkZ)
 	{
 		lowerVillageBoundX = Math.min(lowerVillageBoundX, newChunkX);
