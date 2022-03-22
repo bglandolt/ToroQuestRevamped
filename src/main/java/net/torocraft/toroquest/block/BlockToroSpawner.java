@@ -8,17 +8,17 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -48,18 +48,20 @@ public class BlockToroSpawner extends BlockContainer
 		//ITEM_INSTANCE = Item.REGISTRY.getObject(new ResourceLocation(ToroQuest.MODID, NAME));
 	}
 
-	public static void registerRenders() {
+	public static void registerRenders()
+	{
 		//ModelResourceLocation model = new ModelResourceLocation(ToroQuest.MODID + ":" + NAME, "inventory");
 		//Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(ITEM_INSTANCE, 0, model);
 	}
 
-	protected BlockToroSpawner()
+	public BlockToroSpawner()
 	{
 		super(Material.AIR);
 		setCreativeTab(CreativeTabs.MISC);
 	}
 
-	public EnumBlockRenderType getRenderType(IBlockState state) {
+	public EnumBlockRenderType getRenderType(IBlockState state)
+	{
 		return EnumBlockRenderType.INVISIBLE;
 	}
 
@@ -130,10 +132,34 @@ public class BlockToroSpawner extends BlockContainer
 	{
 		return null;
 	}
+	
+	@Override
+    public boolean isCollidable()
+    {
+        return false;
+    }
 
 	@SideOnly(Side.CLIENT)
 	public BlockRenderLayer getBlockLayer()
 	{
 		return BlockRenderLayer.CUTOUT;
 	}
+	
+	@Override
+    public boolean isSideSolid(IBlockState base_state, IBlockAccess world, BlockPos pos, EnumFacing side)
+    {
+    	return false;
+    }
+	
+	@Override
+    public int tickRate(World worldIn)
+    {
+        return 30;
+    }
+	
+	@Override
+	public boolean isAir(IBlockState state, IBlockAccess world, BlockPos pos)
+    {
+        return true;
+    }
 }

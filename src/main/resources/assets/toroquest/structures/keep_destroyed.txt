@@ -15,32 +15,32 @@
 
 ######################################
           ------SsSsSsSs        Sc
-  SbPwPwPwSbSs--ScDSSsSbPwPwPwSb
+  SbPwPwPwSbSs--ScDSSsSbPwPwPwSbCs
 ScPwDSDSDSCs--ScLgScDSCsDSDSDSPw
-CsPwDSDSDSDSDS-DSDSDSDSDSDSDSPw
+CsPwDSDSDSDSDS--DSDSDSDSDSDSDSPw
   PwDSDSDSDSDSDSDSDSDSDSDSDSDSPw
   SbCsDSDSwcwcwcwcwcwcwcDSCsCsSbSc
   CsCsPwDSwcWPWPWOWPWPwcDSPw    Sc
 Sc  CsPwDSwcWOWOwcWOWOwcDSPw
-      PwDSwcWPWPWOWPWPwcDSPw
+      PwDSwcWPWPWOWPWPwcDSPWsC
   SbCsDSDSwcwcwcwcwcwcwcDSCsCsSb
-  PwDSDSDSDSDSDSDSDSDSDSDSDSDSPw
-  PwwcwcDSDS--DSDSDSDSDSDSDSDSPw
-  PwwcwcDSCsDSSc--ScDSCsDSDSDSPw
-  Sb------SbSs------SsSbPwPwPw--
+  PwDSMMDSDSDSDSDSDSDSDSDSDSDSPw
+sCPwwcwcDSDS--DSDSDSDSDSDSDSDSPw
+CsPwwcwcDSCsDSSc--ScDSCsDSDSDSPw
+  Sb------SbSs------SsSbPwPwPw--Cs
           SsSs--SsSsSs--    Sc  
 ######################################
                                  
   SbLxLxLxSb----BB----SbLxLxLxSb
-  LzPwPwPwCs----------CsBB--xlLz
-  LzPwLz--S^Sbd^Sb--Sb----BB--Lz
-  LzPw----------------ScCs--BBLz
-  SbCsLz--------S^--------ScCsSb
-      Lz----------pTpT----Lz
-      Lz--S<pTLgLgLgpTS>--Lz
-      Lz------pTpTpTpT----Lz
+  LzPwPwPwCs----------CsBBFFFFLz
+  LzPwLz--S^Sbd^SbFFSb----BBFFLz
+  LzPw----------!^----ScCs--BBLz
+  SbCsLz------------------ScCsSb
+      Lz----------!T!T----Lz
+      Lz--!>!TLgLgLg!T--!<Lz
+      Lz------!T!T!T!T----Lz
   BB----------------------LzCsSb
-  --------------------------PwLz
+  ----FF--!^----------------PwLz
   Lz------------SbdvSbSvSvLzPwLz  
   Lz----FwCs----------CsPwPwPwLz
   SbLxLx--Sb----BB------LxLxLxSb
@@ -48,22 +48,22 @@ Sc  CsPwDSwcWOWOwcWOWOwcDSPw
 ######################################
       --                  --    
   SbCsCsCsSb----------SbScCsCsSb
-  CsPwPwSwCs----------Cs------Cs
---CsCsLg----Sb  --FFSb--------Cs
+  CsPwPwSwCs----------Cs----xrCs
+--CsCsLg----Sb  ----Sb--------Cs
   CsCspT----------------------Cs
   SbCspT--------------------CsSb
       Cs------------------Cs
-      Cs------------IP----Cs
-      Cs--------IP--------Cs
+      Cs--------SK--------Cs
+      Cs------------------Cs
   SbCs----------------------CsSb
-  Cs--FF------------------F<CsCs
+  Cs----------------------F<CsCs
 --Cs--------Sb  Sb  ------LgCsCs
   Cs----WpCs----------CsSwPwPwFF
   SbCsCsCsSb----------SbScCsCsSb
       --                  --    
 ######################################
                                 
-  SbCstiCsSb----LA----SbCstiCsSb
+  SbCstiCsSb----------SbCstiCsSb
   CsSw----Cs----------Cs------Cs
   tiPwLg----ScSbSbSbCs--------ti
   CsCs------------------------Cs
@@ -75,7 +75,7 @@ Sc  CsPwDSwcWOWOwcWOWOwcDSPw
   Cs--------------------------Cs
   ti----------SbSbSbCs----LgPwti
   Cs------Cs----------Cs----Sw--
-  SbCstiCsSb----LA----SbCstiCsSb
+  SbCstiCsSb----------SbCstiCsSb
                                 
 ######################################
                                 
@@ -112,14 +112,14 @@ Sc  CsPwDSwcWOWOwcWOWOwcDSPw
 ######################################
       --                  --    
   SbCsCsCs--------Tv--SbCsCsCsSb
-  ----------PwPwLgPwPwLgSwPwFFCs
+  ----------PwPwLgPwPwLgSwPw--Cs
 --CsSc----------------Fw------Cs--
   Cs--------Sw----------------Cs
   ----------------------SwCsCsCs
     PwQyQx----cpcocp--------Pw
     Lg--Ss--co----coco------Lg
     PwQy----cpcp----cpSw----Pw
-  CsCsSc--FF----------PwSw--CsCs
+  CsCsSc--------------PwSw--CsCs
   Cs------------Sw------------Cs
 ----------Fw------CT--LgFw----Cs--
   Cs------Lg--PwLgPwPwLg------Cs
@@ -305,7 +305,7 @@ Sc  CsPwDSwcWOWOwcWOWOwcDSPw
                                 
   ------------------------------
   ------------------------------
-  ----Fw------------------Fw----
+  ------------------------------
   ------------------------------
   ------------------------------
   ------------------------------
@@ -321,7 +321,7 @@ Sc  CsPwDSwcWOWOwcWOWOwcDSPw
                                 
   ------------------------------
   ------------------------------
-  ----Fw------------------Fw----
+  ------------------------FF----
   ------------------------------
   ------------------------------
   ------------------------------
@@ -337,7 +337,7 @@ Sc  CsPwDSwcWOWOwcWOWOwcDSPw
                                 
   ------------------------------
   ------------------------------
-  ------------------------Fc----
+  ------------------------------
   ------------------------------
   ------------------------------
   ------------------------------

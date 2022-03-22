@@ -337,7 +337,7 @@ public class EntityVillageLord extends EntityToroNpc implements IInventoryChange
 			
 			if ( this.actionReady() )
 			{
-				this.chat(this, player, "crime", null);
+				this.chat(this, player, "crime", homeProvince.getName());
 			}
 			return true;
 		}
@@ -347,7 +347,7 @@ public class EntityVillageLord extends EntityToroNpc implements IInventoryChange
 
 			if ( this.actionReady() )
 			{
-				this.chatfriendly("annoyed", player, null);
+				this.chatfriendly("annoyed", player, homeProvince.getName());
 			}
 			return true;
 		}
@@ -832,7 +832,7 @@ public class EntityVillageLord extends EntityToroNpc implements IInventoryChange
 		{
 			if ( this.getHomeProvince() == null )
 			{
-				player.sendStatusMessage( TextComponentHelper.createComponentTranslation(player, "entity.toroquest.lord.slaingeneric", new Object[0]), true);
+				// player.sendStatusMessage( TextComponentHelper.createComponentTranslation(player, "entity.toroquest.lord.slaingeneric", new Object[0]), true);
 			}
 			else
 			{

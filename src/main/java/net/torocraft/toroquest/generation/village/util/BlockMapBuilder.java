@@ -46,8 +46,10 @@ public abstract class BlockMapBuilder extends BlockMapBase
 		}
 	}
 
-	private void handleLine() {
-		if (line == null) {
+	private void handleLine()
+	{
+		if (line == null)
+		{
 			return;
 		}
 
@@ -61,7 +63,8 @@ public abstract class BlockMapBuilder extends BlockMapBase
 
 		char[] a = line.toCharArray();
 
-		for (int i = 0; i < a.length - 1; i += 2) {
+		for (int i = 0; i < a.length - 1; i += 2)
+		{
 			placeBlock(String.valueOf(a[i]) + String.valueOf(a[i + 1]));
 			x++;
 		}
@@ -108,7 +111,7 @@ public abstract class BlockMapBuilder extends BlockMapBase
 			return;
 		}
 
-		if (specialBlockHandling(c, x, y, z))
+		if ( this.specialBlockHandling(c, x, y, z) )
 		{
 			return;
 		}					

@@ -1,17 +1,11 @@
 package net.torocraft.toroquest.generation;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDirt;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockLog;
-import net.minecraft.block.BlockStone;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -19,12 +13,10 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.fml.common.IWorldGenerator;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.torocraft.toroquest.block.BlockToroSpawner;
-import net.torocraft.toroquest.block.TileEntityToroSpawner;
 import net.torocraft.toroquest.civilization.CivilizationsWorldSaveData;
-import net.torocraft.toroquest.config.ToroQuestConfiguration;
 
-public class WorldGenPlacer implements IWorldGenerator {
+public class WorldGenPlacer implements IWorldGenerator
+{
 
 	public static void init()
 	{

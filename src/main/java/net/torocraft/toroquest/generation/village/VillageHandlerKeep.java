@@ -43,7 +43,7 @@ public class VillageHandlerKeep implements IVillageCreationHandler
 	public static void init()
 	{
 		MapGenStructureIO.registerStructureComponent(VillagePieceKeep.class, NAME);
-		//MapGenStructureIO.registerStructureComponent(VillagePieceKeep.class, NAME + "_destroyed");
+		MapGenStructureIO.registerStructureComponent(VillagePieceKeep.class, NAME + "_destroyed");
 		VillagerRegistry.instance().registerVillageCreationHandler(new VillageHandlerKeep());
 	}
 
@@ -92,6 +92,7 @@ public class VillageHandlerKeep implements IVillageCreationHandler
 		public VillagePieceKeep(String name, Start start, int type, Random rand, StructureBoundingBox bounds, EnumFacing facing)
 		{
 			super(name, start, type, rand, bounds, EnumFacing.NORTH);
+			this.setCoordBaseMode(EnumFacing.NORTH);
 		}
 		
 		public VillagePieceKeep()
@@ -102,23 +103,35 @@ public class VillageHandlerKeep implements IVillageCreationHandler
 		@Override
 		protected boolean specialBlockHandling(World world, String c, int x, int y, int z)
 		{
+			if ( world.isRemote )
+			{
+				return false;
+			}
+						
 			if ( c.equals("xx") )
 			{
 				List<String> entities = new ArrayList<String>();
 				entities.add(ToroQuest.MODID + ":" + EntityGuard.NAME);
-				return specialHandlingForSpawner(world, "xx", c, x, y, z, entities);
+				return specialHandlingForSpawner(world, x, y, z, entities);
 			}
 			else if ( c.equals("xl") )
 			{
 				List<String> villageLord = new ArrayList<String>();
 				villageLord.add(ToroQuest.MODID + ":" + EntityVillageLord.NAME);
-				return specialHandlingForSpawner(world, "xl", c, x, y, z, villageLord);
+//				TextComponentString message = new TextComponentString("" + world.isRemote + " king place ");
+//				{
+//					for ( EntityPlayer p : world.playerEntities )
+//					{
+//						p.sendMessage(message);
+//					}
+//				}
+				return specialHandlingForSpawner(world, x, y, z, villageLord);
 			}
 			else if ( c.equals("BB") )
 			{
 				List<String> bandit = new ArrayList<String>();
 				bandit.add(ToroQuest.MODID + ":" + EntitySentry.NAME);
-				return specialHandlingForSpawner(world, "BB", c, x, y, z, bandit);
+				return specialHandlingForSpawner(world, x, y, z, bandit);
 			}
 			else if ( c.equals("cv") )
 			{
@@ -139,6 +152,12 @@ public class VillageHandlerKeep implements IVillageCreationHandler
 			{
 				setChestBlockState(world, Blocks.TRAPPED_CHEST.getDefaultState().withProperty(BlockChest.FACING, EnumFacing.WEST), x, y, z, boundingBox);
 				return true;
+			}
+			else if ( c.equals("xr") )
+			{
+				List<String> villageLord = new ArrayList<String>();
+				villageLord.add(ToroQuest.MODID + ":" + EntityVillageLord.NAME);
+				return specialHandlingForSpawnerRaidedKing(world, x, y, z, villageLord);
 			}
 //			else if ( c.contains("lll") )
 //			{
@@ -227,7 +246,7 @@ public class VillageHandlerKeep implements IVillageCreationHandler
 
 	        BlockPos blockpos = new BlockPos(this.getXWithOffset(x, z), this.getYWithOffset(y), this.getZWithOffset(x, z));
 
-	        if (boundingboxIn.isVecInside(blockpos))
+	        if (boundingboxIn.isVecInside(blockpos) && !(worldIn.getBlockState(blockpos) instanceof BlockChest) )
 	        {
 	            // worldIn.setBlockState(blockpos, blockstateIn, 2);
 	            setBlockState( worldIn, blockstateIn, x, y, z, boundingBox );

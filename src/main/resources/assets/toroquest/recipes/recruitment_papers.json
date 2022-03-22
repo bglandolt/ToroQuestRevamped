@@ -1,0 +1,36 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        {
+            "item": "minecraft:iron_sword"
+        },
+	{
+            "item": "minecraft:iron_helmet"
+        },
+	{
+            "item": "minecraft:iron_chestplate"
+        },
+	{
+            "item": "minecraft:shield"
+        },
+	{
+            "item": "minecraft:iron_leggings"
+        },
+	{
+            "item": "minecraft:iron_boots"
+        },
+	{
+            "item": "minecraft:dye:0"
+        },
+	{
+            "item": "minecraft:feather"
+        },
+	{
+            "item": "minecraft:paper"
+        }
+    ],
+    "result": {
+        "item": "toroquest:recruitment_papers",
+	"count": 8
+    }
+}

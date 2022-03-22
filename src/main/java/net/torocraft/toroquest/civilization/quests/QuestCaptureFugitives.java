@@ -12,6 +12,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemLead;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -19,6 +20,8 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.server.command.TextComponentHelper;
+import net.torocraft.toroquest.block.BlockToroSpawner;
+import net.torocraft.toroquest.block.TileEntityToroSpawner;
 import net.torocraft.toroquest.civilization.CivilizationHandlers;
 import net.torocraft.toroquest.civilization.CivilizationUtil;
 import net.torocraft.toroquest.civilization.Province;
@@ -314,9 +317,81 @@ public class QuestCaptureFugitives extends QuestBase implements Quest
 		}
 		catch (Exception e)
 		{
+			Province province = CivilizationUtil.getProvinceAt(world, player.chunkCoordX, player.chunkCoordZ);
+			
+			if ( province == null )
+			{
+				return;
+			}
+			
+			int villageCenterX = province.getCenterX();
+			int villageCenterZ = province.getCenterZ();
+			
+			double angle = rand.nextDouble()*Math.PI*2.0D;
+
+			int range = 20+rand.nextInt(32);
+
+			int x = (int) (Math.cos(angle)*range);
+			int z = (int) (Math.sin(angle)*range);
+			
+			x += villageCenterX;
+			z += villageCenterZ;
+			
+			BlockPos loc = new BlockPos(x,CivilizationHandlers.MAX_SPAWN_HEIGHT,z);
+			BlockPos spawnPos = CivilizationHandlers.findSpawnLocationFrom(world, loc);
+			
+			if ( spawnPos == null )
+			{
+				return;
+			}
+			
+			if ( !(world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(spawnPos).grow(16, 10, 16))).isEmpty() )
+			{
+				return;
+			}
+			
+			int localFugitiveCount = world.getEntitiesWithinAABB(EntityFugitive.class, new AxisAlignedBB(spawnPos).grow(90, 45, 90)).size();
+
+			if ( localFugitiveCount > 4 )
+			{
+				return;
+			}
+			
+			addToroSpawner(player.getEntityWorld(), spawnPos, getDefaultEnemies());
+			
 			System.out.println("ERROR SPAWNING EntityFugitive: " + e);
 			return;
 		}
+	}
+	
+	private void addToroSpawner(World world, BlockPos blockpos, List<String> entities)
+	{
+		world.setBlockState(blockpos, BlockToroSpawner.INSTANCE.getDefaultState());
+		TileEntity tileentity = world.getTileEntity(blockpos);
+		if (tileentity instanceof TileEntityToroSpawner)
+		{
+			TileEntityToroSpawner spawner = (TileEntityToroSpawner) tileentity;
+			spawner.setTriggerDistance(40);
+			spawner.setEntityIds(entities);
+			spawner.setSpawnRadius(5);
+			spawner.markDirty();
+		}
+		else
+		{
+			System.out.println("tile entity is missing");
+		}
+	}
+	
+	private List<String> getDefaultEnemies()
+	{
+		List<String> entity = new ArrayList<String>();
+		
+		for (int i = 0; i < 3; i++)
+		{
+			entity.add("toroquest:toroquest_fugitive");
+		}
+		
+		return entity;
 	}
 	
 	public void spawnFugitive(World world, BlockPos spawnPos, EntityPlayer player)

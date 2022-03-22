@@ -11,8 +11,6 @@ import com.google.common.base.Predicate;
 
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.BlockTrapDoor;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
@@ -45,8 +43,8 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -284,7 +282,7 @@ public class EventHandlers
 					{
 						if ( !world.isRemote )
 						{
-							if ( world.rand.nextInt(100) == ToroQuestConfiguration.shopKeeperSpawnChance )
+							if ( world.rand.nextInt(100) < ToroQuestConfiguration.shopKeeperSpawnChance )
 							{
 								EntityShopkeeper newEntity = new EntityShopkeeper( world );
 								BlockPos pos = creature.getPosition();

@@ -23,7 +23,6 @@ import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -44,10 +43,8 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.torocraft.toroquest.ToroQuest;
-import net.torocraft.toroquest.civilization.CivilizationUtil;
-import net.torocraft.toroquest.civilization.Province;
-import net.torocraft.toroquest.civilization.player.PlayerCivilizationCapabilityImpl;
 import net.torocraft.toroquest.config.ToroQuestConfiguration;
+import net.torocraft.toroquest.entities.EntityToroVillager.RepData;
 import net.torocraft.toroquest.entities.ai.AIHelper;
 import net.torocraft.toroquest.entities.ai.EntityAIAvoidEnemies;
 import net.torocraft.toroquest.entities.ai.EntityAIRaid;
@@ -83,9 +80,9 @@ public class EntityShopkeeper extends EntityToroVillager implements IMerchant
 		this.getDataManager().register(RAID_Z, Integer.valueOf(0));
 	}
 	
-	public static DataParameter<Integer> RAID_X = EntityDataManager.<Integer>createKey(EntityToroNpc.class, DataSerializers.VARINT);
-	public static DataParameter<Integer> RAID_Y = EntityDataManager.<Integer>createKey(EntityToroNpc.class, DataSerializers.VARINT);
-	public static DataParameter<Integer> RAID_Z = EntityDataManager.<Integer>createKey(EntityToroNpc.class, DataSerializers.VARINT);
+	public static DataParameter<Integer> RAID_X = EntityDataManager.<Integer>createKey(EntityShopkeeper.class, DataSerializers.VARINT);
+	public static DataParameter<Integer> RAID_Y = EntityDataManager.<Integer>createKey(EntityShopkeeper.class, DataSerializers.VARINT);
+	public static DataParameter<Integer> RAID_Z = EntityDataManager.<Integer>createKey(EntityShopkeeper.class, DataSerializers.VARINT);
 
 	protected void setRaidLocation(int x, int y, int z)
 	{
@@ -346,12 +343,19 @@ public class EntityShopkeeper extends EntityToroVillager implements IMerchant
 	@Override
 	public boolean processInteract(EntityPlayer player, EnumHand hand)
 	{
+		if ( this.world.isRemote )
+		{
+			return true;
+		}
+		
 		ItemStack itemstack = player.getHeldItem(hand);
 		Item item = itemstack.getItem();
+		
 		if ( item.equals(Item.getByNameOrId("toroquest:recruitment_papers")) )
 		{
 			return true;
 		}
+		
 		return super.processInteract(player, hand);
 	}
 	
@@ -575,56 +579,37 @@ public class EntityShopkeeper extends EntityToroVillager implements IMerchant
 	        }
 	    });
 	}
-
+	
 	@Override
-	protected MerchantRecipeList createTradesBaseOnRep(EntityPlayer player)
+	protected MerchantRecipeList createTradesBaseOnRep(EntityPlayer player, RepData repData )
 	{
+		
 		MerchantRecipeList recipeList = new MerchantRecipeList();
+		
 		try
-		{
-			Province province = CivilizationUtil.getProvinceAt( player.world, player.chunkCoordX, player.chunkCoordZ);
-			
-			int rep = PlayerCivilizationCapabilityImpl.get(player).getReputation( province.civilization );
-			
-			if ( province == null || province.civilization == null )
-			{
-				this.playSound(SoundEvents.ENTITY_VILLAGER_AMBIENT, 1.0F, 1.0F);
-				this.canTalk = 2;
-				return recipeList;
-			}
-			else if ( rep <= -50 )
-			{
-				if ( this.canTalk <= 0 )
-				{
-					this.reportToGuards(player);
-					this.playSound(SoundEvents.ENTITY_VILLAGER_NO, 1.0F, 1.0F);
-					this.canTalk = 1;
-				}
-				return recipeList;
-			}
-			
+		{			
 			Item item = Item.getByNameOrId(ToroQuestConfiguration.scrollTradeItem);
 			
 			int amount = ToroQuestConfiguration.scrollTradeAmount;
 			
 			if ( item != null && amount > 0 )
 			{
-				switch ( province.civilization )
+				switch ( repData.civ )
 				{
 					case EARTH:
 					{
 						ItemScrollEarth scroll = (ItemScrollEarth)Item.getByNameOrId("toroquest:scroll_earth");
 						ItemStack itemstack = new ItemStack(scroll,1);
-						itemstack.setTagInfo("province", new NBTTagString(province.id.toString()));
-						itemstack.setTagInfo("province_name", new NBTTagString(province.name.toString()));
-						itemstack.setStackDisplayName("Teleport scroll:  " + province.name);
-						recipeList.add(new MerchantRecipe(new ItemStack(item ,ToroVillagerTrades.getSellPrice(amount, rep) ),ItemStack.EMPTY,itemstack,0,99999));
+						itemstack.setTagInfo("province", new NBTTagString(repData.prov.id.toString()));
+						itemstack.setTagInfo("province_name", new NBTTagString(repData.prov.getName().toString()));
+						itemstack.setStackDisplayName("Teleport scroll:  " + repData.prov.getName());
+						recipeList.add(new MerchantRecipe(new ItemStack(item ,ToroVillagerTrades.getSellPrice(amount, repData.rep) ),ItemStack.EMPTY,itemstack,0,99999));
 						
 						if ( ToroQuestConfiguration.bannerTradeAmount > 0 )
 						{
 							ItemStack banner = VillagePieceBlockMap.getGreenBanner();
-							banner.setStackDisplayName(province.civilization.getDisplayName(player) + " Banner");
-							recipeList.add(new MerchantRecipe(new ItemStack(Items.EMERALD ,ToroVillagerTrades.getSellPrice(ToroQuestConfiguration.bannerTradeAmount, rep) ),ItemStack.EMPTY,banner,0,99999));
+							banner.setStackDisplayName(repData.civ.getDisplayName(player) + " Banner");
+							recipeList.add(new MerchantRecipe(new ItemStack(Items.EMERALD ,ToroVillagerTrades.getSellPrice(ToroQuestConfiguration.bannerTradeAmount, repData.rep) ),ItemStack.EMPTY,banner,0,99999));
 						}
 						break;
 					}
@@ -632,16 +617,16 @@ public class EntityShopkeeper extends EntityToroVillager implements IMerchant
 					{
 						ItemScrollFire scroll = (ItemScrollFire)Item.getByNameOrId("toroquest:scroll_fire");
 						ItemStack itemstack = new ItemStack(scroll,1);
-						itemstack.setTagInfo("province", new NBTTagString(province.id.toString()));
-						itemstack.setTagInfo("province_name", new NBTTagString(province.name.toString()));
-						itemstack.setStackDisplayName("Teleport scroll:  " + province.name);
-						recipeList.add(new MerchantRecipe(new ItemStack(item ,ToroVillagerTrades.getSellPrice(amount, rep) ),ItemStack.EMPTY,itemstack,0,99999));
+						itemstack.setTagInfo("province", new NBTTagString(repData.prov.id.toString()));
+						itemstack.setTagInfo("province_name", new NBTTagString(repData.prov.getName().toString()));
+						itemstack.setStackDisplayName("Teleport scroll:  " + repData.prov.getName());
+						recipeList.add(new MerchantRecipe(new ItemStack(item ,ToroVillagerTrades.getSellPrice(amount, repData.rep) ),ItemStack.EMPTY,itemstack,0,99999));
 						
 						if ( ToroQuestConfiguration.bannerTradeAmount > 0 )
 						{
 							ItemStack banner = VillagePieceBlockMap.getRedBanner();
-							banner.setStackDisplayName(province.civilization.getDisplayName(player) + " Banner");
-							recipeList.add(new MerchantRecipe(new ItemStack(Items.EMERALD ,ToroVillagerTrades.getSellPrice(ToroQuestConfiguration.bannerTradeAmount, rep) ),ItemStack.EMPTY,banner,0,99999));
+							banner.setStackDisplayName(repData.civ.getDisplayName(player) + " Banner");
+							recipeList.add(new MerchantRecipe(new ItemStack(Items.EMERALD ,ToroVillagerTrades.getSellPrice(ToroQuestConfiguration.bannerTradeAmount, repData.rep) ),ItemStack.EMPTY,banner,0,99999));
 						}
 						break;
 					}
@@ -649,16 +634,16 @@ public class EntityShopkeeper extends EntityToroVillager implements IMerchant
 					{
 						ItemScrollSun scroll = (ItemScrollSun)Item.getByNameOrId("toroquest:scroll_sun");
 						ItemStack itemstack = new ItemStack(scroll,1);
-						itemstack.setTagInfo("province", new NBTTagString(province.id.toString()));
-						itemstack.setTagInfo("province_name", new NBTTagString(province.name.toString()));
-						itemstack.setStackDisplayName("Teleport scroll:  " + province.name);
-						recipeList.add(new MerchantRecipe(new ItemStack(item ,ToroVillagerTrades.getSellPrice(amount, rep) ),ItemStack.EMPTY,itemstack,0,99999));
+						itemstack.setTagInfo("province", new NBTTagString(repData.prov.id.toString()));
+						itemstack.setTagInfo("province_name", new NBTTagString(repData.prov.getName().toString()));
+						itemstack.setStackDisplayName("Teleport scroll:  " + repData.prov.getName());
+						recipeList.add(new MerchantRecipe(new ItemStack(item ,ToroVillagerTrades.getSellPrice(amount, repData.rep) ),ItemStack.EMPTY,itemstack,0,99999));
 						
 						if ( ToroQuestConfiguration.bannerTradeAmount > 0 )
 						{
 							ItemStack banner = VillagePieceBlockMap.getYellowBanner();
-							banner.setStackDisplayName(province.civilization.getDisplayName(player) + " Banner");
-							recipeList.add(new MerchantRecipe(new ItemStack(Items.EMERALD ,ToroVillagerTrades.getSellPrice(ToroQuestConfiguration.bannerTradeAmount, rep) ),ItemStack.EMPTY,banner,0,99999));
+							banner.setStackDisplayName(repData.civ.getDisplayName(player) + " Banner");
+							recipeList.add(new MerchantRecipe(new ItemStack(Items.EMERALD ,ToroVillagerTrades.getSellPrice(ToroQuestConfiguration.bannerTradeAmount, repData.rep) ),ItemStack.EMPTY,banner,0,99999));
 						}
 						break;
 					}
@@ -666,16 +651,16 @@ public class EntityShopkeeper extends EntityToroVillager implements IMerchant
 					{
 						ItemScrollWater scroll = (ItemScrollWater)Item.getByNameOrId("toroquest:scroll_water");
 						ItemStack itemstack = new ItemStack(scroll,1);
-						itemstack.setTagInfo("province", new NBTTagString(province.id.toString()));
-						itemstack.setTagInfo("province_name", new NBTTagString(province.name.toString()));
-						itemstack.setStackDisplayName("Teleport scroll:  " + province.name);
-						recipeList.add(new MerchantRecipe(new ItemStack(item ,ToroVillagerTrades.getSellPrice(amount, rep) ),ItemStack.EMPTY,itemstack,0,99999));
+						itemstack.setTagInfo("province", new NBTTagString(repData.prov.id.toString()));
+						itemstack.setTagInfo("province_name", new NBTTagString(repData.prov.getName().toString()));
+						itemstack.setStackDisplayName("Teleport scroll:  " + repData.prov.getName());
+						recipeList.add(new MerchantRecipe(new ItemStack(item ,ToroVillagerTrades.getSellPrice(amount, repData.rep) ),ItemStack.EMPTY,itemstack,0,99999));
 						
 						if ( ToroQuestConfiguration.bannerTradeAmount > 0 )
 						{
 							ItemStack banner = VillagePieceBlockMap.getBlueBanner();
-							banner.setStackDisplayName(province.civilization.getDisplayName(player) + " Banner");
-							recipeList.add(new MerchantRecipe(new ItemStack(Items.EMERALD ,ToroVillagerTrades.getSellPrice(ToroQuestConfiguration.bannerTradeAmount, rep) ),ItemStack.EMPTY,banner,0,99999));
+							banner.setStackDisplayName(repData.civ.getDisplayName(player) + " Banner");
+							recipeList.add(new MerchantRecipe(new ItemStack(Items.EMERALD ,ToroVillagerTrades.getSellPrice(ToroQuestConfiguration.bannerTradeAmount, repData.rep) ),ItemStack.EMPTY,banner,0,99999));
 						}
 						break;
 					}
@@ -683,16 +668,16 @@ public class EntityShopkeeper extends EntityToroVillager implements IMerchant
 					{
 						ItemScrollMoon scroll = (ItemScrollMoon)Item.getByNameOrId("toroquest:scroll_moon");
 						ItemStack itemstack = new ItemStack(scroll,1);
-						itemstack.setTagInfo("province", new NBTTagString(province.id.toString()));
-						itemstack.setTagInfo("province_name", new NBTTagString(province.name.toString()));
-						itemstack.setStackDisplayName("Teleport scroll:  " + province.name);
-						recipeList.add(new MerchantRecipe(new ItemStack(item ,ToroVillagerTrades.getSellPrice(amount, rep) ),ItemStack.EMPTY,itemstack,0,99999));
+						itemstack.setTagInfo("province", new NBTTagString(repData.prov.id.toString()));
+						itemstack.setTagInfo("province_name", new NBTTagString(repData.prov.getName().toString()));
+						itemstack.setStackDisplayName("Teleport scroll:  " + repData.prov.getName());
+						recipeList.add(new MerchantRecipe(new ItemStack(item ,ToroVillagerTrades.getSellPrice(amount, repData.rep) ),ItemStack.EMPTY,itemstack,0,99999));
 						
 						if ( ToroQuestConfiguration.bannerTradeAmount > 0 )
 						{
 							ItemStack banner = VillagePieceBlockMap.getBlackBanner();
-							banner.setStackDisplayName(province.civilization.getDisplayName(player) + " Banner");
-							recipeList.add(new MerchantRecipe(new ItemStack(Items.EMERALD ,ToroVillagerTrades.getSellPrice(ToroQuestConfiguration.bannerTradeAmount, rep) ),ItemStack.EMPTY,banner,0,99999));
+							banner.setStackDisplayName(repData.civ.getDisplayName(player) + " Banner");
+							recipeList.add(new MerchantRecipe(new ItemStack(Items.EMERALD ,ToroVillagerTrades.getSellPrice(ToroQuestConfiguration.bannerTradeAmount, repData.rep) ),ItemStack.EMPTY,banner,0,99999));
 						}
 						break;
 					}
@@ -700,16 +685,16 @@ public class EntityShopkeeper extends EntityToroVillager implements IMerchant
 					{
 						ItemScrollWind scroll = (ItemScrollWind)Item.getByNameOrId("toroquest:scroll_wind");
 						ItemStack itemstack = new ItemStack(scroll,1);
-						itemstack.setTagInfo("province", new NBTTagString(province.id.toString()));
-						itemstack.setTagInfo("province_name", new NBTTagString(province.name.toString()));
-						itemstack.setStackDisplayName("Teleport scroll: " + province.name);
-						recipeList.add(new MerchantRecipe(new ItemStack(item ,ToroVillagerTrades.getSellPrice(amount, rep) ),ItemStack.EMPTY,itemstack,0,99999));
+						itemstack.setTagInfo("province", new NBTTagString(repData.prov.id.toString()));
+						itemstack.setTagInfo("province_name", new NBTTagString(repData.prov.getName().toString()));
+						itemstack.setStackDisplayName("Teleport scroll:  " + repData.prov.getName());
+						recipeList.add(new MerchantRecipe(new ItemStack(item ,ToroVillagerTrades.getSellPrice(amount, repData.rep) ),ItemStack.EMPTY,itemstack,0,99999));
 						
 						if ( ToroQuestConfiguration.bannerTradeAmount > 0 )
 						{
 							ItemStack banner = VillagePieceBlockMap.getBrownBanner();
-							banner.setStackDisplayName(province.civilization.getDisplayName(player) + " Banner");
-							recipeList.add(new MerchantRecipe(new ItemStack(Items.EMERALD ,ToroVillagerTrades.getSellPrice(ToroQuestConfiguration.bannerTradeAmount, rep) ),ItemStack.EMPTY,banner,0,99999));
+							banner.setStackDisplayName(repData.civ.getDisplayName(player) + " Banner");
+							recipeList.add(new MerchantRecipe(new ItemStack(Items.EMERALD ,ToroVillagerTrades.getSellPrice(ToroQuestConfiguration.bannerTradeAmount, repData.rep) ),ItemStack.EMPTY,banner,0,99999));
 						}
 						break;
 					}
@@ -719,11 +704,14 @@ public class EntityShopkeeper extends EntityToroVillager implements IMerchant
 					}
 				}
 			}
-			MerchantRecipeList t = ToroVillagerTrades.trades(this, player, rep, province.civilization, "shopkeeper", "x" );
-			for ( MerchantRecipe tt : t)
+			
+			MerchantRecipeList trades = ToroVillagerTrades.trades(this, player, repData.rep, repData.civ, "shopkeeper", "x" );
+			
+			for ( MerchantRecipe trade : trades)
 			{
-				recipeList.add(tt);
+				recipeList.add(trade);
 			}
+			
 			return recipeList;
 		}
 		catch ( Exception e )

@@ -12,6 +12,7 @@ public class ConfigurationHandler {
 	public static String repDisplayPosition;
 	public static Integer repDisplayX;
 	public static Integer repDisplayY;
+	public static Integer titleDisplayY;
 
 	public static Configuration config;
 
@@ -32,6 +33,7 @@ public class ConfigurationHandler {
 			});
 			repDisplayX = config.getInt("Rep Badge X", Configuration.CATEGORY_CLIENT, 0, -20000, 20000, "Sets X offset of Rep Badge");
 			repDisplayY = config.getInt("Rep Badge Y", Configuration.CATEGORY_CLIENT, 0, -20000, 20000, "Sets Y offset of Rep Badge");
+			titleDisplayY = config.getInt("Title Y", Configuration.CATEGORY_CLIENT, 32, -20000, 20000, "Sets Y offset of Rep Badge");
 		}
 		catch (Exception e)
 		{

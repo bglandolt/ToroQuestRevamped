@@ -34,14 +34,15 @@ import net.torocraft.toroquest.entities.EntityShopkeeper;
 import net.torocraft.toroquest.generation.village.util.BlockMapMeasurer;
 import net.torocraft.toroquest.generation.village.util.VillagePieceBlockMap;
 
-public class VillageHandlerShop implements IVillageCreationHandler {
+public class VillageHandlerShop implements IVillageCreationHandler
+{
 
 	protected static final String NAME = "shop";
 
 	public static void init()
 	{
 		MapGenStructureIO.registerStructureComponent(VillagePieceShop.class, NAME);
-		//MapGenStructureIO.registerStructureComponent(VillagePieceShop.class, NAME + "_destroyed");
+		MapGenStructureIO.registerStructureComponent(VillagePieceShop.class, NAME + "_destroyed");
 		VillagerRegistry.instance().registerVillageCreationHandler(new VillageHandlerShop());
 	}
 
@@ -84,7 +85,7 @@ public class VillageHandlerShop implements IVillageCreationHandler {
 			StructureBoundingBox bounds = StructureBoundingBox.getComponentToAddBoundingBox(x, y, z, 0, 0, 0, size.getX(), size.getY(), size.getZ(), facing);
 			return canVillageGoDeeper(bounds) && StructureComponent.findIntersecting(structures, bounds) == null ? new VillagePieceShop( nameType, start, p_175850_7_, rand, bounds, facing ) : null;
 		}
-
+		
 		public VillagePieceShop( String name, Start start, int type, Random rand, StructureBoundingBox bounds, EnumFacing facing )
 		{
 			super(name, start, type, rand, bounds, facing);
@@ -98,23 +99,28 @@ public class VillageHandlerShop implements IVillageCreationHandler {
 		@Override
 		protected boolean specialBlockHandling(World world, String c, int x, int y, int z)
 		{
+			if ( world.isRemote )
+			{
+				return false;
+			}
+			
 			if ( c.equals("xx") )
 			{
 				List<String> entities = new ArrayList<String>();
 				entities.add(ToroQuest.MODID + ":" + EntityShopkeeper.NAME);
-				return specialHandlingForSpawner(world, "xx", c, x, y, z, entities);
+				return specialHandlingForSpawner(world, x, y, z, entities);
 			}
-			if ( c.equals("XX") )
+			else if ( c.equals("XX") )
 			{
 				List<String> entities = new ArrayList<String>();
 				entities.add(ToroQuest.MODID + ":" + EntityGuard.NAME);
-				return specialHandlingForSpawner(world, "xx", c, x, y, z, entities);
+				return specialHandlingForSpawner(world, x, y, z, entities);
 			}
 			else if ( c.equals("BB") )
 			{
 				List<String> bandit = new ArrayList<String>();
 				bandit.add(ToroQuest.MODID + ":" + EntitySentry.NAME);
-				return specialHandlingForSpawner(world, "BB", c, x, y, z, bandit);
+				return specialHandlingForSpawner(world, x, y, z, bandit);
 			}
 			else if ( c.equals("cv") )
 			{
@@ -149,7 +155,7 @@ public class VillageHandlerShop implements IVillageCreationHandler {
 
 	        BlockPos blockpos = new BlockPos(this.getXWithOffset(x, z), this.getYWithOffset(y), this.getZWithOffset(x, z));
 
-	        if (boundingboxIn.isVecInside(blockpos))
+	        if (boundingboxIn.isVecInside(blockpos) && !(worldIn.getBlockState(blockpos) instanceof BlockChest) )
 	        {
 	        	setBlockState( worldIn, blockstateIn, x, y, z, boundingBox );
 				TileEntity tileentity = worldIn.getTileEntity( blockpos );

@@ -30,10 +30,13 @@ import net.torocraft.toroquest.entities.EntityToroVillager;
 
 public class ToroVillagerTrades
 {
+	public static int MAX_TRADE_AMOUNT = ToroQuestConfiguration.maxTradeAmount;
+	
 	@SuppressWarnings("deprecation")
 	public static MerchantRecipeList trades( EntityToroVillager villager, EntityPlayer player, int rep, CivilizationType civ, String jobName, String varient )
 	{
 		// could limit trades by per villager, replace 999999
+		// villager.maxTrades;
 		
 		MerchantRecipeList recipeList = new MerchantRecipeList();
 		
@@ -160,7 +163,7 @@ public class ToroVillagerTrades
 											+ "   job: " + trade.job
 											+ "   sellOptional: " + trade.sellOptional
 											+ "   varient: " + trade.varient
-											+ "   varient: " + trade.enchantment ));
+											+ "   enchantment: " + trade.enchantment ));
 									continue;
 								}
 							}
@@ -184,7 +187,7 @@ public class ToroVillagerTrades
 					{
 						buyStack.setItemDamage( buyDamage );
 					}
-					recipeList.add( new MerchantRecipe( sellStack, optional, buyStack, 0, 999999 ) );
+					recipeList.add( new MerchantRecipe( sellStack, optional, buyStack, 0, MAX_TRADE_AMOUNT ) );
 				}
 			}
 			catch ( Exception e )
@@ -199,7 +202,7 @@ public class ToroVillagerTrades
 						+ "   job: " + trade.job
 						+ "   sellOptional: " + trade.sellOptional
 						+ "   varient: " + trade.varient
-						+ "   varient: " + trade.enchantment ));
+						+ "   enchantment: " + trade.enchantment ));
 				continue;
 			}
 		}
@@ -211,7 +214,7 @@ public class ToroVillagerTrades
 			{
 				if ( villager.treasureMap != null )
 				{
-					recipeList.add( new MerchantRecipe( new ItemStack(Items.EMERALD, 8), new ItemStack(Items.COMPASS, 1), villager.treasureMap, 0, 99999 ) );
+					recipeList.add( new MerchantRecipe( new ItemStack(Items.EMERALD, 8), new ItemStack(Items.COMPASS, 1), villager.treasureMap, 0, MAX_TRADE_AMOUNT ) );
 				}
 				else
 				{
@@ -221,7 +224,7 @@ public class ToroVillagerTrades
 					{
 						// villager.treasureMap.setStackDisplayName("Map to Woodland Mansion");
 
-						recipeList.add( new MerchantRecipe( new ItemStack(Items.EMERALD, 8), new ItemStack(Items.COMPASS, 1), villager.treasureMap, 0, 99999 ) );
+						recipeList.add( new MerchantRecipe( new ItemStack(Items.EMERALD, 8), new ItemStack(Items.COMPASS, 1), villager.treasureMap, 0, MAX_TRADE_AMOUNT ) );
 					}
 				}
 			}
@@ -229,7 +232,7 @@ public class ToroVillagerTrades
 			{
 				if ( villager.treasureMap != null )
 				{
-					recipeList.add( new MerchantRecipe( new ItemStack(Items.EMERALD, 6), new ItemStack(Items.COMPASS, 1), villager.treasureMap, 0, 99999 ) );
+					recipeList.add( new MerchantRecipe( new ItemStack(Items.EMERALD, 6), new ItemStack(Items.COMPASS, 1), villager.treasureMap, 0, MAX_TRADE_AMOUNT ) );
 				}
 				else
 				{
@@ -239,7 +242,7 @@ public class ToroVillagerTrades
 					{
 						// villager.treasureMap.setStackDisplayName("Map to Ocean Monument");
 
-						recipeList.add( new MerchantRecipe( new ItemStack(Items.EMERALD, 6), new ItemStack(Items.COMPASS, 1), villager.treasureMap, 0, 99999 ) );
+						recipeList.add( new MerchantRecipe( new ItemStack(Items.EMERALD, 6), new ItemStack(Items.COMPASS, 1), villager.treasureMap, 0, MAX_TRADE_AMOUNT ) );
 					}
 				}
 			}
@@ -250,7 +253,7 @@ public class ToroVillagerTrades
 				
 				if ( villager.treasureMap != null )
 				{
-					recipeList.add( new MerchantRecipe( new ItemStack(Items.EMERALD, 4), new ItemStack(Items.COMPASS, 1), villager.treasureMap, 0, 99999 ) );
+					recipeList.add( new MerchantRecipe( new ItemStack(Items.EMERALD, 4), new ItemStack(Items.COMPASS, 1), villager.treasureMap, 0, MAX_TRADE_AMOUNT ) );
 				}
 				else
 				{
@@ -258,7 +261,7 @@ public class ToroVillagerTrades
 					
 					if ( villager.treasureMap != null )
 					{
-						recipeList.add( new MerchantRecipe( new ItemStack(Items.EMERALD, 4), new ItemStack(Items.COMPASS, 1), villager.treasureMap, 0, 99999 ) );
+						recipeList.add( new MerchantRecipe( new ItemStack(Items.EMERALD, 4), new ItemStack(Items.COMPASS, 1), villager.treasureMap, 0, MAX_TRADE_AMOUNT ) );
 					}
 				}
 			}

@@ -34,7 +34,7 @@ public class QuestFarm extends QuestBase implements Quest
 		ID = id;
 	}
 	
-	public void onFarm( EntityPlayer player )
+	public void onFarm( EntityPlayer player ) // should be static technically
 	{
 		if ( player == null ) // || player.world.isRemote )
 		{

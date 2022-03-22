@@ -547,6 +547,7 @@ public class QuestCaptureEntity extends QuestBase implements Quest {
 				}
 			}
 			spawner.setExtra(color);
+			spawner.markDirty();
 		}
 		else
 		{

@@ -48,6 +48,7 @@ import net.torocraft.toroquest.civilization.quests.util.ItemMapCentered;
 import net.torocraft.toroquest.civilization.quests.util.Quest;
 import net.torocraft.toroquest.civilization.quests.util.QuestData;
 import net.torocraft.toroquest.civilization.quests.util.Quests;
+import net.torocraft.toroquest.config.ToroQuestConfiguration;
 import net.torocraft.toroquest.entities.EntitySentry;
 
 public class QuestEnemyEncampment extends QuestBase implements Quest {
@@ -482,11 +483,12 @@ public class QuestEnemyEncampment extends QuestBase implements Quest {
 		if (tileentity instanceof TileEntityToroSpawner)
 		{
 			TileEntityToroSpawner spawner = (TileEntityToroSpawner) tileentity;
-			spawner.setTriggerDistance(64);
+			spawner.setTriggerDistance(56);
 			spawner.setEntityIds(entities);
 			spawner.setSpawnRadius(16);
 			spawner.addEntityTag(data.getQuestId().toString());
 			spawner.addEntityTag("encampment_quest");
+			spawner.markDirty();
 		}
 		else
 		{
@@ -669,7 +671,7 @@ public class QuestEnemyEncampment extends QuestBase implements Quest {
 	private List<String> getDefaultEnemies(QuestData data)
 	{
 		List<String> entity = new ArrayList<String>();
-		if ( rand.nextBoolean() )
+		if ( rand.nextBoolean() ) // || ToroQuestConfiguration.orcsAreNeutral )
 		{
 			for (int i = 0; i < 9; i++)
 			{

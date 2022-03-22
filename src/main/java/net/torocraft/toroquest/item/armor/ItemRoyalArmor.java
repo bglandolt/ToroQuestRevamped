@@ -58,7 +58,7 @@ public class ItemRoyalArmor extends ItemArmor {
     {
 		if ( ToroQuestConfiguration.useCrownToCreateNewProvinces )
 		{
-			tooltip.add("Crown a Guard within a civilization to create a new Village Lord, or crown a hired Guard to create a new province under a new ruler!\n\n§oWho did you kill to get this crown, Kingslayer?");
+			tooltip.add("Crown a Guard within a civilization to create a new Village Lord, or crown a Guard to create a new province under a new ruler!\n\n§oWho did you kill to get this crown, Kingslayer?");
 		}
 		else
 		{
@@ -110,7 +110,7 @@ public class ItemRoyalArmor extends ItemArmor {
 		
 		if ( i != null && !i.isEmpty() )
 		{
-			if ( ToroQuestConfiguration.useCrownToCreateNewProvinces && playerIn.dimension == 0 )
+			if ( playerIn.dimension == 0 )
 			{
 				List<EntityGuard> guards = playerIn.world.getEntitiesWithinAABB(EntityGuard.class, new AxisAlignedBB(playerIn.getPosition()).grow(3, 3, 3));
 				
@@ -164,7 +164,7 @@ public class ItemRoyalArmor extends ItemArmor {
 							return new ActionResult<ItemStack>(EnumActionResult.FAIL, i);
 						}
 					}
-					else
+					else if ( ToroQuestConfiguration.useCrownToCreateNewProvinces )
 					{
 						Province 			    	 provinceNear = CivilizationUtil.getProvinceAt(worldIn, playerIn.chunkCoordX+6, playerIn.chunkCoordZ+6);
 						if ( provinceNear == null ) {provinceNear = CivilizationUtil.getProvinceAt(worldIn, playerIn.chunkCoordX+6, playerIn.chunkCoordZ-6);}

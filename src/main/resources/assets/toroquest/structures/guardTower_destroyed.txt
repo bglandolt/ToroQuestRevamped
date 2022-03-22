@@ -6,20 +6,20 @@
   SbSbSbSbSb
             
 #####################
-      BB  Sc
+  sC  BB  Sc
   SbCs--CsSbCs
-ScCs------CsSc
-  ----Lg----
+CsFFCs----CsSc
+sCCs--Lg----
   --------Cs
   BB----CsSb
     ScBB    
 #####################
             
   SbPw--PwSb
-  Pw------Pw
+  FF------Pw
   ----Lg----
   --------Pw
-  ------PwSb
+  SbPe--PwSb
             
 #####################
       Tv    
@@ -27,13 +27,13 @@ ScCs------CsSc
   ----------
 T>----Lg--LxT<
   ----l^----
-  ----Lz--Sb
+  ----LzPwSb
       T^    
 #####################
             
   SbPw--PwSb
-  --SwSwSwPw
-  --SwLgSwFF
+  PwSwSwSwPw
+  --SwLgSwPw
   PwSwtdSwPw
   Sb----PwSb
             
@@ -43,7 +43,7 @@ T>----Lg--LxT<
   Fw------Fw
   Fw--Lg--Fw
   Fw--l^--Fw
-  SbFw----Sb
+  SbFw--FwSb
             
 #####################
             
@@ -89,9 +89,9 @@ T>----Lg--LxT<
             
   ----FwFwFw
   --------Fw
-  Fw--------
-  Fw--------
-  FwFwFwFw--
+  Fw------FF
+  Fw------Fw
+  FwFwFwFwFw
             
 #####################
             

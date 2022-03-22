@@ -74,11 +74,11 @@ public class ItemRecruitmentPapers extends Item
 		{
 			if ( ToroQuestConfiguration.recruitVillagers )
 			{
-				tooltip.add("§7•§9Right-Click§7 a Guard to set their post\n•§9Shift-Right-Click§7 a Guard to move them to the next highest y-block and set their post\n•§9Shift-Right-Click§7 a Villager or a bribed Bandit to recruit them as a Guard");
+				tooltip.add("§7•§9Right-Click§7 a Guard to set their post\n•§9Shift-Right-Click§7 a Guard to move them to the next highest y-block and set their post\n•§9Shift-Right-Click§7 a Villager or a bribed (with emeralds) Bandit to recruit them as a Guard");
 			}
 			else
 			{
-				tooltip.add("§7•§9Right-Click§7 a Guard to set their post\n•§9Shift-Right-Click§7 a Guard to move them to the next highest y-block and set their post\n•§9Shift-Right-Click§7 a bribed Bandit to recruit them as a Guard");
+				tooltip.add("§7•§9Right-Click§7 a Guard to set their post\n•§9Shift-Right-Click§7 a Guard to move them to the next highest y-block and set their post\n•§9Right-Click§7 a bribed (with emeralds) Bandit to recruit them as a Guard");
 			}
 		}
 		else
@@ -97,12 +97,15 @@ public class ItemRecruitmentPapers extends Item
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer player, EnumHand hand)
     {
-		if ( !player.isSneaking() || ToroQuestConfiguration.recruitVillagers )
+		if ( !player.isSneaking() || !ToroQuestConfiguration.recruitVillagers )
 		{
 			return super.onItemRightClick(worldIn, player, hand);
 		}
+		
 		player.setSneaking(false);
+		
 		List<EntityVillager> villagers = player.world.getEntitiesWithinAABB(EntityVillager.class, new AxisAlignedBB(player.getPosition()).grow(1.25, 1.25, 1.25));
+		
 		for ( EntityVillager v : villagers )
 		{
 			Province province = CivilizationUtil.getProvinceAt(v.getEntityWorld(), v.getPosition().getX()/16, v.getPosition().getZ()/16);

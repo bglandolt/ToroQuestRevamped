@@ -80,17 +80,17 @@ LASbPwPw*CPwPwSbLA
 #######################################
         Fw      
   LgLgLgLzLgLgLg
-  LgPwPwPwPwPwLg
-  LgPwPwPwPwPwLg
-  LgPwPwPwPwPwLg
-  Lgl<PwPwPwl>Lg
-  LgPwPwPwPwPwLg
-FwLxPwPwPwPwPwLxFw
-  LgPwPwPwPwPwLg
-  LgPwPwPwPwPwLg
-  LgPwPwPwPwPwLg
-  LgPwPwPwPwPwLg
-  LgPwPwPwPwPwLg
+  LgPwPwLzPwPwLg
+  LgPwPwLzPwPwLg
+  LgPwPwLzPwPwLg
+  Lgl<PwLzPwl>Lg
+  LgPwPwLzPwPwLg
+FwLxPwPwLzPwPwLxFw
+  LgPwPwLzPwPwLg
+  LgPwPwLzPwPwLg
+  LgPwPwLzPwPwLg
+  LgPwPwLzPwPwLg
+  LgPwPwLzPwPwLg
   LgLgLgLzLgLgLg
         Fw      
 ######################################

@@ -466,6 +466,7 @@ public class QuestEnemyGolem extends QuestBase implements Quest
 			spawner.setSpawnRadius(5);
 			spawner.addEntityTag(data.getQuestId().toString());
 			spawner.addEntityTag("golem_quest");
+			spawner.markDirty();
 		}
 		else
 		{

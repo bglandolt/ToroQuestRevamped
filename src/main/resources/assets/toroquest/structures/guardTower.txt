@@ -73,7 +73,7 @@ T>Lx--Lg--LxT<
             
   SbcTcTcTSb
   cT------cT
-  cTt>Lgt<cT
+  cTt<Lgt>cT
   cT--l^--cT
   SbcTcTcTSb
             																																				

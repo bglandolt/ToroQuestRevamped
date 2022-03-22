@@ -1423,15 +1423,16 @@ entity.toroquest.guard.civvillagerrecruit=For House @e!
 
 ################## BANDIT BETRAY ##################
 
-entity.toroquest.bandit.betray=8
+entity.toroquest.bandit.betray=9
 entity.toroquest.bandit.betray0=Haha! Your emeralds are mine!
-entity.toroquest.bandit.betray1=I'll be taking the rest of the emeralds from you, thanks!
+entity.toroquest.bandit.betray1=I'll be taking the rest of the emeralds from you, coward!
 entity.toroquest.bandit.betray2=There's no honor among thieves, fool!
 entity.toroquest.bandit.betray3=Your pockets are lined with riches and emeralds. Get em' boys!
 entity.toroquest.bandit.betray4=So many emeralds... kill em' and the loot is ours!
-entity.toroquest.bandit.betray5=There must be more emeralds where that came from. Give me all your loot!
+entity.toroquest.bandit.betray5=Must be more emeralds where that came from. Give me all your loot!
 entity.toroquest.bandit.betray6=Give me all your emeralds, weakling!
 entity.toroquest.bandit.betray7=Hand over the rest of the emeralds, or die!
+entity.toroquest.bandit.betray8=You must be loaded with emeralds... hand em' over!
 
 ################## BANDIT EMERALDS ##################
 

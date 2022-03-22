@@ -79,7 +79,7 @@ public abstract class QuestBase implements Quest
 		player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_EVOCATION_ILLAGER_AMBIENT, SoundCategory.VOICE, 1.0F, 1.1F);
 	}
 	
-	public void chatCompletedQuest( QuestData data )
+	public static void chatCompletedQuest( QuestData data )
 	{
 		data.getPlayer().sendStatusMessage( TextComponentHelper.createComponentTranslation(data.getPlayer(), "quest.quest_complete_message", new Object[0]), ToroQuestConfiguration.showQuestCompletionAboveActionBar );
 		data.getPlayer().world.playSound((EntityPlayer)null, data.getPlayer().posX, data.getPlayer().posY, data.getPlayer().posZ, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.1F, 1.1F);

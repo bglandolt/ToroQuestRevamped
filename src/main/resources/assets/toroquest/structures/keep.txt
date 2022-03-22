@@ -14,7 +14,7 @@
   SbPwPwPwSbCsCsCsCsCsSbPwPwPwSb
           CsCsCsCsCsCsCs
 ######################################
-          SsSsSsSsSsSsSs        
+        --SsSsSsSsSsSsSs--      
   SbPwPwPwSbSsDS*CDSSsSbPwPwPwSb
   PwDSDSDSCsDS*CLg*CDSCsDSDSDSPw
   PwDSDSDSDSDSDSDSDSDSDSDSDSDSPw
@@ -28,73 +28,73 @@
   PwwcwcDSDSDSDSDSDSDSDSDSDSDSPw
   PwwcwcDSCsDS*CLg*CDSCsDSDSDSPw
   SbPwPwPwSbSsDS*CDSSsSbPwPwPwSb
-          SsSsSsSsSsSsSs        
+        --SsSsSsSsSsSsSs--      
 ######################################
-                                 
-  SbLxLxLxSb----xx----SbLxLxLxSb
+          --------------        
+  SbLxLxLxSb--xx--xx--SbLxLxLxSb
   LzPwPwPwCs----------CsBSBSBSLz
   LzPwLzS^S^Sbd^Sbd^SbCA----BSLz
   LzPwLz--------------------BSLz
-  SbCsLz--------!^--------BSCsSb
+  SbCsLz--------!v--------BSCsSb
       Lz----!T!T!T!T!T----Lz
-      Lz--!<!TLgLgLg!T!>--Lz
+      Lz--!>!TLgLgLg!T!<--Lz
       Lz----!T!T!T!T!T----Lz
-  SbCsBS--------!v--------LzCsSb
+  SbCsBS--------!^--------LzCsSb
   LzBS--------------------LzPwLz
   Lz--------SbdvSbdvSbSvSvLzPwLz  
   LzET--FwCs----------CsPwPwPwLz
-  SbLxLxLxSb----xx----SbLxLxLxSb
-                                
+  SbLxLxLxSb--xx--xx--SbLxLxLxSb
+          --------------        
 ######################################
-      @v                  @v    
+      @v  --------------  @v    
   SbCsCsCsSb----------SbCsCsCsSb
-  CsPwPwSwCs----------Cscv----Cs
+  CsPwPwSwCs----------Cscv--BSCs
 @>CsCsLg----Sb  Sb  Sb------BSCs@<
-  CsCspT--------------------BSCs
+  CsCspT----------------------Cs
   SbCspT------------------BSCsSb
-      Cs--------IP--------Cs
-      Cs----IP!CFL!DIP----Cs
-      Cs--------IP--------Cs
+      Cs------------------Cs
+      Cs------!CFL!D------Cs
+      Cs------------------Cs
   SbCsBS------------------F<CsSb
   CsBS--------------------F<CsCs
 @>Cs--------Sb  Sb  Sb----LgCsCs@<
   Cs----WpCs----------CsSwPwPwCs
   SbCsCsCsSb----------SbCsCsCsSb
-      @^                  @^    
+      @^  --------------  @^    
 ######################################
-                                
+          --------------        
   SbCstiCsSb----LA----SbCstiCsSb
-  CsSw----Cs----------Cs------Cs
-  tiPwLg----CsSbSbSbCs------FLti
+  CsSw----Cs----------Cs----FLCs
+  tiPwLg----CsSbSbSbCs----LA--ti
   CsCsFL--------@^------------Cs
   SbCsc>--------------------CsSb
-      Cs------------------Cs
-      ti--------!A--------ti
-      Cs------------------Cs
+      Cs--------t^--------Cs
+  LA--ti------t<!At>------ti--LA
+      Cs--------tv--------Cs
   SbCs--------------------F<CsSb
   Cs------------@v--------F<CsCs
-  ti--------CsSbSbSbCs----LgPwti
+  ti--LA----CsSbSbSbCs----LgPwti
   Cs------Cs----------Cs----SwCs
   SbCstiCsSb----LA----SbCstiCsSb
-                                
+          --------------        
 ######################################
-                                
+          --------------        
   SbCsCsCsSb----CH----SbCsCsCsSb
   Cs------Cs^^--Tv--^^Cs------Cs
-  Cs--Lg----CsCsPwCsCs----LA--Cs
+  Cs--Lg----CsCsPwCsCs----CH--Cs
   CsSw>>--------T^------------Cs
   SbCs>>--------------------CsSb
       Cs------------------Cs
-  LA<<Cs--------CH--------Cs>>LA
+  CH<<Cs--------CH--------Cs>>CH
       Cs------------------Cs
   SbCs--------------------<<CsSb
   Cs------------Tv--------<<SwCs
-  Cs--LA----CsCsPwCsCs----Lg--Cs
+  Cs--CH----CsCsPwCsCs----Lg--Cs
   Cs------Csvv--T^--vvCs------Cs
   SbCsCsCsSb----CH----SbCsCsCsSb
-                                
+          --------------        
 ######################################
-                                
+          --------------        
   SbSbSbSbSb----Fw----SbSbSbSbSb
   Sb------SbLzLxLzLxLzSbPwPwPwSb
   Sb--LgLxLxPwPwPwPwPwPwPwPwPwSb
@@ -108,7 +108,7 @@
   SbPwPwPwPwPwPwPwPwPwLxLxLg--Sb
   SbPwPwPwSbLzLxLzLxLzSb------Sb
   SbSbSbSbSb----Fw----SbSbSbSbSb
-                                
+          --------------        
 ######################################
       @v                  @v    
   SbCsCsCsSb--TvTvTv--SbCsCsCsSb
@@ -145,7 +145,7 @@
                                 
   SbCsttCsSb          SbCsttCsSb
   Cs------Lgtt*CLg*CttLg------Cs
-  tt----------FL--------------tt
+  tt--LA------FL----------LA--tt
   Cs--------------------------Cs
   CsCsCs@<--------------@>CsCsCs
     LzQ^--------------------Lz
@@ -153,7 +153,7 @@
     LzQv--------------------Lz
   CsCsCs@<--------------@>CsCsCs
   Cs--------------------------Cs
-  tt--------------------------tt
+  tt--LA------------------LA--tt
   Cs------Lgtt*CLg*CttLg------Cs
   SbCsttCsSb          SbCsttCsSb
                               
@@ -161,7 +161,7 @@
                                 
   SbCsCsCsSb  TvTvTv  SbCsCsCsSb
   Cs------LgPwPwLgPwPwLg------Cs
-  Cs--LA--------Lz--------LA--Cs
+  Cs--CH--------Lz--------CH--Cs
   Cs--------------------------Cs
   CsCsCs------------------CsCsCs
     *C----------------------*C
@@ -169,7 +169,7 @@
     *C----------------------*C
   CsCsCs------------------CsCsCs
   Cs--------------------------Cs
-  Cs--LA--------Lz--------LA--Cs
+  Cs--CH--------Lz--------CH--Cs
   Cs------LgPwPwLgPwPwLg------Cs
   SbCsCsCsSb  T^T^T^  SbCsCsCsSb
                                 
@@ -217,7 +217,7 @@
   --Fw----------------------Fw--
   SbDS----Sb----------Sb----DSSb
   Fw--------------------------Fw
-  DS----------------------xx--DS
+  DS--------------------------DS
   Fw------DSFwDSFwDSFwDS------Fw
   SbFwDSFwSb----------SbFwDSFwSb
                                 

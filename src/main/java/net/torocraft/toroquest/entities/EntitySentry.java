@@ -466,33 +466,37 @@ public class EntitySentry extends EntityToroMob implements IRangedAttackMob, IMo
 		ItemStack itemstack = player.getHeldItem(hand);
 		Item item = itemstack.getItem();
 		
-		if ( !this.getBribed() && this.getHealth() >= this.getMaxHealth() && !this.inCombat() && itemstack.getItem() == Items.EMERALD && CivilizationUtil.getProvinceAt(this.world, this.chunkCoordX, this.chunkCoordZ) == null )
+		Province province = CivilizationUtil.getProvinceAt(this.world, this.chunkCoordX, this.chunkCoordZ);
+				
+		if ( !this.getBribed() && this.getHealth() >= this.getMaxHealth() && !this.inCombat() )
         {
-			itemstack.shrink(1);
-        	this.getLookHelper().setLookPositionWithEntity(player, 30.0F, 30.0F);
-        	this.faceEntity(player, 30.0F, 30.0F);
-        	
-    		List<EntitySentry> bandits = this.world.<EntitySentry>getEntitiesWithinAABB(EntitySentry.class, new AxisAlignedBB(this.getPosition()).grow(32, 16, 32));
-    		{
-    			for ( EntitySentry bandit : bandits )
-    			{
-    				if ( bandit.passiveTimer <= 0 )
-    				{
-    					bandit.passiveTimer = 4;
-        				bandit.getNavigator().tryMoveToEntityLiving(player, 0.4D+rand.nextDouble()/10.0D);
-    				}
-    				else if ( bandit.passiveTimer < 10 )
-    				{
-    					bandit.passiveTimer += 2;
-    				}
-    			}
-    		}
-        	
-        	player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND, SoundCategory.AMBIENT, 1.0F, 1.1F);
-            {
+			/* BRIBE WITH EMERALDS */
+			if ( itemstack.getItem() == Items.EMERALD )
+			{
+				itemstack.shrink(1);
+	        	this.getLookHelper().setLookPositionWithEntity(player, 30.0F, 30.0F);
+	        	this.faceEntity(player, 30.0F, 30.0F);
+	        	
+	    		List<EntitySentry> bandits = this.world.<EntitySentry>getEntitiesWithinAABB(EntitySentry.class, new AxisAlignedBB(this.getPosition()).grow(32, 16, 32));
+	    		{
+	    			for ( EntitySentry bandit : bandits )
+	    			{
+	    				if ( bandit.passiveTimer <= 0 )
+	    				{
+	    					bandit.passiveTimer = 4;
+	        				bandit.getNavigator().tryMoveToEntityLiving(player, 0.4D+rand.nextDouble()/10.0D);
+	    				}
+	    				else if ( bandit.passiveTimer < 10 )
+	    				{
+	    					bandit.passiveTimer += 2;
+	    				}
+	    			}
+	    		}
+	    		
+	    		player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND, SoundCategory.AMBIENT, 1.0F, 1.1F);
 	            {
 	                this.getNavigator().clearPath();
-	
+
 	                if ( rand.nextInt(3) == 0 )
 	                {
 		            	player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.VINDICATION_ILLAGER_AMBIENT, SoundCategory.AMBIENT, 1.0F, 1.1F);
@@ -505,55 +509,56 @@ public class EntitySentry extends EntityToroMob implements IRangedAttackMob, IMo
 	        			this.world.setEntityState(this, (byte)6);
 	                    if ( rand.nextInt(32) == 0 )
 	                    {
-    						this.setAttackTarget(player);
-    						if ( !this.world.isRemote) this.chat(player, "betray", null);
+							this.setAttackTarget(player);
+							this.callForHelp(player);
+							this.chat(player, "betray", null);
 	    				}
 	                }
 	            }
-            }
+			}
+			/* RECRUIT WITH PAPERS */
+			else if ( ToroQuestConfiguration.recruitBandits && item.equals(Item.getByNameOrId("toroquest:recruitment_papers")) )
+	        {
+				itemstack.shrink(1);
+	        	this.getLookHelper().setLookPositionWithEntity(player, 30.0F, 30.0F);
+	        	this.faceEntity(player, 30.0F, 30.0F);
+	        	playSound(SoundEvents.ENTITY_ILLAGER_CAST_SPELL, 1.5F, 1.5F);
+	        	playSound(SoundEvents.BLOCK_ANVIL_USE, 1.0F, 1.0F);
+				EntityGuard newEntity = new EntityGuard(world);
+				newEntity.setPosition(this.posX, this.posY, this.posZ);
+				this.setDead();
+				newEntity.setPlayerGuard(player.getName());
+				newEntity.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(this.getPosition())), (IEntityLivingData) null);
+				newEntity.actionTimer = 1;
+				
+				List<EntitySentry> bandits = this.world.getEntitiesWithinAABB(EntitySentry.class, new AxisAlignedBB(this.getPosition()).grow(32, 16, 32), new Predicate<EntitySentry>()
+	    		{
+	    			public boolean apply(@Nullable EntitySentry entity)
+	    			{
+	    				return true;
+	    			}
+	    		});
+				
+				for ( EntitySentry b : bandits )
+				{
+					b.passiveTimer = 8;
+				}
+				
+				newEntity.spawnedNearBandits = true;
+				newEntity.copyLocationAndAnglesFrom(this);
+				world.spawnEntity(newEntity);
+				newEntity.setMeleeWeapon();
+								
+				if ( province != null && province.getCiv() != null )
+				{
+					newEntity.recruitGuard(player, province, "civbanditrecruit");
+				}
+				else
+				{
+					newEntity.chat(newEntity, player, "nocivbanditrecruit", TextComponentHelper.createComponentTranslation(player, "civilization.null.name", new Object[0]).getFormattedText());
+				}
+			}
         }
-		else if ( this.getBribed() && !this.inCombat() && ToroQuestConfiguration.recruitBandits && item.equals(Item.getByNameOrId("toroquest:recruitment_papers")) )
-        {
-        	playSound(SoundEvents.ENTITY_ILLAGER_CAST_SPELL, 1.5F, 1.5F);
-        	playSound(SoundEvents.BLOCK_ANVIL_USE, 1.0F, 1.0F);
-        	player.setHeldItem(hand, new ItemStack(item, itemstack.getCount()-1 ));
-			EntityGuard newEntity = new EntityGuard(world);
-			newEntity.setPosition(this.posX, this.posY, this.posZ);
-			this.setDead();
-			newEntity.setPlayerGuard(player.getName());
-			newEntity.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(this.getPosition())), (IEntityLivingData) null);
-			newEntity.actionTimer = 1;
-			
-			List<EntitySentry> bandits = this.world.getEntitiesWithinAABB(EntitySentry.class, new AxisAlignedBB(this.getPosition()).grow(32, 16, 32), new Predicate<EntitySentry>()
-    		{
-    			public boolean apply(@Nullable EntitySentry entity)
-    			{
-    				return true;
-    			}
-    		});
-			
-			for ( EntitySentry b : bandits )
-			{
-				b.passiveTimer = 8;
-			}
-			
-			newEntity.spawnedNearBandits = true;
-			newEntity.copyLocationAndAnglesFrom(this);
-			world.spawnEntity(newEntity);
-			newEntity.setMeleeWeapon();
-			
-			Province province = CivilizationUtil.getProvinceAt(player.getEntityWorld(), player.chunkCoordX, player.chunkCoordZ);
-			
-			if ( province != null && province.getCiv() != null )
-			{
-				newEntity.recruitGuard(player, province, "civbanditrecruit");
-			}
-			else
-			{
-				newEntity.chat(newEntity, player, "nocivbanditrecruit", TextComponentHelper.createComponentTranslation(player, "civilization.null.name", new Object[0]).getFormattedText());
-			}
-			
-		}
 		else if ( this.canTalk )
     	{
     		this.canTalk = false;
@@ -3385,7 +3390,7 @@ public class EntitySentry extends EntityToroMob implements IRangedAttackMob, IMo
 		{
 			if ( !(entity instanceof EntityOrc) )
 			{
-				if ( entity.getAttackTarget() == null )
+				if ( !entity.getBribed() && entity.getAttackTarget() == null )
 				{
 					entity.setAttackTarget(attacker);
 				}

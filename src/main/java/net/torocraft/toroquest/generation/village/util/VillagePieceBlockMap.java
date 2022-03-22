@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.BlockChest;
@@ -18,6 +16,7 @@ import net.minecraft.block.BlockLog;
 import net.minecraft.block.BlockLog.EnumAxis;
 import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.BlockQuartz;
+import net.minecraft.block.BlockSkull;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.BlockSlab.EnumBlockHalf;
 import net.minecraft.block.BlockStairs;
@@ -28,8 +27,8 @@ import net.minecraft.block.BlockStoneSlab.EnumType;
 import net.minecraft.block.BlockTorch;
 import net.minecraft.block.BlockTrapDoor;
 import net.minecraft.block.BlockTrapDoor.DoorHalf;
+import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemBanner;
@@ -112,7 +111,7 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
 		DEFAULT_PALLETTE.put("wR", Blocks.STONE.getDefaultState());
 		DEFAULT_PALLETTE.put("FF", Blocks.FIRE.getDefaultState());
 		DEFAULT_PALLETTE.put("BS", Blocks.BOOKSHELF.getDefaultState());
-		
+
 		// TABLE
 		DEFAULT_PALLETTE.put("Wp", Blocks.WOODEN_PRESSURE_PLATE.getDefaultState());
 		DEFAULT_PALLETTE.put("Fw", Blocks.OAK_FENCE.getDefaultState());
@@ -121,12 +120,13 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
 		
 		DEFAULT_PALLETTE.put("CT", Block.getBlockFromName(ToroQuestConfiguration.craftingTableResourceName).getDefaultState());
 		DEFAULT_PALLETTE.put("CA", Blocks.CAULDRON.getDefaultState());
-		
+		DEFAULT_PALLETTE.put("SK", Blocks.SKULL.getDefaultState().withProperty(BlockSkull.FACING, EnumFacing.UP));
+
 		// CHAIRS
-		IBlockState CHAIR_NORTH = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH);
-		IBlockState CHAIR_SOUTH = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.SOUTH);
-		IBlockState CHAIR_EAST = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.EAST);
-		IBlockState CHAIR_WEST = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.WEST);
+		IBlockState CHAIR_NORTH = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.SOUTH);
+		IBlockState CHAIR_SOUTH = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH);
+		IBlockState CHAIR_EAST = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.WEST);
+		IBlockState CHAIR_WEST = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.EAST);
 		
 		try
 		{
@@ -144,19 +144,21 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
 		DEFAULT_PALLETTE.put("!^", CHAIR_SOUTH);
 		DEFAULT_PALLETTE.put("!>", CHAIR_EAST);
 		DEFAULT_PALLETTE.put("!<", CHAIR_WEST);
-		// =====
 		
+		// CivilizationGeneratorHandlers.getLantern();
+
 		IBlockState LA = Blocks.AIR.getDefaultState();
 		
 		try
 		{
-			LA = Block.getBlockFromName(ToroQuestConfiguration.lanternResourceName).getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.byName("up"));
+			LA = Block.getBlockFromName(ToroQuestConfiguration.lanternResourceName).getDefaultState().withProperty(PropertyDirection.create("facing"), EnumFacing.DOWN);
 		}
 		catch ( Exception e )
 		{
 			try
 			{
 				LA = Block.getBlockFromName(ToroQuestConfiguration.lanternResourceName).getDefaultState();
+
 			}
 			catch ( Exception ee )
 			{
@@ -165,7 +167,7 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
 		}
 		
 		DEFAULT_PALLETTE.put("LA", LA);
-		
+				
 		IBlockState CH = Blocks.AIR.getDefaultState();
 		try
 		{
@@ -189,8 +191,15 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
 		try {TABLE = Block.getBlockFromName(ToroQuestConfiguration.tableResourceName).getDefaultState();}catch(Exception e){}
 		DEFAULT_PALLETTE.put("!T", TABLE);
 		
-		IBlockState CHANDELIER = Blocks.GLOWSTONE.getDefaultState();
-		try {CHANDELIER = Block.getBlockFromName(ToroQuestConfiguration.chandelierResourceName).getDefaultState();}catch(Exception e){}
+		IBlockState CHANDELIER = Blocks.LOG.getDefaultState();
+		try
+		{
+			CHANDELIER = Block.getBlockFromName(ToroQuestConfiguration.chandelierResourceName).getDefaultState();
+		}
+		catch( Exception e )
+		{
+			
+		}
 		DEFAULT_PALLETTE.put("!A", CHANDELIER);
 		
 		// l
@@ -224,11 +233,36 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
 		DEFAULT_PALLETTE.put("c<", Blocks.TRAPPED_CHEST.getDefaultState().withProperty(BlockChest.FACING, EnumFacing.WEST));
 
 		// t
-		DEFAULT_PALLETTE.put("t^", Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH));
-		DEFAULT_PALLETTE.put("tv", Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.SOUTH));
-		DEFAULT_PALLETTE.put("t<", Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.EAST));
-		DEFAULT_PALLETTE.put("t>", Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.WEST));
-		DEFAULT_PALLETTE.put("t.", Blocks.TORCH.getDefaultState());
+
+		IBlockState TORCH = Blocks.TORCH.getDefaultState();
+				
+		// TORCHES
+		IBlockState TORCH_NORTH = TORCH.withProperty(BlockTorch.FACING, EnumFacing.SOUTH);
+		IBlockState TORCH_SOUTH = TORCH.withProperty(BlockTorch.FACING, EnumFacing.NORTH);
+		IBlockState TORCH_EAST = TORCH.withProperty(BlockTorch.FACING, EnumFacing.WEST);
+		IBlockState TORCH_WEST = TORCH.withProperty(BlockTorch.FACING, EnumFacing.EAST);
+		
+		try
+		{
+			IBlockState CANDLE = Block.getBlockFromName(ToroQuestConfiguration.candleResourceName).getDefaultState();
+			TORCH_NORTH = CANDLE.withProperty(BlockStairs.FACING, EnumFacing.NORTH);
+			TORCH_SOUTH = CANDLE.withProperty(BlockStairs.FACING, EnumFacing.WEST);//south
+			TORCH_EAST = CANDLE.withProperty(BlockStairs.FACING, EnumFacing.EAST);
+			TORCH_WEST = CANDLE.withProperty(BlockStairs.FACING, EnumFacing.SOUTH);//west
+		}
+		catch ( Exception e )
+		{
+//			TORCH_NORTH = TORCH.withProperty(BlockStairs.FACING, EnumFacing.NORTH);
+//			TORCH_SOUTH = TORCH.withProperty(BlockStairs.FACING, EnumFacing.SOUTH);
+//			TORCH_EAST = TORCH.withProperty(BlockStairs.FACING, EnumFacing.EAST);
+//			TORCH_WEST = TORCH.withProperty(BlockStairs.FACING, EnumFacing.WEST);
+		}
+		
+		DEFAULT_PALLETTE.put("t^", TORCH_NORTH);
+		DEFAULT_PALLETTE.put("tv", TORCH_SOUTH);
+		DEFAULT_PALLETTE.put("t<", TORCH_EAST);
+		DEFAULT_PALLETTE.put("t>", TORCH_WEST);
+		DEFAULT_PALLETTE.put("t.", TORCH);
 		
 		// COLORED BEDS = $v
 		//DEFAULT_PALLETTE.put("aa", Block.getBlockFromItem( new ItemStack(Items.BED, 1, 3).getItem() ).getDefaultState());
@@ -341,6 +375,7 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
 
 	protected String name;
 
+	// XXX
 	public VillagePieceBlockMap(String name, StructureVillagePieces.Start start, int type, Random rand, StructureBoundingBox bounds, EnumFacing facing)
 	{
 		super(start, type);
@@ -364,18 +399,21 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
 		return 0;
 	}
 
-	protected boolean specialHandlingForSpawner(World world, String entityBlockCode, String c, int x, int y, int z, List<String> entities)
+	protected boolean specialHandlingForSpawner(World world, int x, int y, int z, List<String> entities)
 	{
-		if (!c.equals(entityBlockCode))
-		{
-			return false;
-		}
-
 		BlockPos blockpos = new BlockPos(this.getXWithOffset(x, z), this.getYWithOffset(y), this.getZWithOffset(x, z));
 		
-		if (boundingBox.isVecInside(blockpos))
+		if ( this.boundingBox.isVecInside(blockpos) )
 		{
-			addToroSpawner(world, blockpos, entities);
+			TileEntity tileentity = world.getTileEntity(blockpos);
+			if ( tileentity instanceof TileEntityToroSpawner )
+			{
+				return true;
+			}
+			else
+			{
+				this.addToroSpawner(world, blockpos, entities);
+			}
 		}
 		
 		return true;
@@ -387,12 +425,11 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
 		{
 			world.setBlockState(blockpos, BlockToroSpawner.INSTANCE.getDefaultState());
 			TileEntity tileentity = world.getTileEntity(blockpos);
-			if (tileentity instanceof TileEntityToroSpawner)
+			if ( tileentity instanceof TileEntityToroSpawner )
 			{
 				TileEntityToroSpawner spawner = (TileEntityToroSpawner) tileentity;
-				spawner.setTriggerDistance(80);
 				spawner.setEntityIds(entities);
-				spawner.setExtra(-1);
+				//spawner.markDirty();
 			}
 		}
 		catch(Exception e)
@@ -400,6 +437,45 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
 			System.out.println("***error spawning ToroQuest entity***");
 		}
 	}
+	
+						protected boolean specialHandlingForSpawnerRaidedKing(World world, int x, int y, int z, List<String> entities)
+						{
+							BlockPos blockpos = new BlockPos(this.getXWithOffset(x, z), this.getYWithOffset(y), this.getZWithOffset(x, z));
+							
+							if ( this.boundingBox.isVecInside(blockpos) )
+							{
+								TileEntity tileentity = world.getTileEntity(blockpos);
+								if ( tileentity instanceof TileEntityToroSpawner )
+								{
+									return true;
+								}
+								else
+								{
+									this.addToroSpawnerRaidedKing(world, blockpos, entities);
+								}
+							}
+							
+							return true;
+						}
+					
+						protected void addToroSpawnerRaidedKing(World world, BlockPos blockpos, List<String> entities)
+						{
+							try
+							{
+								world.setBlockState(blockpos, BlockToroSpawner.INSTANCE.getDefaultState());
+								TileEntity tileentity = world.getTileEntity(blockpos);
+								if ( tileentity instanceof TileEntityToroSpawner )
+								{
+									TileEntityToroSpawner spawner = (TileEntityToroSpawner) tileentity;
+									spawner.setEntityIds(entities);
+									spawner.setExtra(1);
+								}
+							}
+							catch(Exception e)
+							{
+								System.out.println("***error spawning ToroQuest entity***");
+							}
+						}
 	
 //	// helmet
 //	protected boolean specialHandlingForSpawnerH(World world, String entityBlockCode, String c, int x, int y, int z, List<String> entities)
@@ -1087,7 +1163,6 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
         NBTTagList nbttaglist = new NBTTagList();
 
         // GRADIENT BLUE
-        patterntag = new NBTTagCompound();
         patterntag.setString("Pattern", "gru");
         patterntag.setInteger("Color", 15);
         nbttaglist.appendTag(patterntag);
@@ -1310,39 +1385,38 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
 	    ItemBanner.setTileEntityNBT(world, null, pos, banner);
 	}
 
-	public static boolean setb(World worldIn, @Nullable EntityPlayer player, BlockPos pos, ItemStack stackIn)
-    {
-        
-        {
-            NBTTagCompound nbttagcompound = stackIn.getSubCompound("BlockEntityTag");
-
-            if (nbttagcompound != null)
-            {
-                TileEntity tileentity = worldIn.getTileEntity(pos);
-
-                if (tileentity != null)
-                {
-                    
-
-                    NBTTagCompound nbttagcompound1 = tileentity.writeToNBT(new NBTTagCompound());
-                    NBTTagCompound nbttagcompound2 = nbttagcompound1.copy();
-                    nbttagcompound1.merge(nbttagcompound);
-                    nbttagcompound1.setInteger("x", pos.getX());
-                    nbttagcompound1.setInteger("y", pos.getY());
-                    nbttagcompound1.setInteger("z", pos.getZ());
-
-                    if (!nbttagcompound1.equals(nbttagcompound2))
-                    {
-                        tileentity.readFromNBT(nbttagcompound1);
-                        tileentity.markDirty();
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-    }
+//	public static boolean setb(World worldIn, @Nullable EntityPlayer player, BlockPos pos, ItemStack stackIn)
+//    {
+//        {
+//            NBTTagCompound nbttagcompound = stackIn.getSubCompound("BlockEntityTag");
+//
+//            if (nbttagcompound != null)
+//            {
+//                TileEntity tileentity = worldIn.getTileEntity(pos);
+//
+//                if (tileentity != null)
+//                {
+//                    
+//
+//                    NBTTagCompound nbttagcompound1 = tileentity.writeToNBT(new NBTTagCompound());
+//                    NBTTagCompound nbttagcompound2 = nbttagcompound1.copy();
+//                    nbttagcompound1.merge(nbttagcompound);
+//                    nbttagcompound1.setInteger("x", pos.getX());
+//                    nbttagcompound1.setInteger("y", pos.getY());
+//                    nbttagcompound1.setInteger("z", pos.getZ());
+//
+//                    if (!nbttagcompound1.equals(nbttagcompound2))
+//                    {
+//                        tileentity.readFromNBT(nbttagcompound1);
+//                        tileentity.markDirty();
+//                        return true;
+//                    }
+//                }
+//            }
+//
+//            return false;
+//        }
+//    }
 	
 	// ================ Yellow ================
 	public static ItemStack getYellowBanner()
@@ -1358,22 +1432,27 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
         patterntag.setInteger("Color", 1);
         nbttaglist.appendTag(patterntag);
         // ORANGE BORDER
+        patterntag = new NBTTagCompound();
         patterntag.setString("Pattern", "cbo");
         patterntag.setInteger("Color", 14);
         nbttaglist.appendTag(patterntag);
         // YELLOW BRICKS
+        patterntag = new NBTTagCompound();
         patterntag.setString("Pattern", "bri");
         patterntag.setInteger("Color", 11);
         nbttaglist.appendTag(patterntag);
         // RED FLOWER
+        patterntag = new NBTTagCompound();
         patterntag.setString("Pattern", "flo");
         patterntag.setInteger("Color", 1);
         nbttaglist.appendTag(patterntag);
         // ORANGE GRADIENT
+        patterntag = new NBTTagCompound();
         patterntag.setString("Pattern", "gra");
         patterntag.setInteger("Color", 14);
         nbttaglist.appendTag(patterntag);
         // YELLOW CIRCLE
+        patterntag = new NBTTagCompound();
         patterntag.setString("Pattern", "mc");
         patterntag.setInteger("Color", 11);
         nbttaglist.appendTag(patterntag);
@@ -1406,51 +1485,69 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
 	public static void setBanditBanner( World world, BlockPos pos )
 	{
 		NBTTagCompound nbttagcompound = new NBTTagCompound();
-		nbttagcompound.setInteger("Base", 0);
+		nbttagcompound.setInteger("Base", 8); // 7
 		
     	NBTTagCompound patterntag = new NBTTagCompound();
         NBTTagList nbttaglist = new NBTTagList();
-
-        //
-        patterntag.setString("Pattern", "flo");
-        patterntag.setInteger("Color", 2);
+    	
+        // BLACK BASE
+        patterntag.setString("Pattern", "hhb");
+        patterntag.setInteger("Color", 0);
         nbttaglist.appendTag(patterntag);
-        //
+        // RED DIAMOND
         patterntag = new NBTTagCompound();
-        patterntag.setString("Pattern", "moj");
-        patterntag.setInteger("Color", 10);
-        nbttaglist.appendTag(patterntag);
-        //
-        patterntag = new NBTTagCompound();
-        patterntag.setString("Pattern", "lud");
-        patterntag.setInteger("Color", 15);
-        nbttaglist.appendTag(patterntag);
-        //
-        patterntag = new NBTTagCompound();
-        patterntag.setString("Pattern", "tl");
+        patterntag.setString("Pattern", "mr");
         patterntag.setInteger("Color", 1);
         nbttaglist.appendTag(patterntag);
-        //
+        // GRAY TOP
         patterntag = new NBTTagCompound();
-        patterntag.setString("Pattern", "tts");
+        patterntag.setString("Pattern", "hh");
+        patterntag.setInteger("Color", 8);
+        nbttaglist.appendTag(patterntag);
+        // RED HORIZONTAL LINE
+        patterntag = new NBTTagCompound();
+        patterntag.setString("Pattern", "ms");
+        patterntag.setInteger("Color", 1);
+        nbttaglist.appendTag(patterntag);
+        // WHITE SKULL
+        patterntag = new NBTTagCompound();
+        patterntag.setString("Pattern", "sku");
         patterntag.setInteger("Color", 15);
         nbttaglist.appendTag(patterntag);
-        //
+        // GRAY BORDER
         patterntag = new NBTTagCompound();
-        patterntag.setString("Pattern", "cbo");
-        patterntag.setInteger("Color", 15);
+        patterntag.setString("Pattern", "bo");
+        patterntag.setInteger("Color", 8);
         nbttaglist.appendTag(patterntag);
         //
 
         nbttagcompound.setTag("Patterns", nbttaglist);
-        
-        //banner.setTagInfo("BlockEntityTag", nbttagcompound);
-        
+                
         ItemBanner ba = new ItemBanner();
-        ItemStack banner = ItemBanner.makeBanner(EnumDyeColor.WHITE, nbttaglist);
+        ItemStack banner = ItemBanner.makeBanner(EnumDyeColor.GRAY, nbttaglist);
         banner.setTagInfo("BlockEntityTag", nbttagcompound);
         
-        ba.placeBlockAt(banner, null, world, pos, EnumFacing.EAST, 0.0F, 0.0F, 0.0F, Blocks.STANDING_BANNER.getDefaultState());
+        Rotation rotation = Rotation.NONE;
+
+		switch ( world.rand.nextInt(4) )
+		{
+			case 0: {rotation = Rotation.NONE;break;}
+			case 1: {rotation = Rotation.CLOCKWISE_90;break;}
+			case 2: {rotation = Rotation.COUNTERCLOCKWISE_90;break;}
+			case 3: {rotation = Rotation.CLOCKWISE_180;break;}
+		}
+		
+		EnumFacing direction = EnumFacing.EAST;
+		
+		switch ( world.rand.nextInt(4) )
+		{
+			case 0: {direction = EnumFacing.EAST;break;}
+			case 1: {direction = EnumFacing.WEST;break;}
+			case 2: {direction = EnumFacing.NORTH;break;}
+			case 3: {direction = EnumFacing.SOUTH;break;}
+		}		
+		
+        ba.placeBlockAt(banner, null, world, pos, direction, 0.0F, 0.0F, 0.0F, Blocks.STANDING_BANNER.getDefaultState().withRotation(rotation));
 	}
 	
 	

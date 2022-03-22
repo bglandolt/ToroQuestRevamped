@@ -9,8 +9,6 @@ import javax.annotation.Nullable;
 
 import net.minecraft.block.BlockChest;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.item.EntityArmorStand;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -27,7 +25,6 @@ import net.minecraft.world.gen.structure.StructureVillagePieces;
 import net.minecraft.world.gen.structure.StructureVillagePieces.PieceWeight;
 import net.minecraft.world.gen.structure.StructureVillagePieces.Start;
 import net.minecraft.world.gen.structure.StructureVillagePieces.Village;
-import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.fml.common.registry.VillagerRegistry.IVillageCreationHandler;
 import net.torocraft.toroquest.ToroQuest;
@@ -45,7 +42,7 @@ public class VillageHandlerBarracks implements IVillageCreationHandler
 	public static void init()
 	{
 		MapGenStructureIO.registerStructureComponent(VillagePieceBarracks.class, NAME);
-		//MapGenStructureIO.registerStructureComponent(VillagePieceBarracks.class, NAME + "_destroyed");
+		MapGenStructureIO.registerStructureComponent(VillagePieceBarracks.class, NAME + "_destroyed");
 		VillagerRegistry.instance().registerVillageCreationHandler(new VillageHandlerBarracks());
 	}
 	
@@ -92,6 +89,7 @@ public class VillageHandlerBarracks implements IVillageCreationHandler
 		public VillagePieceBarracks( String name, Start start, int type, Random rand, StructureBoundingBox bounds, EnumFacing facing )
 		{
 			super(name, start, type, rand, bounds, EnumFacing.NORTH);
+			this.setCoordBaseMode(EnumFacing.NORTH);
 		}
 		
 		public VillagePieceBarracks()
@@ -102,33 +100,22 @@ public class VillageHandlerBarracks implements IVillageCreationHandler
 		@Override
 		protected boolean specialBlockHandling(World world, String c, int x, int y, int z)
 		{
+			if ( world.isRemote )
+			{
+				return false;
+			}
+			
 			if ( c.equals("xx") )
 			{
-				setBlockState(world, Blocks.AIR.getDefaultState(), x, y, z, boundingBox);
-	
-//				int j = this.getXWithOffset(x, z);
-//				int k = this.getYWithOffset(y);
-//				int l = this.getZWithOffset(x, z);
-	
-				/*
-				 * if (!structurebb.isVecInside(new BlockPos(j, k, l))) { return; }
-				 */
-//				if ( c.equals("XX") )
-//				{
-//					EntityArmorStand stand = new EntityArmorStand(world);
-//					stand.setLocationAndAngles((double) j + 0.5D, (double) k, (double) l + 0.5D, 90F, 0.0F);
-//					world.spawnEntity(stand);
-//				}
 				List<String> entities = new ArrayList<String>();
 				entities.add(ToroQuest.MODID + ":" + EntityGuard.NAME);
-				specialHandlingForSpawner(world, "xx", c, x, y, z, entities);
-				return true;
+				return specialHandlingForSpawner(world, x, y, z, entities);
 			}
 			else if ( c.equals("BB") )
 			{
 				List<String> bandit = new ArrayList<String>();
 				bandit.add(ToroQuest.MODID + ":" + EntitySentry.NAME);
-				return specialHandlingForSpawner(world, "BB", c, x, y, z, bandit);
+				return specialHandlingForSpawner(world, x, y, z, bandit);
 			}
 			else if ( c.equals("cv") )
 			{
@@ -159,7 +146,7 @@ public class VillageHandlerBarracks implements IVillageCreationHandler
 
 	        BlockPos blockpos = new BlockPos(this.getXWithOffset(x, z), this.getYWithOffset(y), this.getZWithOffset(x, z));
 
-	        if (boundingboxIn.isVecInside(blockpos))
+	        if (boundingboxIn.isVecInside(blockpos) && !(worldIn.getBlockState(blockpos) instanceof BlockChest) )
 	        {
 	            // worldIn.setBlockState(blockpos, blockstateIn, 2);
 	        	

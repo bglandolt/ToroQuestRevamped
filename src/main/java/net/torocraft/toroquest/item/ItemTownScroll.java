@@ -237,7 +237,7 @@ public class ItemTownScroll extends Item
 	        	entityplayer.setPositionAndUpdate(teleportLocation.getX()+0.5,teleportLocation.getY()+0.5,teleportLocation.getZ()+0.5);
 	        }
 			entityplayer.addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, 30, 1, true, false));
-        	entityplayer.world.playSound((EntityPlayer)null, entityplayer.posX, entityplayer.posY, entityplayer.posZ, SoundEvents.BLOCK_PORTAL_TRAVEL, SoundCategory.PLAYERS, 1.0F, 1.5F);
+        	entityplayer.world.playSound((EntityPlayer)null, entityplayer.posX, entityplayer.posY, entityplayer.posZ, SoundEvents.BLOCK_PORTAL_TRAVEL, SoundCategory.PLAYERS, 0.5F, 1.5F);
         }
         catch ( Exception e )
         {

@@ -27,7 +27,8 @@ public class ToroQuestConfiguration
 	private static Configuration config;
 	
 	public static boolean useCrownToCreateNewProvinces = true;
-	
+	public static boolean coinTradeSounds = true;
+
 	public static float bossHealthMultiplier = 1.0F;
 	public static float bossAttackDamageMultiplier = 1.0F;
 		
@@ -69,15 +70,6 @@ public class ToroQuestConfiguration
 	public static boolean disableShop = false;
 	public static boolean disableGuardTower = false;
 	public static boolean disableBarracks = false;
-
-	// public static boolean enableBloodParticles = false;
-	
-	// public static float banditDamageBasedOnHealthModifier = 0.01; per 1HP
-	// public static float orcDamageBasedOnHealthModifier = 0.01; per 1HP
-	// public static float guardDamageBasedOnHealthModifier = 0.01;
-	// increases the damage modifier by X for every 1HP over their base health. So with the default value (0.01), 
-	// a bandit with 50HP over their default base health (20) would have a damage multiplier of...   
-	//1 * ( banditDamageMultiplier + banditDamageBasedOnHealthModifier )  ->  1 * (1.25 * 0.5)  -> 1.75
 	
 	public static int maxSpawnHeight = 144;
 	public static int minSpawnHeight = 48;
@@ -92,6 +84,7 @@ public class ToroQuestConfiguration
 	public static String turkeyBlockResourceName = "betteranimalsplus:turkey_cooked";
 	public static String cakeBlockResourceName = "minecraft:cake";
 	public static String chandelierResourceName = "rustic:chandelier";
+	public static String candleResourceName = "rustic:candle";
 	public static String tableResourceName = "rustic:table_oak";
 	public static String chairResourceName = "rustic:chair_spruce";
 	public static String lanternResourceName = "futuremc:lantern";
@@ -126,7 +119,8 @@ public class ToroQuestConfiguration
 	public static boolean banditsHaveArmorForSpartanWeaponry = true;
 	public static boolean guardsHaveArmorForSpartanWeaponry = true;
 	
-	public static boolean showProvinceEnterLeaveMessage = true;
+	public static boolean showProvinceEnterTitle = true;
+	public static String raidedProvinceTitle = "Raided Village";
 	public static boolean sendRepLevelMessage = true;
 	
 	public static boolean mobsAttackGuards = true;
@@ -167,6 +161,7 @@ public class ToroQuestConfiguration
 	public static String scrollTradeItem = "minecraft:emerald";
 	public static int scrollTradeAmount = 3;
 	public static int bannerTradeAmount = 2;
+	public static int maxTradeAmount = 5;
 	
 	public static int destroyedVillagesNearSpawnDistance = 320;
 	public static boolean unregisterDestroyedVillages = true;
@@ -320,7 +315,7 @@ public class ToroQuestConfiguration
 	// public static int adventurerSkins = 1;
 	public static int banditSkins = 36;
 	public static int orcSkins = 16;
-
+	
 	private static void loadConfiguration()
 	{
 		try
@@ -344,7 +339,7 @@ public class ToroQuestConfiguration
 			
 			useBiomeSpecificProvinces = config.getBoolean("useBiomeSpecificProvinces", CATEGORY_GEN, true,
 					"If set to true, villages will generate their province based off the biome they are in, otherwise they will be random.  "
-					+ "(I highly recommened you include the mod Mo' Villages so that villages spawn more frequently and in any biome. ***IMPORTANT*** If Biomes O' Plenty is installed I reccomend going throught and changing the settings for each biome to canGenerateVillages=true. To have these changes persist, copy the files in the 'defaults' folder and paste them into the folder with the 'Put biome configs here' file so that the biome settings will not be overwritten! You can also use BiomeTweaker to allow villages to spawn in every biome!!!)");
+					+ "(I highly recommened you include the mod Mo' Villages so that villages spawn more frequently and in any biome. ***IMPORTANT*** If Biomes O' Plenty is installed I reccommend going through and changing the settings for each biome to canGenerateVillages=true. To have these changes persist, copy the files in the 'defaults' folder and paste them into the folder with the 'Put biome configs here' file so that the biome settings will not be overwritten! You can also use BiomeTweaker to allow villages to spawn in every biome!!!)");
 
 			unregisterDestroyedVillages = config.getBoolean("unregisterDestroyedVillages", CATEGORY_GEN, true,
 					"Village destoyed through destroyedVillagesNearSpawnDistance are unregistered and no longer show UI.");
@@ -378,6 +373,9 @@ public class ToroQuestConfiguration
 			
 			chandelierResourceName = config.getString("chandelierResourceName", CATEGORY_GEN, "rustic:chandelier",
 					"Resource string for Chandelier that generate in villages.");
+			
+			candleResourceName = config.getString("candleResourceName", CATEGORY_GEN, "rustic:candle",
+					"Resource string for Candle that generate in villages.");
 			
 			tableResourceName = config.getString("tableResourceName", CATEGORY_GEN, "rustic:table_oak",
 					"Resource string for Tables that generate in villages.");
@@ -572,10 +570,10 @@ public class ToroQuestConfiguration
 			// SPAWNING =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 			
 			maxSpawnHeight = config.getInt("maxSpawnHeight", CATEGORY_SPAWNING, 144, 0, 256,
-					"Max spawn height of toroquest entities, ender idol, & scroll teleport. Also used for checking villagers and structures for creating uined villages.");
+					"DO NOT TOUCH. Max spawn height of toroquest entities, ender idol, & scroll teleport. Also used for checking villagers and structures for creating ruined villages.");
 			
 			minSpawnHeight = config.getInt("minSpawnHeight", CATEGORY_SPAWNING, 48, 0, 256,
-					"Min spawn height of toroquest entities, ender idol & scroll teleport. Also used for checking villagers and structures for creating ruined villages.");
+					"DO NOT TOUCH. Min spawn height of toroquest entities, ender idol, & scroll teleport. Also used for checking villagers and structures for creating ruined villages.");
 			
 			disableMobSpawningNearVillage = config.getInt("disableMobSpawningNearVillage", CATEGORY_SPAWNING, 76, 0, 104,
 					"Disable mob spawns within X blocks from the village center. The higher the number, the further from the center of a province mobs will spawn. 208 blocks is the total length of a province. Setting this to 104 means mobs can NOT spawn anywhere in a province. Setting this to 0 disables this feature and mobs can spawn anywhere - RIP villages!");
@@ -657,7 +655,7 @@ public class ToroQuestConfiguration
 			
 			new String[]
 				    {
-				    	"water","regeneration","healing","breathing","swiftness","strength","resistance","leaping","vision","invisibility","luck"
+				    	"water","regeneration","healing","breathing","swiftness","strength","resistance","leaping","vision","invisibility","luck","purifying"
 				    },
 			"Safe and unharmful potions that will not cause reputation loss when throwing them at guards or villagers.");
 						
@@ -703,7 +701,7 @@ public class ToroQuestConfiguration
 					"If set to true, players can use Recruitment Papers on Villagers to recruit them as Guards.");
 			
 			useCrownToCreateNewProvinces = config.getBoolean("useCrownToCreateNewProvinces", CATEGORY, true,
-					"If set to true, players can create new provinces using the crown on a bandit.");
+					"If set to true, players can create new provinces using the crown on a Guard.");
 			
 			artifactDropRate = config.getInt("artifactDropRate", CATEGORY, 10, 0 ,2000,
 					"Drop rate of lost artifacts. X out of 2000 mobs will drop an artifact on death, and X out of 8000 dirt/stone/sand blocks will drop an artifact on harvest. Set to 0 to disable.");
@@ -711,8 +709,11 @@ public class ToroQuestConfiguration
 			showQuestCompletionAboveActionBar = config.getBoolean("showQuestCompletionAboveActionBar", CATEGORY, true,
 					"If set to true, the Quest Complete! notification will appear above the action bar instead of in chat.");
 			
-			showProvinceEnterLeaveMessage = config.getBoolean("showProvinceEnterLeaveMessage", CATEGORY, true,
-					"If set to true, show province enter and leave message.");
+			showProvinceEnterTitle = config.getBoolean("showProvinceEnterTitle", CATEGORY, true,
+					"If set to true, show province name/house title message when entering a province.");
+			
+			raidedProvinceTitle = config.getString("raidedProvinceTitle", CATEGORY, "Raided Village",
+					"Displays this tet for raided villages when entering a province (only shown once, remove text to disable).");
 			
 			sendRepLevelMessage = config.getBoolean("sendRepLevelMessage", CATEGORY, true,
 					"If set to true, show the reputation level message that appears at certain reputation level thresholds (at 50, 100, 250, 500, 1000, 2000, 3000)");
@@ -731,6 +732,9 @@ public class ToroQuestConfiguration
 			
 			cartographerMapTrade = config.getBoolean("cartographerMapTrade", CATEGORY_TRADES, true,
 					"Set true to torovillager enable map trade.");
+			
+			coinTradeSounds = config.getBoolean("coinTradeSounds", CATEGORY_TRADES, true,
+					"Set true to enable torovillager trade sound (coins sound).");
 			
 			villagerUniqueShopInventoryVarients = config.getInt("villagerUniqueShopInventoryVarients", CATEGORY_TRADES, 4, 0 , 256,
 					"The unique inventory of trades that villagers can offer. If set to 4 (meaning the varients are: 0, 1, 2, 3, 4) then for each profession there are 5 different inventories of trades that profession can offer. For example: a varient 0 and 1 blacksmith could sell iron swords, a varient 3 blacksmith could buy iron ingots, and a varient 4 blacksmith could sell shields. YOU MUST MANUALLY CONFIGURE TORO VILLAGER TRADES IF YOU PLAN ON CHANGING THIS SETTING!");
@@ -988,10 +992,8 @@ public class ToroQuestConfiguration
 		    	
 		    	"minecraft:emerald,1,x,minecraft:iron_sword,1,x,x,weapon,x",
 		    	
-		    	"minecraft:iron_ingot,2,x,minecraft:emerald,1,x,x,armor,x",
-		    	
-		    	"minecraft:emerald,1,x,minecraft:shield,1,x,x,armor,x",
-		    	
+		    	"minecraft:iron_ingot,2,x,minecraft:emerald,1,x,x,weapon,x",
+		    			    	
 		    	"minecraft:emerald,24,x,minecraft:enchanted_book,2,YELLOW,250,weapon,1,minecraft:fire_aspect~1",
 		    	"minecraft:emerald,48,x,minecraft:enchanted_book,2,YELLOW,1000,weapon,1,minecraft:fire_aspect~2",
 		    	"minecraft:emerald,128,x,minecraft:enchanted_book,2,YELLOW,3000,weapon,1,minecraft:fire_aspect~3",
@@ -1091,7 +1093,7 @@ public class ToroQuestConfiguration
 		    	
 		    	// LEATHER =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 		    	
-		    	"minecraft:emerald,9,x,minecraft:leather,1,x,x,leather,x",
+		    	"minecraft:emerald,1,x,minecraft:leather,2,x,x,leather,x",
 		    	
 		    	"minecraft:rabbit_hide,2,x,minecraft:emerald,1,x,x,leather,0",
 		    	
@@ -1222,6 +1224,9 @@ public class ToroQuestConfiguration
 			
 			bannerTradeAmount = config.getInt("bannerTradeAmount", CATEGORY_TRADES, 2, 0, 128,
 					"The amount of scrollTradeItem a shopkeeper's banner will cost you. Set to 0 to disable this trade.");
+			
+			maxTradeAmount = config.getInt("maxTradeAmount", CATEGORY_TRADES, 5, 1, 99999,
+					"The amount of trades you can complete before the recipe is locked. Shops are refreshed every 5 minutes.");
 			
 			// RAIDERS =-=-=-=-=-=-=-=-=-=-=
 			

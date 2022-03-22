@@ -18,17 +18,17 @@ PwCsDrDrDrDrDrCsPw
   Sc--CsCsCsCsSb
   --CsCsCsCsCsCs
   --ScCsCsCsCsCs
-S>CsCsCsScCsCsSc
+S>CsCsMMScCsCsSc
   Cs--CsCsCsCsCs
   CsCsCsCsCsCsCsSc
   SbCsCsCsCsCsSb
-  CsCsCsCsCsCsCs
-ScCsCsCsScCsCsCs
+  CsCsCsCsCsCsCsSc
+ScCsCsCsScCsCsCsCs
 CsCsCsScCsCsCs--
-  CsCsCsScCs--Sc
+ScCsCsCsScCs--Sc
   CsCsCsCsScCs--
   SbCsCsCsCsCs--
-        S^      Sc
+        S^  Cs  Sc
 ######################################
                 
   SbPwPwdvPwPwSb
@@ -80,17 +80,17 @@ CsCsCsScCsCsCs--
 #######################################
         Fw      
   LgLgLgLzLgLgLg
-  LgPw--PwPwPwLg
+  LgPw--LzPwPwLg
   Lg------PwPwLg
-  ----PwPw------
-  Lgl<PwPwPwl>Lg
-  LgPwPwPwSwPwLg
+  ----PwLz------
+  Lgl<PwLzPwl>Lg
+  LgPwPwLzSwPwLg
   LxPwPw--PwPwLxFw
   LgPwSw--PwPwLg
   --Pw------PwLg
   --------------
   --PwPw--SwPwLg
-  LgPwPwPwPw--Lg
+  LgPwPwLzPw--Lg
   LgLgLgLzLgLg--
         Fw      
 ######################################
@@ -102,11 +102,11 @@ CsCsCsScCsCsCs--
   Fw----Fw----Fw
   Fw----Fw----Fw
   ------------Fw
-  ------------Fw
+  Fw----------Fw
   --------------
   --------------
   ------Fw----FF
-  Fw----Fw------
+  Fw----Fw----Fw
   FwFwFwFwFw----
                 
 ######################################

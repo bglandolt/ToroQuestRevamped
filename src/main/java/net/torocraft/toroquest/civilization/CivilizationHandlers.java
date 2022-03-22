@@ -38,7 +38,6 @@ import net.minecraft.block.BlockLadder;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockLog;
-import net.minecraft.block.BlockMagma;
 import net.minecraft.block.BlockOre;
 import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.BlockQuartz;
@@ -50,7 +49,6 @@ import net.minecraft.block.BlockStone;
 import net.minecraft.block.BlockTNT;
 import net.minecraft.block.BlockTrapDoor;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
@@ -89,7 +87,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.village.Village;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
@@ -152,22 +149,22 @@ public class CivilizationHandlers
 
 	// private static final ResourceLocation guiTexture = new ResourceLocation("toroquest:textures/gui/lord_gui.png");
 
-	@SideOnly(Side.CLIENT)
-	@SubscribeEvent
-	public void handleEnterProvince(CivilizationEvent.Enter event)
-	{
-		if ( event.getEntityPlayer() != null && event.getEntityPlayer().dimension == 0 && ToroQuestConfiguration.showProvinceEnterLeaveMessage )
-		{
-			if ( event.getEntityPlayer().ticksExisted - displayCapture >= displayWait )
-			{
-				displayCapture = event.getEntityPlayer().ticksExisted;
-				String subTitle = "House " + event.province.getCiv().getLocalizedName();
-				Minecraft.getMinecraft().ingameGUI.displayTitle(null, TextFormatting.ITALIC + subTitle, 0, 0, 0);
-				Minecraft.getMinecraft().ingameGUI.displayTitle(TextFormatting.BOLD + event.province.getName(), subTitle, timeFadeIn, displayTime, timeFadeOut); // with TextFormatting
-				// Minecraft.getMinecraft().ingameGUI.displayTitle(TextFormatting.BOLD + event.province.getName() + TextFormatting.UNDERLINE, subTitle, timeFadeIn, displayTime, timeFadeOut); // with TextFormatting
-			}
-		}
-	}
+//	@SideOnly(Side.CLIENT)
+//	@SubscribeEvent
+//	public void handleEnterProvince(CivilizationEvent.Enter event)
+//	{
+//		if ( event.getEntityPlayer() != null && event.getEntityPlayer().dimension == 0 && ToroQuestConfiguration.showProvinceEnterTitle )
+//		{
+//			if ( event.getEntityPlayer().ticksExisted - displayCapture >= displayWait )
+//			{
+//				displayCapture = event.getEntityPlayer().ticksExisted;
+//				String subTitle = "House " + event.province.getCiv().getLocalizedName();
+//				Minecraft.getMinecraft().ingameGUI.displayTitle(null, TextFormatting.ITALIC + subTitle, 0, 0, 0);
+//				Minecraft.getMinecraft().ingameGUI.displayTitle(TextFormatting.BOLD + event.province.getName(), subTitle, timeFadeIn, displayTime, timeFadeOut); // with TextFormatting
+//				// Minecraft.getMinecraft().ingameGUI.displayTitle(TextFormatting.BOLD + event.province.getName() + TextFormatting.UNDERLINE, subTitle, timeFadeIn, displayTime, timeFadeOut); // with TextFormatting
+//			}
+//		}
+//	}
 
 //	@SideOnly(Side.CLIENT)
 //	@SubscribeEvent
@@ -1020,7 +1017,7 @@ public class CivilizationHandlers
 	}
 	
 	@SubscribeEvent
-	public void fire(EntityPlaceEvent event)
+	public void placeEvent(EntityPlaceEvent event)
 	{
 		if ( event.getWorld().isRemote )
 		{
@@ -1037,7 +1034,7 @@ public class CivilizationHandlers
 		
 		EntityPlayer player = (EntityPlayer)eventEntity;
 
-		if ( e instanceof BlockCrops || e instanceof BlockStem )
+		if ( Item.getItemFromBlock(e) instanceof net.minecraftforge.common.IPlantable )
 		{
 			try
 			{
@@ -2934,7 +2931,7 @@ public class CivilizationHandlers
 	
 	public static boolean isStructureBlock(IBlockState blockState)
 	{
-		if ( !blockState.getBlock().getDefaultState().isFullCube() || blockState.getBlock() instanceof BlockLeaves || blockState.getBlock().getDefaultState() == Blocks.WOOL.getDefaultState() || blockState.getBlock().getDefaultState() == Blocks.CONCRETE.getDefaultState() || blockState.getBlock().getDefaultState() == Blocks.STONEBRICK.getDefaultState() || blockState.getBlock() instanceof BlockPlanks || blockState.getBlock() instanceof BlockMagma )
+		if ( !blockState.getBlock().getDefaultState().isFullCube() || blockState.getBlock() instanceof BlockLeaves || blockState.getBlock().getDefaultState() == Blocks.WOOL.getDefaultState() || blockState.getBlock().getDefaultState() == Blocks.CONCRETE.getDefaultState() || blockState.getBlock().getDefaultState() == Blocks.STONEBRICK.getDefaultState() || blockState.getBlock() instanceof BlockPlanks || blockState.getBlock() instanceof BlockFire )
 		{
 			return true;
 		}

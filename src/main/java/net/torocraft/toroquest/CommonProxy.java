@@ -18,9 +18,11 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import net.torocraft.toroquest.block.BlockSmartBanner;
+import net.torocraft.toroquest.block.BlockToroSpawner;
 import net.torocraft.toroquest.block.BlockVillageSpawner;
 import net.torocraft.toroquest.civilization.CivilizationGeneratorHandlers;
 import net.torocraft.toroquest.civilization.CivilizationHandlers;
+import net.torocraft.toroquest.civilization.CivilizationOverlayHandler;
 import net.torocraft.toroquest.civilization.player.PlayerCivilizationCapabilityImpl;
 import net.torocraft.toroquest.civilization.quests.util.Quests;
 import net.torocraft.toroquest.config.ToroQuestConfiguration;
@@ -41,8 +43,9 @@ public class CommonProxy
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event)
     {
+        //event.getRegistry().register(new BlockToroSpawner());
         event.getRegistry().register(new BlockVillageSpawner());
-        event.getRegistry().register(new BlockSmartBanner());
+        //event.getRegistry().register(new BlockSmartBanner());
     }
 
     @SubscribeEvent
@@ -66,6 +69,7 @@ public class CommonProxy
 		MinecraftForge.EVENT_BUS.register(new CivilizationGeneratorHandlers());
 		MinecraftForge.EVENT_BUS.register(new EventHandlers());
 		MinecraftForge.EVENT_BUS.register(new CivilizationHandlers());
+		//MinecraftForge.EVENT_BUS.register(new CivilizationOverlayHandler());
 		VillageHandlerKeep.init();
 		VillageHandlerShop.init();
 		VillageHandlerGuardTower.init();

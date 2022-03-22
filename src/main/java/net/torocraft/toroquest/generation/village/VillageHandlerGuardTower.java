@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Random;
 
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -34,7 +33,7 @@ public class VillageHandlerGuardTower implements IVillageCreationHandler
 	public static void init()
 	{
 		MapGenStructureIO.registerStructureComponent(VillagePieceGuardTower.class, NAME);
-		//MapGenStructureIO.registerStructureComponent(VillagePieceGuardTower.class, NAME + "_destroyed");
+		MapGenStructureIO.registerStructureComponent(VillagePieceGuardTower.class, NAME + "_destroyed");
 		VillagerRegistry.instance().registerVillageCreationHandler(new VillageHandlerGuardTower());
 	}
 
@@ -83,6 +82,7 @@ public class VillageHandlerGuardTower implements IVillageCreationHandler
 		public VillagePieceGuardTower(String name, Start start, int type, Random rand, StructureBoundingBox bounds, EnumFacing facing)
 		{
 			super(name, start, type, rand, bounds, EnumFacing.NORTH);
+			this.setCoordBaseMode(EnumFacing.NORTH);
 		}
 
 		public VillagePieceGuardTower()
@@ -93,17 +93,21 @@ public class VillageHandlerGuardTower implements IVillageCreationHandler
 		@Override
 		protected boolean specialBlockHandling(World world, String c, int x, int y, int z)
 		{
+			if ( world.isRemote )
+			{
+				return false;
+			}
 			if ( c.equals("xx") )
 			{
 				List<String> entities = new ArrayList<String>();
 				entities.add(ToroQuest.MODID + ":" + EntityGuard.NAME);
-				return specialHandlingForSpawner(world, "xx", c, x, y, z, entities);
+				return specialHandlingForSpawner(world, x, y, z, entities);
 			}
 			else if ( c.equals("BB") )
 			{
 				List<String> bandit = new ArrayList<String>();
 				bandit.add(ToroQuest.MODID + ":" + EntitySentry.NAME);
-				return specialHandlingForSpawner(world, "BB", c, x, y, z, bandit);
+				return specialHandlingForSpawner(world, x, y, z, bandit);
 			}
 			return false;
 		}

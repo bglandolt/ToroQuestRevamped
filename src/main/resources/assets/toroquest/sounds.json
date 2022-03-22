@@ -2,36 +2,75 @@
 	"entity.steam_0": {
 		"category": "entity",
 		"subtitle": "entity.steam_0",
-		"sounds": [{ "name": "toroquest:entity/steam_0", "stream": true}]
+		"sounds": [{
+			"name": "toroquest:entity/steam_0",
+			"stream": true
+		}]
 	},
 	"entity.steam_1": {
 		"category": "entity",
 		"subtitle": "entity.steam_1",
-		"sounds": [{ "name": "toroquest:entity/steam_1", "stream": true}]
+		"sounds": [{
+			"name": "toroquest:entity/steam_1",
+			"stream": true
+		}]
 	},
 	"entity.steam_2": {
 		"category": "entity",
 		"subtitle": "entity.steam_2",
-		"sounds": [{ "name": "toroquest:entity/steam_2", "stream": true}]
+		"sounds": [{
+			"name": "toroquest:entity/steam_2",
+			"stream": true
+		}]
 	},
 	"entity.steam_3": {
 		"category": "entity",
 		"subtitle": "entity.steam_3",
-		"sounds": [{ "name": "toroquest:entity/steam_3", "stream": true}]
+		"sounds": [{
+			"name": "toroquest:entity/steam_3",
+			"stream": true
+		}]
 	},
 	"entity.steam_step_0": {
 		"category": "entity",
 		"subtitle": "entity.steam_step_0",
-		"sounds": [{ "name": "toroquest:entity/steam_step_0", "stream": true}]
+		"sounds": [{
+			"name": "toroquest:entity/steam_step_0",
+			"stream": true
+		}]
 	},
 	"entity.steam_step_1": {
 		"category": "entity",
 		"subtitle": "entity.steam_step_1",
-		"sounds": [{ "name": "toroquest:entity/steam_step_1", "stream": true}]
+		"sounds": [{
+			"name": "toroquest:entity/steam_step_1",
+			"stream": true
+		}]
 	},
 	"entity.steam_ambient": {
 		"category": "entity",
 		"subtitle": "entity.steam_ambient",
-		"sounds": [{ "name": "toroquest:entity/steam_ambient", "stream": true}]
+		"sounds": [{
+			"name": "toroquest:entity/steam_ambient",
+			"stream": true
+		}]
+	},
+	"player.tradec_0": {
+		"sounds": [{
+			"name": "toroquest:tradec_0",
+			"stream": true
+		}]
+	},
+	"player.tradec_1": {
+		"sounds": [{
+			"name": "toroquest:tradec_1",
+			"stream": true
+		}]
+	},
+	"player.tradec_2": {
+		"sounds": [{
+			"name": "toroquest:tradec_2",
+			"stream": true
+		}]
 	}
 }
