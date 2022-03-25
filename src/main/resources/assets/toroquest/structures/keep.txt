@@ -66,8 +66,8 @@
   SbCstiCsSb----LA----SbCstiCsSb
   CsSw----Cs----------Cs----FLCs
   tiPwLg----CsSbSbSbCs----LA--ti
-  CsCsFL--------@^------------Cs
-  SbCsc>--------------------CsSb
+  CsPwFL--------@^------------Cs
+  SbPwc>--------------------CsSb
       Cs--------t^--------Cs
   LA--ti------t<!At>------ti--LA
       Cs--------tv--------Cs
@@ -82,13 +82,13 @@
   SbCsCsCsSb----CH----SbCsCsCsSb
   Cs------Cs^^--Tv--^^Cs------Cs
   Cs--Lg----CsCsPwCsCs----CH--Cs
-  CsSw>>--------T^------------Cs
-  SbCs>>--------------------CsSb
-      Cs------------------Cs
-  CH<<Cs--------CH--------Cs>>CH
-      Cs------------------Cs
-  SbCs--------------------<<CsSb
-  Cs------------Tv--------<<SwCs
+  CsSwpT--------T^------------Cs
+  SbPwpT--------------------CsSb
+    k<Cs------------------Csk>
+  CHk<Cs--------CH--------Csk>CH
+    k<Cs------------------Csk>
+  SbCs--------------------pTPwSb
+  Cs------------Tv--------pTSwCs
   Cs--CH----CsCsPwCsCs----Lg--Cs
   Cs------Csvv--T^--vvCs------Cs
   SbCsCsCsSb----CH----SbCsCsCsSb

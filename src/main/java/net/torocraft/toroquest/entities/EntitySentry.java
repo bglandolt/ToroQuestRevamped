@@ -103,12 +103,14 @@ public class EntitySentry extends EntityToroMob implements IRangedAttackMob, IMo
 	protected float strafeVer = 0.0F;
 	protected float strafeHor = 0.0F;
     public int passiveTimer = -1;
+    public boolean helloGreeting = true;
+    public boolean emeraldGreeting = true;
 	public float capeAni = 0;
 	public boolean capeAniUp = true;
 	protected boolean blocking = false;
 	protected int blockingTimer = 0;
 	public int climbingTimer = 0;
-	protected boolean canTalk = true;
+	public boolean canTalk = true;
 	public short potionImmunity = 0;
     private int potionUseTimer = 0;
 	private int climbingCooldown = 0;
@@ -460,41 +462,43 @@ public class EntitySentry extends EntityToroMob implements IRangedAttackMob, IMo
 	{
 		if ( player == null || player.world.isRemote || !this.isEntityAlive() || player.isInvisible() )
     	{
-			return false;
+			return true;
     	}
-				
+		
+		if ( this.interacted )
+		{
+			return this.interacted = true;
+		}
+		
 		ItemStack itemstack = player.getHeldItem(hand);
 		Item item = itemstack.getItem();
 		
 		Province province = CivilizationUtil.getProvinceAt(this.world, this.chunkCoordX, this.chunkCoordZ);
 				
-		if ( !this.getBribed() && this.getHealth() >= this.getMaxHealth() && !this.inCombat() )
+		if ( this.getHealth() >= this.getMaxHealth() && !this.inCombat() )
         {
-			/* BRIBE WITH EMERALDS */
-			if ( itemstack.getItem() == Items.EMERALD )
+			if ( !this.getBribed() )
 			{
-				itemstack.shrink(1);
-	        	this.getLookHelper().setLookPositionWithEntity(player, 30.0F, 30.0F);
-	        	this.faceEntity(player, 30.0F, 30.0F);
-	        	
-	    		List<EntitySentry> bandits = this.world.<EntitySentry>getEntitiesWithinAABB(EntitySentry.class, new AxisAlignedBB(this.getPosition()).grow(32, 16, 32));
-	    		{
-	    			for ( EntitySentry bandit : bandits )
-	    			{
-	    				if ( bandit.passiveTimer <= 0 )
-	    				{
-	    					bandit.passiveTimer = 4;
-	        				bandit.getNavigator().tryMoveToEntityLiving(player, 0.4D+rand.nextDouble()/10.0D);
-	    				}
-	    				else if ( bandit.passiveTimer < 10 )
-	    				{
-	    					bandit.passiveTimer += 2;
-	    				}
-	    			}
-	    		}
-	    		
-	    		player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND, SoundCategory.AMBIENT, 1.0F, 1.1F);
-	            {
+				/* BRIBE WITH EMERALDS */
+				if ( itemstack.getItem() == Items.EMERALD )
+				{
+					itemstack.shrink(1);
+		        	this.getLookHelper().setLookPositionWithEntity(player, 30.0F, 30.0F);
+		        	this.faceEntity(player, 30.0F, 30.0F);
+		        	
+		    		List<EntitySentry> bandits = this.world.<EntitySentry>getEntitiesWithinAABB(EntitySentry.class, new AxisAlignedBB(this.getPosition()).grow(25, 12, 25));
+		    		{
+		    			for ( EntitySentry bandit : bandits )
+		    			{
+		    				if ( !bandit.getBribed() && bandit.passiveTimer < 4 )
+		    				{
+		    					bandit.passiveTimer = 4;
+		        				bandit.getNavigator().tryMoveToEntityLiving(player, 0.45D+rand.nextDouble()/10.0D);
+		    				}
+		    			}
+		    		}
+		    		
+		    		player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND, SoundCategory.AMBIENT, 1.0F, 1.1F);
 	                this.getNavigator().clearPath();
 
 	                if ( rand.nextInt(3) == 0 )
@@ -512,57 +516,88 @@ public class EntitySentry extends EntityToroMob implements IRangedAttackMob, IMo
 							this.setAttackTarget(player);
 							this.callForHelp(player);
 							this.chat(player, "betray", null);
+							this.canTalk = false;
 	    				}
-	                }
-	            }
+		            }
+				}
+				/* RECRUIT WITH PAPERS */
+				else if ( ToroQuestConfiguration.recruitBandits && item.equals(Item.getByNameOrId("toroquest:recruitment_papers")) )
+		        {
+					this.playTameEffect(false);
+        			this.world.setEntityState(this, (byte)6);
+        			if ( this.canTalk )
+        			{
+			    		this.chat(player, "moreemeralds", null);
+						this.canTalk = false;
+					}
+				}
+				/* NONE, NOT BRIBED */
+				else if ( this.canTalk )
+		    	{
+					if ( rand.nextBoolean() || this.passiveTimer < 1 )
+					{
+			    		this.chat(player, "hello", null);
+						this.canTalk = false;
+					}
+					else
+					{
+			    		this.chat(player, "moreemeralds", null);
+						this.canTalk = false;
+					}
+		        }
 			}
-			/* RECRUIT WITH PAPERS */
-			else if ( ToroQuestConfiguration.recruitBandits && item.equals(Item.getByNameOrId("toroquest:recruitment_papers")) )
-	        {
-				itemstack.shrink(1);
-	        	this.getLookHelper().setLookPositionWithEntity(player, 30.0F, 30.0F);
-	        	this.faceEntity(player, 30.0F, 30.0F);
-	        	playSound(SoundEvents.ENTITY_ILLAGER_CAST_SPELL, 1.5F, 1.5F);
-	        	playSound(SoundEvents.BLOCK_ANVIL_USE, 1.0F, 1.0F);
-				EntityGuard newEntity = new EntityGuard(world);
-				newEntity.setPosition(this.posX, this.posY, this.posZ);
-				this.setDead();
-				newEntity.setPlayerGuard(player.getName());
-				newEntity.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(this.getPosition())), (IEntityLivingData) null);
-				newEntity.actionTimer = 1;
-				
-				List<EntitySentry> bandits = this.world.getEntitiesWithinAABB(EntitySentry.class, new AxisAlignedBB(this.getPosition()).grow(32, 16, 32), new Predicate<EntitySentry>()
-	    		{
-	    			public boolean apply(@Nullable EntitySentry entity)
-	    			{
-	    				return true;
-	    			}
-	    		});
-				
-				for ( EntitySentry b : bandits )
+			else
+			{
+				/* RECRUIT WITH PAPERS, BRIBED */
+				if ( ToroQuestConfiguration.recruitBandits && item.equals(Item.getByNameOrId("toroquest:recruitment_papers")) )
 				{
-					b.passiveTimer = 8;
+		    		this.canTalk = false;
+					itemstack.shrink(1);
+		        	this.getLookHelper().setLookPositionWithEntity(player, 30.0F, 30.0F);
+		        	this.faceEntity(player, 30.0F, 30.0F);
+		        	playSound(SoundEvents.ENTITY_ILLAGER_CAST_SPELL, 1.5F, 1.5F);
+		        	playSound(SoundEvents.BLOCK_ANVIL_USE, 1.0F, 1.0F);
+					EntityGuard newEntity = new EntityGuard(this.world, null);
+					newEntity.setPosition(this.posX, this.posY, this.posZ);
+					this.setDead();
+					newEntity.setPlayerGuard(player.getName());
+					newEntity.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(this.getPosition())), (IEntityLivingData) null);
+					newEntity.actionTimer = 1;
+					
+//					List<EntitySentry> bandits = this.world.getEntitiesWithinAABB(EntitySentry.class, new AxisAlignedBB(this.getPosition()).grow(32, 16, 32), new Predicate<EntitySentry>()
+//		    		{
+//		    			public boolean apply(@Nullable EntitySentry entity)
+//		    			{
+//		    				return true;
+//		    			}
+//		    		});
+//					
+//					for ( EntitySentry b : bandits )
+//					{
+//						b.passiveTimer = 8;
+//					}
+					
+					newEntity.spawnedNearBandits = true;
+					newEntity.copyLocationAndAnglesFrom(this);
+					world.spawnEntity(newEntity);
+					newEntity.setMeleeWeapon();
+									
+					if ( province != null && province.getCiv() != null )
+					{
+						newEntity.chat(newEntity, player, "civbanditrecruit", province.getCiv().getDisplayName(player));
+					}
+					else
+					{
+						newEntity.chat(newEntity, player, "nocivbanditrecruit", null);
+					}
 				}
-				
-				newEntity.spawnedNearBandits = true;
-				newEntity.copyLocationAndAnglesFrom(this);
-				world.spawnEntity(newEntity);
-				newEntity.setMeleeWeapon();
-								
-				if ( province != null && province.getCiv() != null )
-				{
-					newEntity.recruitGuard(player, province, "civbanditrecruit");
-				}
-				else
-				{
-					newEntity.chat(newEntity, player, "nocivbanditrecruit", TextComponentHelper.createComponentTranslation(player, "civilization.null.name", new Object[0]).getFormattedText());
-				}
-			}
-        }
-		else if ( this.canTalk )
-    	{
-    		this.canTalk = false;
-    		this.chat(player, "moreemeralds", null);
+				/* NONE, BRIBED */
+				else if ( this.canTalk )
+		    	{
+		    		this.chat(player, "bribed", null);
+		    		this.canTalk = false;
+		    	}
+        	}
         }
 		return true;
 	}
@@ -899,6 +934,7 @@ public class EntitySentry extends EntityToroMob implements IRangedAttackMob, IMo
 	// if this aggro timer is >= 5, deaggro
 	public int aggroTimer = 0;
 	public int flankingTimer = 0;
+	private boolean interacted = false;
 	
 	@Override
 	public void onLivingUpdate()
@@ -1008,6 +1044,8 @@ public class EntitySentry extends EntityToroMob implements IRangedAttackMob, IMo
 			return;
 		}
 		
+		this.interacted = false;
+		
 		if ( this.getRidingEntity() instanceof EntityBoat )
 		{
 			// CAMERA
@@ -1079,8 +1117,11 @@ public class EntitySentry extends EntityToroMob implements IRangedAttackMob, IMo
 		if ( this.ticksExisted % 100 == 0 )
     	{
     		this.heal(1.0f);
+    		
 	        this.setSprinting(false);
 	        
+			super.collideWithNearbyEntities();
+
 //	    	if ( this.getHealth() > this.fleeModifier*this.getMaxHealth() )
 //	    	{
 //	    		this.fleeing = false;
@@ -3145,11 +3186,11 @@ public class EntitySentry extends EntityToroMob implements IRangedAttackMob, IMo
     }
     
 	//===================================================== Climbing =======================================================
-    
+
     @Override
-    public boolean canBePushed()
+    protected void collideWithNearbyEntities()
     {
-        return this.isEntityAlive();
+    	
     }
     
     @Override

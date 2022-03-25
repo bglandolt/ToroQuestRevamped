@@ -351,7 +351,9 @@ public class EntityGuard extends EntityToroNpc implements IRangedAttackMob, Toro
 			       		this.pledgeAllegianceIfUnaffiliated(false);
 			
 			    		this.setSprinting(false);
-			       		
+			    		
+						super.collideWithNearbyEntities();
+			    		
 						if ( !this.actionReady() )
 						{
 							this.actionTimer--;
@@ -1511,6 +1513,8 @@ public class EntityGuard extends EntityToroNpc implements IRangedAttackMob, Toro
 	{
 		livingdata = super.onInitialSpawn(difficulty, livingdata);
 		
+		this.setLeftHanded(false);
+
 		if ( !this.world.isRemote )
 		{
 			this.setCustomNameTag("...");
@@ -1539,6 +1543,7 @@ public class EntityGuard extends EntityToroNpc implements IRangedAttackMob, Toro
     	this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(ToroQuestConfiguration.guardAttackDamage);
 
 		CivilizationType civ = this.getCivilization();
+		
 		if ( civ == null )
 		{
 			this.setHeldItem(EnumHand.MAIN_HAND, new ItemStack(Items.IRON_SWORD, 1));

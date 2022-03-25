@@ -344,7 +344,8 @@ public class PlayerCivilizationCapabilityImpl extends PlayerCivilization impleme
 	}
 
 	@Override
-	public Province getInCivilization() {
+	public Province getInCivilization()
+	{
 		return inCiv;
 	}
 
@@ -442,7 +443,7 @@ public class PlayerCivilizationCapabilityImpl extends PlayerCivilization impleme
 	@Override
 	public List<ItemStack> rejectQuest(List<ItemStack> in)
 	{
-		Province province = getInCivilization();
+		Province province = this.getInCivilization();
 		
 		if (province == null)
 		{

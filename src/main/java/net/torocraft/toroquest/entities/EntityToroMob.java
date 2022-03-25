@@ -57,12 +57,6 @@ public class EntityToroMob extends EntityCreature implements IMob
             this.setDead();
         }
 	}
-	
-    @Override
-    protected void collideWithNearbyEntities()
-    {
-    	
-    }
 
 	public SoundCategory getSoundCategory()
 	{

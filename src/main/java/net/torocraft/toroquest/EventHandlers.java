@@ -43,8 +43,8 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -863,6 +863,7 @@ public class EventHandlers
 		if ( (event.getEntity() instanceof EntityPlayer) )
 		{
 			EntityPlayer player = (EntityPlayer) event.getEntity();
+			
 			if ( player == null )
 			{
 				return;
@@ -930,6 +931,23 @@ public class EventHandlers
 						
 					}
 				}
+				
+
+//				if ( event.getSource() != null && event.getSource().getTrueSource() instanceof EntityGuard )
+//				{
+//					event.getSource().getTrueSource().setCustomNameTag("Guard");
+//				}
+//				else if ( event.getSource() != null && event.getSource().getTrueSource() instanceof EntitySentry )
+//				{
+//					if ( event.getSource().getTrueSource() instanceof EntityOrc )
+//					{
+//						event.getSource().getTrueSource().setCustomNameTag("Orc");
+//					}
+//					else
+//					{
+//						event.getSource().getTrueSource().setCustomNameTag("Bandit");
+//					}
+//				}
 			}
 			else
 			{

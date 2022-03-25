@@ -68,16 +68,9 @@ public class RenderVillageLord extends RenderBiped<EntityVillageLord>
 	 * unless you call Render.bindEntityTexture.
 	 */
 	
-	ResourceLocation R;
-
 	@Override
 	protected ResourceLocation getEntityTexture(EntityVillageLord entity)
 	{
-		if ( R != null )
-		{
-			return R;
-		}
-		
 		CivilizationType civ = entity.getCivilization();
 		
 		if ( civ == null )
@@ -89,31 +82,31 @@ public class RenderVillageLord extends RenderBiped<EntityVillageLord>
 		{
 			case FIRE:
 			{
-				return R = TEXTURES_FIRE;
+				return TEXTURES_FIRE;
 			}
 			case EARTH:
 			{
-				return R = TEXTURES_EARTH;
+				return TEXTURES_EARTH;
 			}
 			case MOON:
 			{
-				return R = TEXTURES_MOON;
+				return TEXTURES_MOON;
 			}
 			case SUN:
 			{
-				return R = TEXTURES_SUN;
+				return TEXTURES_SUN;
 			}
 			case WIND:
 			{
-				return R = TEXTURES_WIND;
+				return TEXTURES_WIND;
 			}
 			case WATER:
 			{
-				return R = TEXTURES_WATER;
+				return TEXTURES_WATER;
 			}
 			default:
 			{
-				return R;
+				return DEFAULT;
 			}
 		}
 	}

@@ -141,11 +141,9 @@ public class CivilizationHandlers
 	public static int MIN_SPAWN_HEIGHT = ToroQuestConfiguration.minSpawnHeight;
 	public static int SPAWN_RANGE = MAX_SPAWN_HEIGHT-MIN_SPAWN_HEIGHT;
 	
-	public static final int timeFadeIn = 18;
-	public static final int displayTime = 38;
-	public static final int timeFadeOut = 8;
-	public static final int displayWait = 0;
-	public static int displayCapture = 200;
+	public static final int timeFadeIn = 20;
+	public static final int displayTime = 50;
+	public static final int timeFadeOut = 20;
 
 	// private static final ResourceLocation guiTexture = new ResourceLocation("toroquest:textures/gui/lord_gui.png");
 
@@ -1027,14 +1025,15 @@ public class CivilizationHandlers
 		Block e = event.getState().getBlock();
 		
 		Entity eventEntity = event.getEntity();
+		
 		if ( eventEntity == null || !(eventEntity instanceof EntityPlayer) )
 		{
 			return;
 		}
 		
 		EntityPlayer player = (EntityPlayer)eventEntity;
-
-		if ( Item.getItemFromBlock(e) instanceof net.minecraftforge.common.IPlantable )
+	    
+		if ( e instanceof net.minecraftforge.common.IPlantable )
 		{
 			try
 			{

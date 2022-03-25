@@ -276,7 +276,7 @@ public class EntityVillageLord extends EntityToroNpc implements IInventoryChange
 	{
 		if ( player == null || !this.isEntityAlive() || hand == null )
 		{
-			return false;
+			return true;
 		}
 		
 		this.getLookHelper().setLookPositionWithEntity(player, 30.0F, 30.0F);
@@ -285,7 +285,7 @@ public class EntityVillageLord extends EntityToroNpc implements IInventoryChange
 		
 		if ( player.world.isRemote )
 		{
-			return false;
+			return true;
 		}
 		
 		if ( this.isChild() )

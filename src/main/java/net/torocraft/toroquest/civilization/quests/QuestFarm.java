@@ -197,7 +197,7 @@ public class QuestFarm extends QuestBase implements Quest
 	{
 		Random rand = new Random();
 		DataWrapper q = new DataWrapper();
-		q.getData().setCiv(province.civilization);
+		q.getData().setCiv(province.getCiv());
 		q.getData().setPlayer(player);
 		q.getData().setProvinceId(province.id);
 		q.getData().setQuestId(UUID.randomUUID());
@@ -306,7 +306,8 @@ public class QuestFarm extends QuestBase implements Quest
 			return data;
 		}
 
-		public DataWrapper setData(QuestData data) {
+		public DataWrapper setData(QuestData data)
+		{
 			this.data = data;
 			return this;
 		}

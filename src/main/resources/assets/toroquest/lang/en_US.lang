@@ -348,7 +348,8 @@ quests.coal.itemname=Coal
 quests.redstone.itemname=Redstone Dust
 quests.obsidian.itemname=Obsidian
 quests.glowstone.itemname=Glowstone Dust
-quests.diamond.itemname=Diamond
+quests.lapis.itemname=Lapis
+quests.diamond.itemname=Diamonds
 
 quests.mine.loggathered.incomplete=This wood is rotten! I'll need you to cut down trees with healthier wood, then, return to me with the new resources.
 
@@ -358,7 +359,7 @@ quests.mine.stonegathered.incomplete=Hmm... this stone is too brittle. I need st
 
 quests.mine.coalgathered.incomplete=This coal is of very low quality. Would you care to mine a few more coal veins and return the resources to me?
 
-quests.mine.redstonegatheredincomplete=This redstone is somewhat depleted... my engineers need resources powerful enough for their creations. You'll need to mine some new redstone deposits, @p.
+quests.mine.redstonegathered.incomplete=This redstone is somewhat depleted... my engineers need resources powerful enough for their creations. You'll need to mine some new redstone deposits, @p.
 
 quests.mine.obsidiangathered.incomplete=This obsidian is far too brittle, @p. I'll need you to mine new obsidian for me.
 
@@ -1466,11 +1467,28 @@ entity.toroquest.bandit.moreemeralds11=I don't do mercenary work for free.
 entity.toroquest.bandit.moreemeralds12=Pay me enough and I'll do just about §oanything§r.
 entity.toroquest.bandit.moreemeralds13=Why don't you make like an Enderman and teleport away.
 entity.toroquest.bandit.moreemeralds14=Go play in lava why don't you.
-entity.toroquest.bandit.moreemeralds15=Emeralds first. Otherwise don't waste my time.
+entity.toroquest.bandit.moreemeralds15=Emeralds first. Otherwise, don't waste my time.
+
+################## BANDIT BRIBED ##################
+
+entity.toroquest.bandit.bribed=13
+entity.toroquest.bandit.bribed0=So. You got work for me or what?
+entity.toroquest.bandit.bribed1=What is it you hired me for?
+entity.toroquest.bandit.bribed2=What’ll you have me do? Kill? Murder? Steal? All of the above I hope.
+entity.toroquest.bandit.bribed3=Get on with it then, what’s my task?
+entity.toroquest.bandit.bribed4=I’m ready to kill. Tell me your orders.
+entity.toroquest.bandit.bribed5=You got work for me, right?
+entity.toroquest.bandit.bribed6=You said the pay is half now, half later… §oright§r?
+entity.toroquest.bandit.bribed7=Ha! I would’ve done it for half the emeralds!
+entity.toroquest.bandit.bribed8=You’ve got work for me, so let’s hear it.
+entity.toroquest.bandit.bribed9=You pay handsomely, @p.
+entity.toroquest.bandit.bribed10=You are quite generous with your emeralds, @p.
+entity.toroquest.bandit.bribed11=@p? Pleased to meet you. Now, what are my orders?
+entity.toroquest.bandit.bribed12=What are my orders?
 
 ################## BANDIT HELLO ##################
 
-entity.toroquest.bandit.hello=20
+entity.toroquest.bandit.hello=21
 entity.toroquest.bandit.hello0=What is it?
 entity.toroquest.bandit.hello1=Who you lookin' at?
 entity.toroquest.bandit.hello2=I don't recognize you...
@@ -1480,7 +1498,7 @@ entity.toroquest.bandit.hello5=Get out of my face or I'll bash yours in.
 entity.toroquest.bandit.hello6=Hah. You look weak.
 entity.toroquest.bandit.hello7=Looking for trouble? You've found it.
 entity.toroquest.bandit.hello8=I'm looking for work. Got anything for me?
-entity.toroquest.bandit.hello9=You know where I can find diamonds?
+entity.toroquest.bandit.hello9=You know where I can find any emeralds?
 entity.toroquest.bandit.hello10=You smell like... rotten beetroot...
 entity.toroquest.bandit.hello11=How are you?
 entity.toroquest.bandit.hello12=Greetings, @p.
@@ -1491,13 +1509,18 @@ entity.toroquest.bandit.hello16=Village nearby. Soon their emeralds will be mine
 entity.toroquest.bandit.hello17=I enjoy killing. It's what I do best.
 entity.toroquest.bandit.hello18=Would you like to be friends? All of mine are dead.
 entity.toroquest.bandit.hello19=Piss off.
+entity.toroquest.bandit.hello20=Don't worry I won't kill you... maybe.
 
 ################## BANDIT OUTLAW ##################
 
-entity.toroquest.bandit.outlaw=6
+entity.toroquest.bandit.outlaw=10
 entity.toroquest.bandit.outlaw0=@p, is it? I heard you're wanted for murder.
 entity.toroquest.bandit.outlaw1=Could it be..? I've heard tales of your crimes, @p.
 entity.toroquest.bandit.outlaw2=You're the infamous @p, aren't you?
 entity.toroquest.bandit.outlaw3=@p, right? I know not to mess with you.
 entity.toroquest.bandit.outlaw4=Word of your crimes travel quickly, @p. Greetings.
 entity.toroquest.bandit.outlaw5=A fellow outlaw. Welcome.
+entity.toroquest.bandit.outlaw6=Please... don't hurt me. I've heard of your crimes...
+entity.toroquest.bandit.outlaw7=Is it really @p?! I wish I could murder as good as you...
+entity.toroquest.bandit.outlaw8=Look, I don't want any trouble!
+entity.toroquest.bandit.outlaw9=There's a bounty on your head. I bet mine is bigger.

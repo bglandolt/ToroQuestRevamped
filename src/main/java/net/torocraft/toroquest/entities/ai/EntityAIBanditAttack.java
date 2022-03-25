@@ -129,48 +129,53 @@ public class EntityAIBanditAttack extends EntityAITarget
 		}
 		else if ( this.taskOwner instanceof EntitySentry )
 		{
-			if ( ((EntitySentry)taskOwner).enemy == player ) return true;
+			EntitySentry sentry = (EntitySentry)taskOwner;
+			if ( sentry.enemy == player ) return true;
 			
 			if ( player.getHeldItemMainhand().getItem() == Items.EMERALD || player.getHeldItemOffhand().getItem() == Items.EMERALD )
 			{
-				if ( ((EntitySentry)(taskOwner)).passiveTimer == -1 )
+				if ( !sentry.getBribed() && sentry.passiveTimer == -1 )
 				{
-					((EntitySentry)(taskOwner)).passiveTimer = 4;
-					this.taskOwner.getNavigator().tryMoveToEntityLiving(player, 0.4D+rand.nextDouble()/10.0D);
-					//if ( rand.nextInt(3) == 0 )
-					List<EntitySentry> bandits = taskOwner.world.<EntitySentry>getEntitiesWithinAABB(EntitySentry.class, new AxisAlignedBB(taskOwner.getPosition()).grow(32, 16, 32));
+					sentry.passiveTimer = 4;
+					sentry.getNavigator().tryMoveToEntityLiving(player, 0.45D+rand.nextDouble()/10.0D);
+
+					boolean flag = true;
+					
+					if ( sentry.emeraldGreeting && sentry.getDistance(player) < 12 )
+					{
+						sentry.chat(player, "emeralds", null);
+						sentry.emeraldGreeting = false;
+					}
+					
+					List<EntitySentry> bandits = sentry.world.<EntitySentry>getEntitiesWithinAABB(EntitySentry.class, new AxisAlignedBB(sentry.getPosition()).grow(25, 12, 25));
 		    		{
 		    			for ( EntitySentry bandit : bandits )
 		    			{
-		    				if ( bandit.passiveTimer <= 0 )
+		    				if ( !bandit.getBribed() && bandit.passiveTimer == -1 )
 		    				{
 		    					bandit.passiveTimer = 4;
-		        				bandit.getNavigator().tryMoveToEntityLiving(player, 0.4D+rand.nextDouble()/10.0D);
-		    				}
-		    				else if ( bandit.passiveTimer < 10 )
-		    				{
-		    					bandit.passiveTimer += 2;
+		        				bandit.getNavigator().tryMoveToEntityLiving(player, 0.45D+rand.nextDouble()/10.0D);
+		        				bandit.emeraldGreeting = flag;
 		    				}
 		    			}
 		    		}
-					((EntitySentry)(taskOwner)).chat(player, "emeralds", null);
 					return false;
 				}
 			}
 			
-			if ( ((EntitySentry)(taskOwner)).getBribed() || ((EntitySentry)(taskOwner)).passiveTimer > 0 )
+			if ( sentry.getBribed() || sentry.passiveTimer > 0 )
 			{
 				return false;
 			}
-			else if ( ((EntitySentry)(taskOwner)).passiveTimer == 0 )
+			else if ( sentry.passiveTimer == 0 )
 			{
 				// PEACEFUL
-				if ( taskOwner.world.getDifficulty() == EnumDifficulty.PEACEFUL )
+				if ( sentry.world.getDifficulty() == EnumDifficulty.PEACEFUL )
 				{
 					return false;
 				}
 				
-				((EntitySentry)(taskOwner)).chat(player, "betray", null);
+				sentry.chat(player, "betray", null);
 				return true;
 			}
 		
@@ -183,14 +188,15 @@ public class EntityAIBanditAttack extends EntityAITarget
 			
 			if ( totalRep <= -50 )
 			{
-				((EntitySentry)taskOwner).passiveTimer = 8;
-				List<EntitySentry> bandits = taskOwner.world.<EntitySentry>getEntitiesWithinAABB(EntitySentry.class, new AxisAlignedBB(taskOwner.getPosition()).grow(32, 16, 32));
-	    		{
-	    			for ( EntitySentry bandit : bandits )
-	    			{
-	    				bandit.passiveTimer = 8;
-	    			}
-	    		}
+//				sentry.passiveTimer = 4;
+//				
+//				List<EntitySentry> bandits = sentry.world.<EntitySentry>getEntitiesWithinAABB(EntitySentry.class, new AxisAlignedBB(sentry.getPosition()).grow(25, 12, 25));
+//	    		{
+//	    			for ( EntitySentry bandit : bandits )
+//	    			{
+//	    				bandit.passiveTimer = 4;
+//	    			}
+//	    		}
 
 				String bandit = "";
 				
@@ -227,7 +233,7 @@ public class EntityAIBanditAttack extends EntityAITarget
 					bandit = TextComponentHelper.createComponentTranslation(player, "civilization.wind.name", new Object[0]).toString();
 				}
 				
-				((EntitySentry)(taskOwner)).chat(player, "outlaw", TextComponentHelper.createComponentTranslation(player, "civilization.house.name", new Object[0]).toString() + " " + bandit);
+				sentry.chat(player, "outlaw", TextComponentHelper.createComponentTranslation(player, "civilization.house.name", new Object[0]).toString() + " " + bandit);
 				return false;
 			}
 			
@@ -235,15 +241,22 @@ public class EntityAIBanditAttack extends EntityAITarget
 			{
 				if ( i.getItem() instanceof ItemBanditArmor || i.getItem() instanceof ItemLegendaryBanditArmor )
 				{
-					((EntitySentry)(taskOwner)).chat(player, "hello", null);
-					((EntitySentry)taskOwner).passiveTimer = 8;
-					List<EntitySentry> bandits = taskOwner.world.<EntitySentry>getEntitiesWithinAABB(EntitySentry.class, new AxisAlignedBB(taskOwner.getPosition()).grow(32, 16, 32));
+					boolean flag = true;
+					
+					if ( sentry.helloGreeting && sentry.getDistance(player) < 12 )
+					{
+						sentry.chat(player, "hello", null);
+						sentry.helloGreeting = false;
+					}
+					
+					List<EntitySentry> bandits = sentry.world.<EntitySentry>getEntitiesWithinAABB(EntitySentry.class, new AxisAlignedBB(sentry.getPosition()).grow(25, 12, 25));
 		    		{
 		    			for ( EntitySentry bandit : bandits )
 		    			{
-		    				bandit.passiveTimer = 8;
+		    				bandit.helloGreeting = flag;
 		    			}
 		    		}
+		    		
 					return false;
 				}
 			}
@@ -254,6 +267,7 @@ public class EntityAIBanditAttack extends EntityAITarget
 		{
 			return false;
 		}
+		
 		return true;
     }
 	

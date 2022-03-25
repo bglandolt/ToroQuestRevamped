@@ -157,17 +157,19 @@ public class RenderGuard extends RenderBiped<EntityGuard>
 	 * unless you call Render.bindEntityTexture.
 	 */
 	
-	ResourceLocation R;
+	// ResourceLocation R;
 	
 	@Override
 	protected ResourceLocation getEntityTexture(EntityGuard entity)
 	{
-		if ( R != null )
-		{
-			return R;
-		}
+//		if ( R != null )
+//		{
+//			return R;
+//		}
 		
 		CivilizationType civ = entity.getCivilization();
+		
+		// System.out.println(civ);
 		
 		if ( civ == null )
 		{
@@ -178,31 +180,31 @@ public class RenderGuard extends RenderBiped<EntityGuard>
 		{
 			case FIRE:
 			{
-				return R = TEXTURES_FIRE;
+				return TEXTURES_FIRE;
 			}
 			case EARTH:
 			{
-				return R = TEXTURES_EARTH;
+				return TEXTURES_EARTH;
 			}
 			case MOON:
 			{
-				return R = TEXTURES_MOON;
+				return TEXTURES_MOON;
 			}
 			case SUN:
 			{
-				return R = TEXTURES_SUN;
+				return TEXTURES_SUN;
 			}
 			case WIND:
 			{
-				return R = TEXTURES_WIND;
+				return TEXTURES_WIND;
 			}
 			case WATER:
 			{
-				return R = TEXTURES_WATER;
+				return TEXTURES_WATER;
 			}
 			default:
 			{
-				return R;
+				return DEFAULT;
 			}
 		}
 	}

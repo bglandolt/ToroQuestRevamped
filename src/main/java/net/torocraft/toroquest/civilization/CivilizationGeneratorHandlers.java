@@ -23,7 +23,6 @@ import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.BlockPane;
 import net.minecraft.block.BlockSand;
 import net.minecraft.block.BlockSkull;
-import net.minecraft.block.BlockStairs;
 import net.minecraft.block.BlockStone;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -73,10 +72,10 @@ public class CivilizationGeneratorHandlers
 	@SubscribeEvent (priority = EventPriority.NORMAL)
 	public void registerNewCiviliationBorder(PopulateChunkEvent.Pre event)
 	{
-		if ( event.getWorld().isRemote )
-		{
-			return;
-		}
+//		if ( event.getWorld().isRemote )
+//		{
+//			return;
+//		}
 		
 		if ( !event.isHasVillageGenerated() )
 		{
@@ -89,10 +88,10 @@ public class CivilizationGeneratorHandlers
 	@SubscribeEvent (priority = EventPriority.LOWEST)
 	public void registerNewCiviliationBorderPost(PopulateChunkEvent.Post event)
 	{
-		if ( event.getWorld().isRemote )
-		{
-			return;
-		}
+//		if ( event.getWorld().isRemote )
+//		{
+//			return;
+//		}
 		
 		if ( !event.isHasVillageGenerated() )
 		{
@@ -144,9 +143,9 @@ public class CivilizationGeneratorHandlers
 						{
 							if ( hasVillagerChunk )
 							{
-								if ( event.getRand().nextInt(75) == 0 )
+								if ( event.getRand().nextInt(80) == 0 )
 								{
-									if ( event.getRand().nextInt(4) == 0 )
+									if ( event.getRand().nextInt(6) == 0 )
 									{
 										VillagePieceBlockMap.setBanditBanner(event.getWorld(), pos.up());
 									}
@@ -435,7 +434,7 @@ public class CivilizationGeneratorHandlers
 										}
 										case WATER:
 										{
-											bed.setColor(EnumDyeColor.BLUE);
+											bed.setColor(EnumDyeColor.CYAN);
 											break;
 										}
 										case MOON:

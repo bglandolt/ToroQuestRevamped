@@ -41,7 +41,7 @@ import net.torocraft.toroquest.entities.EntityVillageLord;
 public class TileEntityToroSpawner extends TileEntity implements ITickable
 {
 
-	protected int triggerDistance = 60;
+	protected int triggerDistance = 64;
 	protected List<String> entityIds = new ArrayList<String>();
 	protected int spawnRadius = 0;
 	
@@ -327,10 +327,10 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 			{
 				for ( EntityPlayer player : this.world.playerEntities )
 		        {
-		            if ( EntitySelectors.NOT_SPECTATING.apply(player) && player.dimension == 0 && player.getPosition().getY() >= ToroQuestConfiguration.minSpawnHeight && player.getDistanceSq(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ()) <= 4900 );
+		            if ( EntitySelectors.NOT_SPECTATING.apply(player) && player.dimension == 0 && player.getPosition().getY() >= ToroQuestConfiguration.minSpawnHeight && player.getDistanceSq(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ()) <= 5000 )
 		            {
-						Minecraft.getMinecraft().ingameGUI.displayTitle(null, TextFormatting.BOLD + ToroQuestConfiguration.raidedProvinceTitle, 0, 0, 0);
-						Minecraft.getMinecraft().ingameGUI.displayTitle("", ToroQuestConfiguration.raidedProvinceTitle, CivilizationHandlers.timeFadeIn, CivilizationHandlers.displayTime, CivilizationHandlers.timeFadeOut);
+						Minecraft.getMinecraft().ingameGUI.displayTitle(null, TextFormatting.RED + "" + TextFormatting.BOLD + ToroQuestConfiguration.raidedProvinceTitle, 0, 0, 0);
+						Minecraft.getMinecraft().ingameGUI.displayTitle("", TextFormatting.RED + "" + TextFormatting.BOLD + ToroQuestConfiguration.raidedProvinceTitle, CivilizationHandlers.timeFadeIn, CivilizationHandlers.displayTime, CivilizationHandlers.timeFadeOut);
 		            }
 		        }
 				this.world.spawnEntity(entity);
@@ -406,12 +406,11 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
     {    			
         for ( EntityPlayer player : this.world.playerEntities )
         {
-            if ( EntitySelectors.NOT_SPECTATING.apply(player) && player.dimension == 0 && player.getDistanceSq(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ()) <= this.triggerDistance*this.triggerDistance );
+            if ( EntitySelectors.NOT_SPECTATING.apply(player) && player.dimension == 0 && player.getDistanceSq(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ()) <= this.triggerDistance*this.triggerDistance )
             {
             	return true;
             }
         }
-
         return false;
     }
     

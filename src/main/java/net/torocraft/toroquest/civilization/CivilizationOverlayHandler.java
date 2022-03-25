@@ -8,9 +8,6 @@ import net.torocraft.toroquest.civilization.player.PlayerCivilizationCapabilityI
 import net.torocraft.toroquest.configuration.ConfigurationHandler;
 import net.torocraft.toroquest.util.Hud;
 import net.torocraft.toroquest.util.ToroGuiUtils;
-import java.awt.Font;
-import java.awt.font.FontRenderContext;
-import java.awt.geom.AffineTransform;
 
 public class CivilizationOverlayHandler extends Hud
 {
@@ -281,7 +278,7 @@ public class CivilizationOverlayHandler extends Hud
 
 		//GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		// GlStateManager.color(1F, 1F, 1F, alpha);
-		ToroGuiUtils.drawOverlayIcon(mc, badgeX, badgeY, ToroGuiUtils.DEFAULT_ICON_TEXTURE_WIDTH, 0, ToroGuiUtils.DEFAULT_ICON_TEXTURE_WIDTH, ToroGuiUtils.DEFAULT_ICON_TEXTURE_HEIGTH);
+		ToroGuiUtils.drawOverlayIcon(mc, badgeX, badgeY, iconIndex(civType)*ToroGuiUtils.DEFAULT_ICON_TEXTURE_WIDTH, 0, ToroGuiUtils.DEFAULT_ICON_TEXTURE_WIDTH, ToroGuiUtils.DEFAULT_ICON_TEXTURE_HEIGTH);
 		GlStateManager.popMatrix();
 		
 //		GlStateManager.pushAttrib();
@@ -360,40 +357,40 @@ public class CivilizationOverlayHandler extends Hud
 		return y + ConfigurationHandler.repDisplayY;
 	}
 
-//	private int iconIndex(CivilizationType civ)
-//	{
-//		switch (civ)
-//		{
-//			case FIRE:
-//			{
-//				return 1;
-//			}
-//			case EARTH:
-//			{
-//				return 3;
-//			}
-//			case MOON:
-//			{
-//				return 2;
-//			}
-//			case SUN:
-//			{
-//				return 4;
-//			}
-//			case WIND:
-//			{
-//				return 5;
-//			}
-//			case WATER:
-//			{
-//				return 0;
-//			}
-//			default:
-//			{
-//				return 6;
-//			}
-//		}
-//	}
+	private int iconIndex(CivilizationType civ)
+	{
+		switch (civ)
+		{
+			case FIRE:
+			{
+				return 1;
+			}
+			case EARTH:
+			{
+				return 3;
+			}
+			case MOON:
+			{
+				return 2;
+			}
+			case SUN:
+			{
+				return 4;
+			}
+			case WIND:
+			{
+				return 5;
+			}
+			case WATER:
+			{
+				return 0;
+			}
+			default:
+			{
+				return 6;
+			}
+		}
+	}
 
 }
 

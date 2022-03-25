@@ -22,7 +22,7 @@ import net.torocraft.toroquest.entities.EntityVillageLord;
 public class TileEntityVillageSpawner extends TileEntity implements ITickable
 {
 
-	protected int triggerDistance = 60;
+	protected int triggerDistance = 80;
 
 	public TileEntityVillageSpawner()
 	{
@@ -168,12 +168,11 @@ public class TileEntityVillageSpawner extends TileEntity implements ITickable
     {    			
         for ( EntityPlayer player : this.world.playerEntities )
         {
-            if ( EntitySelectors.NOT_SPECTATING.apply(player) && !player.isCreative() && player.dimension == 0 && player.getDistanceSq(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ()) <= this.triggerDistance*this.triggerDistance );
+            if ( EntitySelectors.NOT_SPECTATING.apply(player) && !player.isCreative() && player.dimension == 0 && player.getDistanceSq(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ()) <= this.triggerDistance*this.triggerDistance )
             {
             	return true;
             }
         }
-
         return false;
     }
 

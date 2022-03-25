@@ -655,6 +655,8 @@ public class EntityToroVillager extends EntityVillager implements INpc, IMerchan
 			}
 			else this.heal(1.0f);
 			
+			super.collideWithNearbyEntities();
+			
 			if ( this.canTalk > 0 )
 			{	
 				this.canTalk--;

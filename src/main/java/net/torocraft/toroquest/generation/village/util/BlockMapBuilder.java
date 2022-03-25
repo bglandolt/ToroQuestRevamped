@@ -3,7 +3,6 @@ package net.torocraft.toroquest.generation.village.util;
 import java.io.IOException;
 import java.util.Map;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.BlockBed.EnumPartType;
 import net.minecraft.block.BlockDoor;
@@ -143,6 +142,9 @@ public abstract class BlockMapBuilder extends BlockMapBase
 			handleExtraDoorBlock(block, c);
 		}
 	}
+	
+	// wooden planks getting flipped, purifying
+	
 
 	private boolean blockIsRepeatable(IBlockState block) {
 		return !(block instanceof BlockStairs || block instanceof BlockDoor);

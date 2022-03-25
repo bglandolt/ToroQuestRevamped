@@ -71,8 +71,11 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
 		DEFAULT_PALLETTE.put("st", Blocks.WOODEN_SLAB.getDefaultState().withProperty(BlockPlanks.VARIANT, BlockPlanks.EnumType.SPRUCE).withProperty(BlockSlab.HALF, EnumBlockHalf.TOP));
 		DEFAULT_PALLETTE.put("sb", Blocks.WOODEN_SLAB.getDefaultState().withProperty(BlockPlanks.VARIANT, BlockPlanks.EnumType.SPRUCE));
 
-		DEFAULT_PALLETTE.put("Fc", Blocks.COBBLESTONE_WALL.getDefaultState());
 		DEFAULT_PALLETTE.put("Sw", Blocks.WOODEN_SLAB.getDefaultState());
+		DEFAULT_PALLETTE.put("pT", Blocks.WOODEN_SLAB.getDefaultState().withProperty(BlockSlab.HALF, EnumBlockHalf.TOP));
+		
+		DEFAULT_PALLETTE.put("Fc", Blocks.COBBLESTONE_WALL.getDefaultState());
+
 		DEFAULT_PALLETTE.put("td", Blocks.TRAPDOOR.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH));
 		DEFAULT_PALLETTE.put("ti", Blocks.IRON_TRAPDOOR.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH));
 		DEFAULT_PALLETTE.put("tt", Blocks.IRON_TRAPDOOR.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH).withProperty(BlockTrapDoor.HALF, DoorHalf.TOP));
@@ -91,11 +94,13 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
 		DEFAULT_PALLETTE.put(">>", Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.WEST).withProperty(BlockStairs.HALF, EnumHalf.TOP));
 		DEFAULT_PALLETTE.put("<<", Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.EAST).withProperty(BlockStairs.HALF, EnumHalf.TOP));
 
+		DEFAULT_PALLETTE.put("k>", Blocks.STONE_BRICK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.WEST).withProperty(BlockStairs.HALF, EnumHalf.TOP));
+		DEFAULT_PALLETTE.put("k<", Blocks.STONE_BRICK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.EAST).withProperty(BlockStairs.HALF, EnumHalf.TOP));
+		
 		DEFAULT_PALLETTE.put("Ss", Blocks.STONE_SLAB.getDefaultState());
 		DEFAULT_PALLETTE.put("DS", Blocks.DOUBLE_STONE_SLAB.getDefaultState());
 		DEFAULT_PALLETTE.put("Gp", Blocks.GLASS_PANE.getDefaultState());
 		DEFAULT_PALLETTE.put("Gs", Blocks.GLOWSTONE.getDefaultState());
-		DEFAULT_PALLETTE.put("pT", Blocks.WOODEN_SLAB.getDefaultState().withProperty(BlockSlab.HALF, EnumBlockHalf.TOP));
 		DEFAULT_PALLETTE.put("cT", Blocks.STONE_SLAB.getDefaultState().withProperty(BlockSlab.HALF, EnumBlockHalf.TOP).withProperty(BlockStoneSlab.VARIANT, EnumType.COBBLESTONE));
 		DEFAULT_PALLETTE.put("Sc", Blocks.STONE_SLAB.getDefaultState().withProperty(BlockStoneSlab.VARIANT, EnumType.COBBLESTONE));
 		DEFAULT_PALLETTE.put("Sv", Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH));
@@ -245,10 +250,10 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
 		try
 		{
 			IBlockState CANDLE = Block.getBlockFromName(ToroQuestConfiguration.candleResourceName).getDefaultState();
-			TORCH_NORTH = CANDLE.withProperty(BlockStairs.FACING, EnumFacing.NORTH);
-			TORCH_SOUTH = CANDLE.withProperty(BlockStairs.FACING, EnumFacing.WEST);//south
-			TORCH_EAST = CANDLE.withProperty(BlockStairs.FACING, EnumFacing.EAST);
-			TORCH_WEST = CANDLE.withProperty(BlockStairs.FACING, EnumFacing.SOUTH);//west
+			TORCH_NORTH = CANDLE.withProperty(BlockTorch.FACING, EnumFacing.SOUTH);
+			TORCH_SOUTH = CANDLE.withProperty(BlockTorch.FACING, EnumFacing.NORTH);//south
+			TORCH_EAST = CANDLE.withProperty(BlockTorch.FACING, EnumFacing.WEST);
+			TORCH_WEST = CANDLE.withProperty(BlockTorch.FACING, EnumFacing.EAST);//west
 		}
 		catch ( Exception e )
 		{
@@ -271,30 +276,7 @@ public abstract class VillagePieceBlockMap extends StructureVillagePieces.Villag
 		DEFAULT_PALLETTE.put("b^", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.SOUTH));
 		DEFAULT_PALLETTE.put("b>", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.EAST));
 		DEFAULT_PALLETTE.put("b<", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.WEST));
-//		DEFAULT_PALLETTE.put("rv", Block.getBlockFromName("minecraft:bed").getDefaultState().withProperty(BlockBed.FACING, EnumFacing.NORTH).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("r^", Block.getBlockFromName("minecraft:bed").getDefaultState().withProperty(BlockBed.FACING, EnumFacing.SOUTH).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("r>", Block.getBlockFromName("minecraft:bed").getDefaultState().withProperty(BlockBed.FACING, EnumFacing.EAST).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("r<", Block.getBlockFromName("minecraft:bed").getDefaultState().withProperty(BlockBed.FACING, EnumFacing.WEST).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("gv", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.NORTH).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("g^", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.SOUTH).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("g>", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.EAST).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("g<", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.WEST).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("uv", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.NORTH).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("u^", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.SOUTH).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("u>", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.EAST).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("u<", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.WEST).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("bv", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.NORTH).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("b^", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.SOUTH).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("b>", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.EAST).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("b<", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.WEST).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("yv", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.NORTH).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("y^", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.SOUTH).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("y>", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.EAST).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("y<", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.WEST).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("wv", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.NORTH).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("w^", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.SOUTH).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("w>", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.EAST).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
-//		DEFAULT_PALLETTE.put("w<", Blocks.BED.getDefaultState().withProperty(BlockBed.FACING, EnumFacing.WEST).withProperty(BlockColored.COLOR, EnumDyeColor.RED));
+
 		IBlockState ET = Blocks.ENCHANTING_TABLE.getDefaultState();
 		try {ET = Block.getBlockFromName(ToroQuestConfiguration.enchantingTableResourceName).getDefaultState();}catch(Exception e){}
 		DEFAULT_PALLETTE.put("ET", ET);

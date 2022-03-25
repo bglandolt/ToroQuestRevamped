@@ -3,6 +3,9 @@ package net.torocraft.toroquest.civilization.quests.util;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
+import net.torocraft.toroquest.civilization.CivilizationType;
+import net.torocraft.toroquest.civilization.Province;
+import net.torocraft.toroquest.civilization.quests.QuestFarm;
 
 public class QuestDelegator
 {
@@ -47,6 +50,7 @@ public class QuestDelegator
 	{
 		if (data == null)
 		{
+			this.reject(null);
 			throw new NullPointerException("quest delegator was set with a null");
 		}
 		this.data = data;

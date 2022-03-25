@@ -135,6 +135,10 @@ public class EntityToroNpc extends EntityCreature
 	
 	public Province getStandingInProvince()
 	{
+		if ( this.getPosition() == BlockPos.ORIGIN )
+		{
+			return null;
+		}
 		return CivilizationUtil.getProvinceAt(this.world, this.chunkCoordX, this.chunkCoordZ);
 	}
 	
@@ -250,12 +254,6 @@ public class EntityToroNpc extends EntityCreature
 			return this.civ = enumCiv(this.getDataManager().get(CIV));
 		}
 	}
-	
-    @Override
-    protected void collideWithNearbyEntities()
-    {
-    	
-    }
 	
 	protected CivilizationType enumCiv(String s)
 	{

@@ -250,7 +250,7 @@ public class QuestMine extends QuestBase implements Quest
 			
 			quest.getiData().put("amount", quest.getiData().get("amount")+count);
 	
-			quest.getPlayer().sendStatusMessage( new TextComponentString("Gathered " + MathHelper.clamp(quest.getiData().get("amount"), 0, quest.getiData().get("target")) + "/" + quest.getiData().get("target") + " " + getDescription(quest)), true);
+			quest.getPlayer().sendStatusMessage( new TextComponentString( "Gathered " + MathHelper.clamp(quest.getiData().get("amount"),0,quest.getiData().get("target")) + "/" + quest.getiData().get("target") + " Resources"), true);
 	
 			if ( quest.getiData().get("amount") >= quest.getiData().get("target") )
 			{
