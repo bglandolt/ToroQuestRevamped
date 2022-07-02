@@ -20,35 +20,36 @@ public class VillageLordGuiHandler implements IGuiHandler
 	}
 
 	@Override
-	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
+	public Object getServerGuiElement( int ID, EntityPlayer player, World world, int x, int y, int z )
 	{
-		if (ID == VILLAGE_LORD_GUI_ID) {
+		if ( ID == VILLAGE_LORD_GUI_ID )
+		{
 			return new VillageLordContainer(player, getVillageLordInventory(world, player, x, y, z), world);
 		}
 		return null;
 	}
 
 	@Override
-	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
+	public Object getClientGuiElement( int ID, EntityPlayer player, World world, int x, int y, int z )
 	{
-		if (ID == VILLAGE_LORD_GUI_ID)
+		if ( ID == VILLAGE_LORD_GUI_ID )
 		{
 			return new VillageLordGuiContainer(player, getVillageLordInventory(world, player, x, y, z), world);
 		}
 		return null;
 	}
-	
-	private IVillageLordInventory getVillageLordInventory(World world, EntityPlayer player, int x, int y, int z)
+
+	private IVillageLordInventory getVillageLordInventory( World world, EntityPlayer player, int x, int y, int z )
 	{
 		EntityVillageLord lord = getVillageLord(world, x, y, z);
-		if( lord == null )
+		if ( lord == null )
 		{
 			return null;
 		}
 		return lord.getInventory(player.getUniqueID());
 	}
-	
-	public static EntityVillageLord getVillageLord(World world, int x, int y, int z)
+
+	public static EntityVillageLord getVillageLord( World world, int x, int y, int z )
 	{
 		// TODO is this really the best way to get the village lord reference,
 		// what if there is another close by?
@@ -58,7 +59,7 @@ public class VillageLordGuiHandler implements IGuiHandler
 		// maybe take the last clicked on lord in the player cap
 
 		List<EntityVillageLord> lords;
-		for (int i = 1; i < 15; i++)
+		for ( int i = 1; i < 15; i++ )
 		{
 			lords = world.getEntitiesWithinAABB(EntityVillageLord.class, new AxisAlignedBB(new BlockPos(x, y, z)).grow(i, i, i));
 			if ( lords != null && lords.size() > 0 )

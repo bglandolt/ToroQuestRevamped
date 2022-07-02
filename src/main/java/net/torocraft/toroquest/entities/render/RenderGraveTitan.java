@@ -10,35 +10,35 @@ import net.torocraft.toroquest.ToroQuest;
 import net.torocraft.toroquest.entities.EntityGraveTitan;
 import net.torocraft.toroquest.entities.model.ModelGraveTitan;
 
-@SideOnly(Side.CLIENT)
+@SideOnly( Side.CLIENT )
 public class RenderGraveTitan extends RenderLiving<EntityGraveTitan>
 {
 	private static final ResourceLocation TEXTURE = new ResourceLocation(ToroQuest.MODID + ":textures/entity/grave_titan.png");
 
-	public RenderGraveTitan(RenderManager renderManagerIn)
+	public RenderGraveTitan( RenderManager renderManagerIn )
 	{
 		super(renderManagerIn, new ModelGraveTitan(), 5.0F);
 
-//		this.addLayer(new LayerBipedArmor(this)
-//		{
-//			protected void initArmor() {
-//				this.modelLeggings = new ModelZombie(0.5F, true);
-//				this.modelArmor =  new ModelZombie(0.5F, true);
-//			}
-//		});
+		// this.addLayer(new LayerBipedArmor(this)
+		// {
+		// protected void initArmor() {
+		// this.modelLeggings = new ModelZombie(0.5F, true);
+		// this.modelArmor = new ModelZombie(0.5F, true);
+		// }
+		// });
 
 	}
-	
-//	@SideOnly(Side.CLIENT)
-//    public AxisAlignedBB getRenderBoundingBox()
-//    {
-//        return this.getEntityBoundingBox();
-//    }
+
+	// @SideOnly(Side.CLIENT)
+	// public AxisAlignedBB getRenderBoundingBox()
+	// {
+	// return this.getEntityBoundingBox();
+	// }
 
 	@Override
-	protected void preRenderCallback(EntityGraveTitan entitylivingbaseIn, float partialTickTime)
+	protected void preRenderCallback( EntityGraveTitan entitylivingbaseIn, float partialTickTime )
 	{
-		float health = (entitylivingbaseIn.getHealth()+100)/entitylivingbaseIn.getMaxHealth();
+		float health = (entitylivingbaseIn.getHealth() + 100) / entitylivingbaseIn.getMaxHealth();
 		GlStateManager.scale(health, health, health);
 	}
 
@@ -47,7 +47,7 @@ public class RenderGraveTitan extends RenderLiving<EntityGraveTitan>
 	 * unless you call Render.bindEntityTexture.
 	 */
 	@Override
-	protected ResourceLocation getEntityTexture(EntityGraveTitan entity)
+	protected ResourceLocation getEntityTexture( EntityGraveTitan entity )
 	{
 		return TEXTURE;
 	}

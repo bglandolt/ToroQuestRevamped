@@ -30,31 +30,33 @@ public class ItemTrophySpider extends ItemTrophy
 	private static ResourceLocation REGISTRY_NAME = new ResourceLocation(ToroQuest.MODID, NAME);
 
 	@SubscribeEvent
-	public static void init(final RegistryEvent.Register<Item> event)
+	public static void init( final RegistryEvent.Register<Item> event )
 	{
 		INSTANCE = new ItemTrophySpider();
 		INSTANCE.setRegistryName(REGISTRY_NAME);
 		event.getRegistry().register(INSTANCE);
 	}
 
-	public static void registerRenders() {
+	public static void registerRenders()
+	{
 		ModelResourceLocation model = new ModelResourceLocation(ToroQuest.MODID + ":" + NAME, "inventory");
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(INSTANCE, 0, model);
 		RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
 		renderItem.getItemModelMesher().register(INSTANCE, 0, new ModelResourceLocation(ToroQuest.MODID + ":" + NAME, "inventory"));
 	}
 
-	public ItemTrophySpider() {
+	public ItemTrophySpider()
+	{
 		setUnlocalizedName(NAME);
 		this.maxStackSize = 1;
 		this.setCreativeTab(CreativeTabs.MATERIALS);
 	}
-	
+
 	@Override
-    @SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
-    {
+	@SideOnly( Side.CLIENT )
+	public void addInformation( ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn )
+	{
 		tooltip.add("Give this trophy to a Village Lord: Inherit the agility of the Spider Queen, increasing speed and jump height while in that province.\n\n§oThe giant spider leg wreaks of sulfur and twitches every few seconds with a loud hissing sound.");
-    }
+	}
 
 }

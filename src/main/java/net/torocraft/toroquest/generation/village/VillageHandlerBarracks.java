@@ -37,7 +37,7 @@ import net.torocraft.toroquest.generation.village.util.VillagePieceBlockMap;
 public class VillageHandlerBarracks implements IVillageCreationHandler
 {
 
-	protected static final String NAME = "barracks";
+	protected static final String NAME = "tqr_barracks";
 
 	public static void init()
 	{
@@ -45,19 +45,22 @@ public class VillageHandlerBarracks implements IVillageCreationHandler
 		MapGenStructureIO.registerStructureComponent(VillagePieceBarracks.class, NAME + "_destroyed");
 		VillagerRegistry.instance().registerVillageCreationHandler(new VillageHandlerBarracks());
 	}
-	
+
 	@Override
-	public PieceWeight getVillagePieceWeight(Random random, int i) {
+	public PieceWeight getVillagePieceWeight( Random random, int i )
+	{
 		return new PieceWeight(VillagePieceBarracks.class, 30, 1);
 	}
 
 	@Override
-	public Class<?> getComponentClass() {
+	public Class<?> getComponentClass()
+	{
 		return VillagePieceBarracks.class;
 	}
 
 	@Override
-	public Village buildComponent(PieceWeight villagePiece, Start startPiece, List<StructureComponent> pieces, Random random, int p1, int p2, int p3, EnumFacing facing, int p5) {
+	public Village buildComponent( PieceWeight villagePiece, Start startPiece, List<StructureComponent> pieces, Random random, int p1, int p2, int p3, EnumFacing facing, int p5 )
+	{
 		return VillagePieceBarracks.createPiece(startPiece, pieces, random, p1, p2, p3, facing, p5);
 
 	}
@@ -66,22 +69,24 @@ public class VillageHandlerBarracks implements IVillageCreationHandler
 	{
 
 		@Override
-		protected int getYOffset() {
+		protected int getYOffset()
+		{
 			return -1;
 		}
-		
-		public static VillagePieceBarracks createPiece(StructureVillagePieces.Start start, List<StructureComponent> structures, Random rand, int x, int y, int z, EnumFacing facing, int p_175850_7_)
+
+		public static VillagePieceBarracks createPiece( StructureVillagePieces.Start start, List<StructureComponent> structures, Random rand, int x, int y, int z, EnumFacing facing, int p_175850_7_ )
 		{
-			if ( ToroQuestConfiguration.disableBarracks ) return null;
+			if ( ToroQuestConfiguration.disableBarracks )
+				return null;
 			int i = ToroQuestConfiguration.destroyedVillagesNearSpawnDistance;
 			String nameType = NAME;
 			if ( i > 0 && Math.abs(x) < i && Math.abs(z) < i )
 			{
-				 nameType += "_destroyed";
+				nameType += "_destroyed";
 			}
-			
+
 			BlockPos size = new BlockMapMeasurer(nameType).measure();
-			
+
 			StructureBoundingBox bounds = StructureBoundingBox.getComponentToAddBoundingBox(x, y, z, 0, 0, -2, size.getX(), size.getY(), size.getZ(), EnumFacing.NORTH);
 			return canVillageGoDeeper(bounds) && StructureComponent.findIntersecting(structures, bounds) == null ? new VillagePieceBarracks(nameType, start, p_175850_7_, rand, bounds, EnumFacing.NORTH) : null;
 		}
@@ -91,20 +96,20 @@ public class VillageHandlerBarracks implements IVillageCreationHandler
 			super(name, start, type, rand, bounds, EnumFacing.NORTH);
 			this.setCoordBaseMode(EnumFacing.NORTH);
 		}
-		
+
 		public VillagePieceBarracks()
 		{
 			super();
 		}
 
 		@Override
-		protected boolean specialBlockHandling(World world, String c, int x, int y, int z)
+		protected boolean specialBlockHandling( World world, String c, int x, int y, int z )
 		{
 			if ( world.isRemote )
 			{
 				return false;
 			}
-			
+
 			if ( c.equals("xx") )
 			{
 				List<String> entities = new ArrayList<String>();
@@ -139,52 +144,55 @@ public class VillageHandlerBarracks implements IVillageCreationHandler
 			}
 			return false;
 		}
-		
-		protected void setChestBlockState(World worldIn, IBlockState blockstateIn, int x, int y, int z, StructureBoundingBox boundingboxIn)
-	    {
-			if ( worldIn.isRemote ) return;
 
-	        BlockPos blockpos = new BlockPos(this.getXWithOffset(x, z), this.getYWithOffset(y), this.getZWithOffset(x, z));
+		protected void setChestBlockState( World worldIn, IBlockState blockstateIn, int x, int y, int z, StructureBoundingBox boundingboxIn )
+		{
+			if ( worldIn.isRemote )
+				return;
 
-	        if (boundingboxIn.isVecInside(blockpos) && !(worldIn.getBlockState(blockpos) instanceof BlockChest) )
-	        {
-	            // worldIn.setBlockState(blockpos, blockstateIn, 2);
-	        	
-	            setBlockState( worldIn, blockstateIn, x, y, z, boundingBox );
-				TileEntity tileentity = worldIn.getTileEntity( blockpos );
-				//((TileEntityChest) tileentity).setLootTable(LootTableList.CHESTS_VILLAGE_BLACKSMITH, worldIn.rand.nextLong());
+			BlockPos blockpos = new BlockPos(this.getXWithOffset(x, z), this.getYWithOffset(y), this.getZWithOffset(x, z));
+
+			if ( boundingboxIn.isVecInside(blockpos) && !(worldIn.getBlockState(blockpos) instanceof BlockChest) )
+			{
+				// worldIn.setBlockState(blockpos, blockstateIn, 2);
+
+				setBlockState(worldIn, blockstateIn, x, y, z, boundingBox);
+				TileEntity tileentity = worldIn.getTileEntity(blockpos);
+				// ((TileEntityChest)
+				// tileentity).setLootTable(LootTableList.CHESTS_VILLAGE_BLACKSMITH,
+				// worldIn.rand.nextLong());
 				if ( tileentity instanceof TileEntityChest )
 				{
 					TileEntityChest t = (TileEntityChest) tileentity;
-					//if ( !worldIn.isRemote )
+					// if ( !worldIn.isRemote )
 					{
-						
+
 						if ( worldIn.rand.nextBoolean() )
 						{
-//							if ( worldIn.rand.nextInt(3) == 0 )
-//							{
-//								setSlot(t, worldIn.rand.nextInt(27), new ItemStack(Items.BOWL, 1));
-//							}
-//							if ( worldIn.rand.nextInt(3) == 0 )
-//							{
-//								setSlot(t, worldIn.rand.nextInt(27), new ItemStack(Items.MUSHROOM_STEW, 1));
-//							}
+							// if ( worldIn.rand.nextInt(3) == 0 )
+							// {
+							// setSlot(t, worldIn.rand.nextInt(27), new ItemStack(Items.BOWL, 1));
+							// }
+							// if ( worldIn.rand.nextInt(3) == 0 )
+							// {
+							// setSlot(t, worldIn.rand.nextInt(27), new ItemStack(Items.MUSHROOM_STEW, 1));
+							// }
 							if ( worldIn.rand.nextInt(4) == 0 )
 							{
 								setSlot(t, worldIn.rand.nextInt(27), new ItemStack(Items.BREAD, 1));
 							}
 							for ( int i = worldIn.rand.nextInt(3); i > 0; i-- )
 							{
-								setSlot(t, worldIn.rand.nextInt(27), new ItemStack(Items.APPLE, worldIn.rand.nextInt(3)+1));
+								setSlot(t, worldIn.rand.nextInt(27), new ItemStack(Items.APPLE, worldIn.rand.nextInt(3) + 1));
 							}
 							for ( int i = worldIn.rand.nextInt(3); i > 0; i-- )
 							{
-								setSlot(t, worldIn.rand.nextInt(27), new ItemStack(Items.BREAD, worldIn.rand.nextInt(3)+1));
+								setSlot(t, worldIn.rand.nextInt(27), new ItemStack(Items.BREAD, worldIn.rand.nextInt(3) + 1));
 							}
 						}
 						else
 						{
-							for ( int i = worldIn.rand.nextInt(3)+1; i > 0; i-- )
+							for ( int i = worldIn.rand.nextInt(3) + 1; i > 0; i-- )
 							{
 								setSlot(t, worldIn.rand.nextInt(27), new ItemStack(Items.ARROW, 8));
 							}
@@ -222,25 +230,22 @@ public class VillageHandlerBarracks implements IVillageCreationHandler
 						}
 					}
 				}
-	        }
-	    }
-
+			}
+		}
 
 		@Override
-		protected void alterPalette(Map<String, IBlockState> palette)
+		protected void alterPalette( Map<String, IBlockState> palette )
 		{
 
 		}
-		
-		
 
 	}
 
-	public static void setSlot(TileEntityChest chest, int index, @Nullable ItemStack stack)
-    {
+	public static void setSlot( TileEntityChest chest, int index, @Nullable ItemStack stack )
+	{
 		if ( chest.getStackInSlot(index).isEmpty() )
 		{
 			chest.setInventorySlotContents(index, stack);
 		}
-    }
+	}
 }

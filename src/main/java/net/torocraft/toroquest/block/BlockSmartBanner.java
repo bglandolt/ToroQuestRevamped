@@ -29,143 +29,156 @@ import net.torocraft.toroquest.ToroQuest;
 @Mod.EventBusSubscriber
 public class BlockSmartBanner extends BlockContainer
 {
-    public static BlockSmartBanner INSTANCE;
+	public static BlockSmartBanner INSTANCE;
 	public static Item ITEM_INSTANCE;
-    
-    public EnumFacing facing = EnumFacing.NORTH;
-    
-    public void setFacing( EnumFacing f )
-    {
-    	this.facing = f;
-    }
-    
-    public EnumFacing getFacing()
-    {
-    	return this.facing;
-    }
+
+	public EnumFacing facing = EnumFacing.NORTH;
+
+	public void setFacing( EnumFacing f )
+	{
+		this.facing = f;
+	}
+
+	public EnumFacing getFacing()
+	{
+		return this.facing;
+	}
 
 	public static final String NAME = "smartBanner";
-	//public static BlockVillageSpawner INSTANCE;
+	// public static BlockVillageSpawner INSTANCE;
 	// public static Item ITEM_INSTANCE;
 	public static ResourceLocation REGISTRY_NAME = new ResourceLocation(ToroQuest.MODID, NAME);
-	//@GameRegistry.ObjectHolder(ToroQuest.MODID + "." + NAME) public static BlockVillageSpawner firstBlock;
+	// @GameRegistry.ObjectHolder(ToroQuest.MODID + "." + NAME) public static
+	// BlockVillageSpawner firstBlock;
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings( "deprecation" )
 	@SubscribeEvent
-	public static void initBlock(final RegistryEvent.Register<Block> event)
+	public static void initBlock( final RegistryEvent.Register<Block> event )
 	{
 		GameRegistry.registerTileEntity(TileEntityBannerSpawner.class, ToroQuest.MODID + ":" + NAME);
-		//INSTANCE = (BlockSmartBanner) new BlockToroSpawner().setUnlocalizedName(NAME);
-		//INSTANCE.setRegistryName(REGISTRY_NAME);
-		//event.getRegistry().register(INSTANCE);
+		// INSTANCE = (BlockSmartBanner) new
+		// BlockToroSpawner().setUnlocalizedName(NAME);
+		// INSTANCE.setRegistryName(REGISTRY_NAME);
+		// event.getRegistry().register(INSTANCE);
 	}
 
-//	@SuppressWarnings("deprecation")
-//	@SubscribeEvent
-//	public static void initBlock(final RegistryEvent.Register<Block> event)
-//	{
-//		// GameRegistry.registerTileEntity(BlockVillageSpawner.class, new ResourceLocation(ToroQuest.MODID , "tileEntityApiary"));
-//
-//		GameRegistry.registerTileEntity(TileEntityBannerSpawner.class, ToroQuest.MODID + ":" + NAME);
-//		INSTANCE = (BlockVillageSpawner) new BlockVillageSpawner().setUnlocalizedName(NAME);
-//		INSTANCE.setRegistryName(REGISTRY_NAME);
-//		event.getRegistry().register(INSTANCE);
-//		ITEM_INSTANCE = Item.REGISTRY.getObject(new ResourceLocation(ToroQuest.MODID, NAME));
-//		INSTANCE.setUnlocalizedName(INSTANCE.getRegistryName().toString());
-//	}
-	
-//	public static void registerRenders()
-//	{
-//		ModelResourceLocation model = new ModelResourceLocation(ToroQuest.MODID + ":" + NAME, "inventory");
-//		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(ITEM_INSTANCE, 0, model);
-//		RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
-//		renderItem.getItemModelMesher().register(ITEM_INSTANCE, 0, new ModelResourceLocation(ToroQuest.MODID + ":" + NAME, "inventory"));
-//	}
+	// @SuppressWarnings("deprecation")
+	// @SubscribeEvent
+	// public static void initBlock(final RegistryEvent.Register<Block> event)
+	// {
+	// // GameRegistry.registerTileEntity(BlockVillageSpawner.class, new
+	// ResourceLocation(ToroQuest.MODID , "tileEntityApiary"));
+	//
+	// GameRegistry.registerTileEntity(TileEntityBannerSpawner.class,
+	// ToroQuest.MODID + ":" + NAME);
+	// INSTANCE = (BlockVillageSpawner) new
+	// BlockVillageSpawner().setUnlocalizedName(NAME);
+	// INSTANCE.setRegistryName(REGISTRY_NAME);
+	// event.getRegistry().register(INSTANCE);
+	// ITEM_INSTANCE = Item.REGISTRY.getObject(new ResourceLocation(ToroQuest.MODID,
+	// NAME));
+	// INSTANCE.setUnlocalizedName(INSTANCE.getRegistryName().toString());
+	// }
 
-	
+	// public static void registerRenders()
+	// {
+	// ModelResourceLocation model = new ModelResourceLocation(ToroQuest.MODID + ":"
+	// + NAME, "inventory");
+	// Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(ITEM_INSTANCE,
+	// 0, model);
+	// RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
+	// renderItem.getItemModelMesher().register(ITEM_INSTANCE, 0, new
+	// ModelResourceLocation(ToroQuest.MODID + ":" + NAME, "inventory"));
+	// }
+
 	@SubscribeEvent
-	public static void registerRenders(ModelRegistryEvent event)
+	public static void registerRenders( ModelRegistryEvent event )
 	{
-		//registerRender(Item.getItemFromBlock(INSTANCE));
+		// registerRender(Item.getItemFromBlock(INSTANCE));
 	}
-	
-	public static void registerRender(Item item)
+
+	public static void registerRender( Item item )
 	{
-		//ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation( item.getRegistryName(), "inventory"));
+		// ModelLoader.setCustomModelResourceLocation(item, 0, new
+		// ModelResourceLocation( item.getRegistryName(), "inventory"));
 	}
-	
+
 	public BlockSmartBanner()
 	{
 		super(Material.AIR);
 		setUnlocalizedName(ToroQuest.MODID + "." + NAME);
 		setRegistryName(NAME);
-		//setCreativeTab(CreativeTabs.MISC);
+		// setCreativeTab(CreativeTabs.MISC);
 	}
-	
-//	public void registerModels()
-//	{
-//		ToroQuest.proxy.re
-//	}
-	
-//	Block myBlock = new CustomBlock();
-//	string registryname = "my_block";
-//	block.setRegistryName(registryname);
-//	block.setUnlocalizedName(block.getRegistryName().toString());
-//	GameRegistry.register(block);
 
-//	@SubscribeEvent
-//	public static void init(final RegistryEvent.Register<Item> event)
-//	{
-//		INSTANCE = new BlockVillageSpawner();
-//	}
-	
-	
+	// public void registerModels()
+	// {
+	// ToroQuest.proxy.re
+	// }
+
+	// Block myBlock = new CustomBlock();
+	// string registryname = "my_block";
+	// block.setRegistryName(registryname);
+	// block.setUnlocalizedName(block.getRegistryName().toString());
+	// GameRegistry.register(block);
+
+	// @SubscribeEvent
+	// public static void init(final RegistryEvent.Register<Item> event)
+	// {
+	// INSTANCE = new BlockVillageSpawner();
+	// }
+
 	/*
-	
-	public static ItemEnderIdol INSTANCE;
-	public static final String NAME = "ender_idol";
-	private static ResourceLocation REGISTRY_NAME = new ResourceLocation(ToroQuest.MODID, NAME);
-
-	@SubscribeEvent
-	public static void init(final RegistryEvent.Register<Item> event)
-	{
-		INSTANCE = new ItemEnderIdol();
-		INSTANCE.setRegistryName(REGISTRY_NAME);
-		event.getRegistry().register(INSTANCE);
-	}
-
-	public static void registerRenders()
-	{
-		ModelResourceLocation model = new ModelResourceLocation(ToroQuest.MODID + ":" + NAME, "inventory");
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(INSTANCE, 0, model);
-		RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
-		renderItem.getItemModelMesher().register(INSTANCE, 0, new ModelResourceLocation(ToroQuest.MODID + ":" + NAME, "inventory"));
-	}
-
-	public ItemEnderIdol() {
-		setUnlocalizedName(NAME);
-		this.maxStackSize = 1;
-		this.setCreativeTab(CreativeTabs.MATERIALS);
-	}
-	
-	
-	*/
-//	public EnumBlockRenderType getRenderType(IBlockState state)
-//	{
-//		return super.getRenderType(state)
-//	}
+	 * 
+	 * public static ItemEnderIdol INSTANCE;
+	 * public static final String NAME = "ender_idol";
+	 * private static ResourceLocation REGISTRY_NAME = new
+	 * ResourceLocation(ToroQuest.MODID, NAME);
+	 * 
+	 * @SubscribeEvent
+	 * public static void init(final RegistryEvent.Register<Item> event)
+	 * {
+	 * INSTANCE = new ItemEnderIdol();
+	 * INSTANCE.setRegistryName(REGISTRY_NAME);
+	 * event.getRegistry().register(INSTANCE);
+	 * }
+	 * 
+	 * public static void registerRenders()
+	 * {
+	 * ModelResourceLocation model = new ModelResourceLocation(ToroQuest.MODID + ":"
+	 * + NAME, "inventory");
+	 * Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(
+	 * INSTANCE, 0, model);
+	 * RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
+	 * renderItem.getItemModelMesher().register(INSTANCE, 0, new
+	 * ModelResourceLocation(ToroQuest.MODID + ":" + NAME, "inventory"));
+	 * }
+	 * 
+	 * public ItemEnderIdol() {
+	 * setUnlocalizedName(NAME);
+	 * this.maxStackSize = 1;
+	 * this.setCreativeTab(CreativeTabs.MATERIALS);
+	 * }
+	 * 
+	 * 
+	 */
+	// public EnumBlockRenderType getRenderType(IBlockState state)
+	// {
+	// return super.getRenderType(state)
+	// }
 
 	@Nullable
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
+	public AxisAlignedBB getCollisionBoundingBox( IBlockState blockState, World worldIn, BlockPos pos )
 	{
 		return NULL_AABB;
 	}
 
-	public boolean isOpaqueCube(IBlockState state) {
+	public boolean isOpaqueCube( IBlockState state )
+	{
 		return true;
 	}
 
-	public boolean canCollideCheck(IBlockState state, boolean hitIfLiquid)
+	public boolean canCollideCheck( IBlockState state, boolean hitIfLiquid )
 	{
 		return false;
 	}
@@ -173,7 +186,7 @@ public class BlockSmartBanner extends BlockContainer
 	/**
 	 * Spawns this Block's drops into the World as EntityItems.
 	 */
-	public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
+	public void dropBlockAsItemWithChance( World worldIn, BlockPos pos, IBlockState state, float chance, int fortune )
 	{
 	}
 
@@ -181,12 +194,12 @@ public class BlockSmartBanner extends BlockContainer
 	 * Returns a new instance of a block's tile entity class. Called on placing
 	 * the block.
 	 */
-	public TileEntity createNewTileEntity(World worldIn, int meta)
+	public TileEntity createNewTileEntity( World worldIn, int meta )
 	{
 		return new TileEntityBannerSpawner();
 	}
 
-	public boolean isFullCube(IBlockState state)
+	public boolean isFullCube( IBlockState state )
 	{
 		return true;
 	}
@@ -195,7 +208,7 @@ public class BlockSmartBanner extends BlockContainer
 	 * Get the Item that this Block should drop when harvested.
 	 */
 	@Nullable
-	public Item getItemDropped(IBlockState state, Random rand, int fortune)
+	public Item getItemDropped( IBlockState state, Random rand, int fortune )
 	{
 		return null;
 	}
@@ -203,23 +216,24 @@ public class BlockSmartBanner extends BlockContainer
 	/**
 	 * Returns the quantity of items to drop on block destruction.
 	 */
-	public int quantityDropped(Random random)
+	public int quantityDropped( Random random )
 	{
 		return 0;
 	}
 
 	@Override
-	public int getExpDrop(IBlockState state, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune)
+	public int getExpDrop( IBlockState state, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune )
 	{
 		return 0;
 	}
 
 	@Nullable
-	public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
+	public ItemStack getItem( World worldIn, BlockPos pos, IBlockState state )
+	{
 		return null;
 	}
 
-	@SideOnly(Side.CLIENT)
+	@SideOnly( Side.CLIENT )
 	public BlockRenderLayer getBlockLayer()
 	{
 		return BlockRenderLayer.TRANSLUCENT;

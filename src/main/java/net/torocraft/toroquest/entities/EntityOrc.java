@@ -37,22 +37,22 @@ import net.torocraft.toroquest.entities.render.RenderOrc;
 
 public class EntityOrc extends EntitySentry implements IRangedAttackMob, IMob
 {
-	
-	public double renderSizeXZ = 1.0D + (rand.nextDouble()/10.0D);
-	public double renderSizeY = renderSizeXZ * (1.025D + rand.nextGaussian()/16.0D);
-	
+
+	public double renderSizeXZ = 1.0D + (rand.nextDouble() / 10.0D);
+	public double renderSizeY = renderSizeXZ * (1.025D + rand.nextGaussian() / 16.0D);
+
 	public static String NAME = "orc";
 	static
 	{
-		if (ToroQuestConfiguration.specificEntityNames)
+		if ( ToroQuestConfiguration.specificEntityNames )
 		{
 			NAME = ToroQuestEntities.ENTITY_PREFIX + NAME;
 		}
 	}
-	public static void init(int entityId)
+
+	public static void init( int entityId )
 	{
-		EntityRegistry.registerModEntity(new ResourceLocation(ToroQuest.MODID, NAME), EntityOrc.class, NAME, entityId, ToroQuest.INSTANCE, 80, 1,
-				true, 0x308f26, 0xe0d359);
+		EntityRegistry.registerModEntity(new ResourceLocation(ToroQuest.MODID, NAME), EntityOrc.class, NAME, entityId, ToroQuest.INSTANCE, 80, 1, true, 0x308f26, 0xe0d359);
 	}
 
 	public static void registerRenders()
@@ -60,38 +60,38 @@ public class EntityOrc extends EntitySentry implements IRangedAttackMob, IMob
 		RenderingRegistry.registerEntityRenderingHandler(EntityOrc.class, new IRenderFactory<EntityOrc>()
 		{
 			@Override
-			public Render<EntityOrc> createRenderFor(RenderManager manager)
+			public Render<EntityOrc> createRenderFor( RenderManager manager )
 			{
 				return new RenderOrc(manager);
 			}
 		});
 	}
-	
+
 	public String getChatName()
-    {
+	{
 		return null;
-    }
-	
+	}
+
 	@Override
 	public boolean hasCustomName()
-    {
+	{
 		this.setAlwaysRenderNameTag(false);
-        return false;
-    }
-	
-    @Override
-    public void addMask()
-    {
+		return false;
+	}
+
+	@Override
+	public void addMask()
+	{
 		if ( ToroQuestConfiguration.renderOrcMask )
 		{
 			ItemStack head = new ItemStack(Item.getByNameOrId("toroquest:bandit_helmet"), 1);
 			setItemStackToSlot(EntityEquipmentSlot.HEAD, head);
 		}
-    }
-    
-    private ResourceLocation banditSkin = new ResourceLocation(ToroQuest.MODID + ":textures/entity/orc/orc_" + this.getSkinID() + ".png");
-	
-    public int getSkinID()
+	}
+
+	private ResourceLocation banditSkin = new ResourceLocation(ToroQuest.MODID + ":textures/entity/orc/orc_" + this.getSkinID() + ".png");
+
+	public int getSkinID()
 	{
 		int i = this.getDataManager().get(SKIN_ID);
 		if ( i < 1 )
@@ -101,60 +101,61 @@ public class EntityOrc extends EntitySentry implements IRangedAttackMob, IMob
 		}
 		return i;
 	}
-    
+
 	public ResourceLocation getSkin()
 	{
 		return this.banditSkin;
 	}
-	
+
 	@Override
 	public double getRenderSizeXZ()
 	{
 		return this.renderSizeXZ;
 	}
-	
+
 	@Override
 	public double getRenderSizeY()
 	{
 		return this.renderSizeY;
 	}
 
-	public EntityOrc(World worldIn)
+	public EntityOrc( World worldIn )
 	{
 		super(worldIn);
-        this.setSize(0.65F, 1.95F);
+		this.setSize(0.65F, 1.95F);
 		this.setAlwaysRenderNameTag(false);
 		this.experienceValue = 30;
 		this.splashPotionTimer = -1;
-	    this.hasSplashPotion = -1;
-	    this.limitPotions = -1;
+		this.hasSplashPotion = -1;
+		this.limitPotions = -1;
 	}
-	
-	public EntityOrc(World worldIn, int x, int z)
+
+	public EntityOrc( World worldIn, int x, int z )
 	{
 		this(worldIn);
-		this.setRaidLocation(x,z);
+		this.setRaidLocation(x, z);
 		this.tasks.addTask(3, new EntityAIRaid(this, x, z, 0.675D));
 	}
-	
-//	@Override
-//	public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
-//	{
-//		return super.onInitialSpawn(difficulty, livingdata);
-//	}
-	
+
+	// @Override
+	// public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty,
+	// @Nullable IEntityLivingData livingdata)
+	// {
+	// return super.onInitialSpawn(difficulty, livingdata);
+	// }
+
 	@Override
 	public void setBribed( boolean b )
 	{
 		this.getDataManager().set(BRIBED, false);
 	}
-	
+
 	@Override
 	public boolean getBribed()
 	{
 		return false;
 	}
-	
+
 	@Override
 	public boolean processInteract( EntityPlayer player, EnumHand hand )
 	{
@@ -162,62 +163,34 @@ public class EntityOrc extends EntitySentry implements IRangedAttackMob, IMob
 	}
 
 	@Override
-    protected void applyEntityAttributes()
-    {
+	protected void applyEntityAttributes()
+	{
 		super.applyEntityAttributes();
-    	this.setLeftHanded(false);
-    	this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(ToroQuestConfiguration.orcBaseHealth);
-    	this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(ToroQuestConfiguration.orcAttackDamage);
-    	this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(ToroQuestConfiguration.orcArmor);
-    	this.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(ToroQuestConfiguration.orcArmorToughness);
+		this.setLeftHanded(false);
+		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(ToroQuestConfiguration.orcBaseHealth);
+		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(ToroQuestConfiguration.orcAttackDamage);
+		this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(ToroQuestConfiguration.orcArmor);
+		this.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(ToroQuestConfiguration.orcArmorToughness);
 		this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(40.0D);
-    	this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.393D+rand.nextDouble()/50.0D);
-    	this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(ToroQuestConfiguration.banditAndOrcKnockBackResistance);
-    }
-	
+		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.393D + rand.nextDouble() / 50.0D);
+		this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(ToroQuestConfiguration.banditAndOrcKnockBackResistance);
+	}
+
 	@Override
 	public void addEquipment()
-    {
-	    int weapon = rand.nextInt(3);
-	    
-	    if ( weapon == 0 ) // MELEE
-	    {
-	    	if ( rand.nextBoolean() ) // TWO-HANDED
-	    	{
-		    	this.weaponMain = new ItemStack(Item.getByNameOrId(ToroQuestConfiguration.orcTwoHandedMeleeWeapons[rand.nextInt(ToroQuestConfiguration.orcTwoHandedMeleeWeapons.length)]),1);
-		    	if ( this.rand.nextInt((int)this.getMaxHealth()) > ToroQuestConfiguration.orcBaseHealth ) this.weaponMain = new ItemStack(Item.getByNameOrId(ToroQuestConfiguration.orcTwoHandedMeleeWeaponsPowerful[rand.nextInt(ToroQuestConfiguration.orcTwoHandedMeleeWeaponsPowerful.length)]),1);
+	{
+		int weapon = rand.nextInt(3);
 
-		    	if ( this.weaponMain == null || this.weaponMain.isEmpty() )
+		if ( weapon == 0 ) // MELEE
+		{
+			if ( rand.nextBoolean() ) // TWO-HANDED
+			{
+				this.weaponMain = new ItemStack(Item.getByNameOrId(ToroQuestConfiguration.orcTwoHandedMeleeWeapons[rand.nextInt(ToroQuestConfiguration.orcTwoHandedMeleeWeapons.length)]), 1);
+				if ( this.rand.nextInt((int) this.getMaxHealth()) > ToroQuestConfiguration.orcBaseHealth )
+					this.weaponMain = new ItemStack(Item.getByNameOrId(ToroQuestConfiguration.orcTwoHandedMeleeWeaponsPowerful[rand.nextInt(ToroQuestConfiguration.orcTwoHandedMeleeWeaponsPowerful.length)]), 1);
+
+				if ( this.weaponMain == null || this.weaponMain.isEmpty() )
 				{
-		    		if ( rand.nextBoolean() )
-					{
-						this.weaponMain = new ItemStack(Items.STONE_SWORD, 1);
-					}
-					else
-					{
-						this.weaponMain = new ItemStack(Items.STONE_AXE, 1);
-					}
-				}
-		    	
-		    	if (  ToroQuestConfiguration.enchantFirstBanditAndOrcChance > 0 && rand.nextInt(100) < ToroQuestConfiguration.enchantFirstBanditAndOrcChance )
-		    	{
-			    	String[] enchant = ToroQuestConfiguration.enchantFirstBanditAndOrcMeleeWeapon[rand.nextInt(ToroQuestConfiguration.enchantFirstBanditAndOrcMeleeWeapon.length)].split(",");
-		    		this.weaponMain.addEnchantment(Enchantment.getEnchantmentByLocation(enchant[0]), rand.nextInt(Integer.parseInt(enchant[1]))+1);
-			    	if (  ToroQuestConfiguration.enchantSecondBanditAndOrcChance > 0 && rand.nextInt(100) < ToroQuestConfiguration.enchantSecondBanditAndOrcChance )
-			    	{
-				    	enchant = ToroQuestConfiguration.enchantSecondBanditAndOrcMeleeWeapon[rand.nextInt(ToroQuestConfiguration.enchantSecondBanditAndOrcMeleeWeapon.length)].split(",");
-			    		this.weaponMain.addEnchantment(Enchantment.getEnchantmentByLocation(enchant[0]), rand.nextInt(Integer.parseInt(enchant[1]))+1);
-			    	}
-		    	}
-
-	    	}
-	    	else // DUAL-WIELD
-	    	{
-	    		this.weaponMain = new ItemStack(Item.getByNameOrId(ToroQuestConfiguration.orcOneHandedMeleeWeapons[rand.nextInt(ToroQuestConfiguration.orcOneHandedMeleeWeapons.length)]),1);
-		    	if ( this.rand.nextInt((int)this.getMaxHealth()) > ToroQuestConfiguration.orcBaseHealth ) this.weaponMain = new ItemStack(Item.getByNameOrId(ToroQuestConfiguration.orcOneHandedMeleeWeaponsPowerful[rand.nextInt(ToroQuestConfiguration.orcOneHandedMeleeWeaponsPowerful.length)]),1);
-	    		
-	    		if ( this.weaponMain == null || this.weaponMain.isEmpty() )
-		    	{
 					if ( rand.nextBoolean() )
 					{
 						this.weaponMain = new ItemStack(Items.STONE_SWORD, 1);
@@ -227,28 +200,59 @@ public class EntityOrc extends EntitySentry implements IRangedAttackMob, IMob
 						this.weaponMain = new ItemStack(Items.STONE_AXE, 1);
 					}
 				}
-				
-		    	if (  ToroQuestConfiguration.enchantFirstBanditAndOrcChance > 0 && rand.nextInt(100) < ToroQuestConfiguration.enchantFirstBanditAndOrcChance )
-		    	{
-			    	String[] enchant = ToroQuestConfiguration.enchantFirstBanditAndOrcMeleeWeapon[rand.nextInt(ToroQuestConfiguration.enchantFirstBanditAndOrcMeleeWeapon.length)].split(",");
-		    		this.weaponMain.addEnchantment(Enchantment.getEnchantmentByLocation(enchant[0]), rand.nextInt(Integer.parseInt(enchant[1]))+1);
-			    	if (  ToroQuestConfiguration.enchantSecondBanditAndOrcChance > 0 && rand.nextInt(100) < ToroQuestConfiguration.enchantSecondBanditAndOrcChance )
-			    	{
-				    	enchant = ToroQuestConfiguration.enchantSecondBanditAndOrcMeleeWeapon[rand.nextInt(ToroQuestConfiguration.enchantSecondBanditAndOrcMeleeWeapon.length)].split(",");
-			    		this.weaponMain.addEnchantment(Enchantment.getEnchantmentByLocation(enchant[0]), rand.nextInt(Integer.parseInt(enchant[1]))+1);
-			    	}
-		    	}
-		    	
-				this.weaponOff = this.weaponMain.copy();
-	    	}
-	    }
-	    else if ( weapon == 1 ) // SHIELD
-	    {
-	    	this.weaponMain = new ItemStack(Item.getByNameOrId(ToroQuestConfiguration.orcOneHandedMeleeWeapons[rand.nextInt(ToroQuestConfiguration.orcOneHandedMeleeWeapons.length)]),1);
-	    	if ( this.rand.nextInt((int)this.getMaxHealth()) > ToroQuestConfiguration.orcBaseHealth ) this.weaponMain = new ItemStack(Item.getByNameOrId(ToroQuestConfiguration.orcOneHandedMeleeWeaponsPowerful[rand.nextInt(ToroQuestConfiguration.orcOneHandedMeleeWeaponsPowerful.length)]),1);
 
-	    	if ( this.weaponMain == null || this.weaponMain.isEmpty() )
-	    	{
+				if ( ToroQuestConfiguration.enchantFirstBanditAndOrcChance > 0 && rand.nextInt(100) < ToroQuestConfiguration.enchantFirstBanditAndOrcChance )
+				{
+					String[] enchant = ToroQuestConfiguration.enchantFirstBanditAndOrcMeleeWeapon[rand.nextInt(ToroQuestConfiguration.enchantFirstBanditAndOrcMeleeWeapon.length)].split(",");
+					this.weaponMain.addEnchantment(Enchantment.getEnchantmentByLocation(enchant[0]), rand.nextInt(Integer.parseInt(enchant[1])) + 1);
+					if ( ToroQuestConfiguration.enchantSecondBanditAndOrcChance > 0 && rand.nextInt(100) < ToroQuestConfiguration.enchantSecondBanditAndOrcChance )
+					{
+						enchant = ToroQuestConfiguration.enchantSecondBanditAndOrcMeleeWeapon[rand.nextInt(ToroQuestConfiguration.enchantSecondBanditAndOrcMeleeWeapon.length)].split(",");
+						this.weaponMain.addEnchantment(Enchantment.getEnchantmentByLocation(enchant[0]), rand.nextInt(Integer.parseInt(enchant[1])) + 1);
+					}
+				}
+
+			}
+			else // DUAL-WIELD
+			{
+				this.weaponMain = new ItemStack(Item.getByNameOrId(ToroQuestConfiguration.orcOneHandedMeleeWeapons[rand.nextInt(ToroQuestConfiguration.orcOneHandedMeleeWeapons.length)]), 1);
+				if ( this.rand.nextInt((int) this.getMaxHealth()) > ToroQuestConfiguration.orcBaseHealth )
+					this.weaponMain = new ItemStack(Item.getByNameOrId(ToroQuestConfiguration.orcOneHandedMeleeWeaponsPowerful[rand.nextInt(ToroQuestConfiguration.orcOneHandedMeleeWeaponsPowerful.length)]), 1);
+
+				if ( this.weaponMain == null || this.weaponMain.isEmpty() )
+				{
+					if ( rand.nextBoolean() )
+					{
+						this.weaponMain = new ItemStack(Items.STONE_SWORD, 1);
+					}
+					else
+					{
+						this.weaponMain = new ItemStack(Items.STONE_AXE, 1);
+					}
+				}
+
+				if ( ToroQuestConfiguration.enchantFirstBanditAndOrcChance > 0 && rand.nextInt(100) < ToroQuestConfiguration.enchantFirstBanditAndOrcChance )
+				{
+					String[] enchant = ToroQuestConfiguration.enchantFirstBanditAndOrcMeleeWeapon[rand.nextInt(ToroQuestConfiguration.enchantFirstBanditAndOrcMeleeWeapon.length)].split(",");
+					this.weaponMain.addEnchantment(Enchantment.getEnchantmentByLocation(enchant[0]), rand.nextInt(Integer.parseInt(enchant[1])) + 1);
+					if ( ToroQuestConfiguration.enchantSecondBanditAndOrcChance > 0 && rand.nextInt(100) < ToroQuestConfiguration.enchantSecondBanditAndOrcChance )
+					{
+						enchant = ToroQuestConfiguration.enchantSecondBanditAndOrcMeleeWeapon[rand.nextInt(ToroQuestConfiguration.enchantSecondBanditAndOrcMeleeWeapon.length)].split(",");
+						this.weaponMain.addEnchantment(Enchantment.getEnchantmentByLocation(enchant[0]), rand.nextInt(Integer.parseInt(enchant[1])) + 1);
+					}
+				}
+
+				this.weaponOff = this.weaponMain.copy();
+			}
+		}
+		else if ( weapon == 1 ) // SHIELD
+		{
+			this.weaponMain = new ItemStack(Item.getByNameOrId(ToroQuestConfiguration.orcOneHandedMeleeWeapons[rand.nextInt(ToroQuestConfiguration.orcOneHandedMeleeWeapons.length)]), 1);
+			if ( this.rand.nextInt((int) this.getMaxHealth()) > ToroQuestConfiguration.orcBaseHealth )
+				this.weaponMain = new ItemStack(Item.getByNameOrId(ToroQuestConfiguration.orcOneHandedMeleeWeaponsPowerful[rand.nextInt(ToroQuestConfiguration.orcOneHandedMeleeWeaponsPowerful.length)]), 1);
+
+			if ( this.weaponMain == null || this.weaponMain.isEmpty() )
+			{
 				if ( rand.nextBoolean() )
 				{
 					this.weaponMain = new ItemStack(Items.STONE_SWORD, 1);
@@ -258,79 +262,81 @@ public class EntityOrc extends EntitySentry implements IRangedAttackMob, IMob
 					this.weaponMain = new ItemStack(Items.STONE_AXE, 1);
 				}
 			}
-	        
-	    	if (  ToroQuestConfiguration.enchantFirstBanditAndOrcChance > 0 && rand.nextInt(100) < ToroQuestConfiguration.enchantFirstBanditAndOrcChance )
-	    	{
-		    	String[] enchant = ToroQuestConfiguration.enchantFirstBanditAndOrcMeleeWeapon[rand.nextInt(ToroQuestConfiguration.enchantFirstBanditAndOrcMeleeWeapon.length)].split(",");
-	    		this.weaponMain.addEnchantment(Enchantment.getEnchantmentByLocation(enchant[0]), rand.nextInt(Integer.parseInt(enchant[1]))+1);
-		    	if (  ToroQuestConfiguration.enchantSecondBanditAndOrcChance > 0 && rand.nextInt(100) < ToroQuestConfiguration.enchantSecondBanditAndOrcChance )
-		    	{
-			    	enchant = ToroQuestConfiguration.enchantSecondBanditAndOrcMeleeWeapon[rand.nextInt(ToroQuestConfiguration.enchantSecondBanditAndOrcMeleeWeapon.length)].split(",");
-		    		this.weaponMain.addEnchantment(Enchantment.getEnchantmentByLocation(enchant[0]), rand.nextInt(Integer.parseInt(enchant[1]))+1);
-		    	}
-	    	}
 
-	    	this.weaponOff = new ItemStack(Item.getByNameOrId(ToroQuestConfiguration.orcShields[rand.nextInt(ToroQuestConfiguration.orcShields.length)]),1);
-	    	if ( this.rand.nextInt((int)this.getMaxHealth()) > ToroQuestConfiguration.orcBaseHealth ) this.weaponOff = new ItemStack(Item.getByNameOrId(ToroQuestConfiguration.orcShieldsPowerful[rand.nextInt(ToroQuestConfiguration.orcShieldsPowerful.length)]),1);
+			if ( ToroQuestConfiguration.enchantFirstBanditAndOrcChance > 0 && rand.nextInt(100) < ToroQuestConfiguration.enchantFirstBanditAndOrcChance )
+			{
+				String[] enchant = ToroQuestConfiguration.enchantFirstBanditAndOrcMeleeWeapon[rand.nextInt(ToroQuestConfiguration.enchantFirstBanditAndOrcMeleeWeapon.length)].split(",");
+				this.weaponMain.addEnchantment(Enchantment.getEnchantmentByLocation(enchant[0]), rand.nextInt(Integer.parseInt(enchant[1])) + 1);
+				if ( ToroQuestConfiguration.enchantSecondBanditAndOrcChance > 0 && rand.nextInt(100) < ToroQuestConfiguration.enchantSecondBanditAndOrcChance )
+				{
+					enchant = ToroQuestConfiguration.enchantSecondBanditAndOrcMeleeWeapon[rand.nextInt(ToroQuestConfiguration.enchantSecondBanditAndOrcMeleeWeapon.length)].split(",");
+					this.weaponMain.addEnchantment(Enchantment.getEnchantmentByLocation(enchant[0]), rand.nextInt(Integer.parseInt(enchant[1])) + 1);
+				}
+			}
 
-	    	if ( this.weaponOff == null || this.weaponOff.isEmpty() )
-	    	{
+			this.weaponOff = new ItemStack(Item.getByNameOrId(ToroQuestConfiguration.orcShields[rand.nextInt(ToroQuestConfiguration.orcShields.length)]), 1);
+			if ( this.rand.nextInt((int) this.getMaxHealth()) > ToroQuestConfiguration.orcBaseHealth )
+				this.weaponOff = new ItemStack(Item.getByNameOrId(ToroQuestConfiguration.orcShieldsPowerful[rand.nextInt(ToroQuestConfiguration.orcShieldsPowerful.length)]), 1);
+
+			if ( this.weaponOff == null || this.weaponOff.isEmpty() )
+			{
 				this.weaponOff = new ItemStack(Items.SHIELD, 1);
 			}
-	    	
-			if (  ToroQuestConfiguration.enchantFirstBanditAndOrcChance > 0 && rand.nextInt(100) < ToroQuestConfiguration.enchantFirstBanditAndOrcChance )
-	    	{
-		    	String[] enchant = ToroQuestConfiguration.enchantFirstBanditAndOrcShield[rand.nextInt(ToroQuestConfiguration.enchantFirstBanditAndOrcShield.length)].split(",");
-	    		this.weaponOff.addEnchantment(Enchantment.getEnchantmentByLocation(enchant[0]), rand.nextInt(Integer.parseInt(enchant[1]))+1);
-	    	}
-	    	
-	    }
-	    else if ( weapon == 2 ) // RANGED
-	    {
-	    	this.weaponMain = new ItemStack(Item.getByNameOrId(ToroQuestConfiguration.orcRangedWeapons[rand.nextInt(ToroQuestConfiguration.orcRangedWeapons.length)]),1);
-	    	if ( this.rand.nextInt((int)this.getMaxHealth()) > ToroQuestConfiguration.orcBaseHealth ) this.weaponMain = new ItemStack(Item.getByNameOrId(ToroQuestConfiguration.orcRangedWeaponsPowerful[rand.nextInt(ToroQuestConfiguration.orcRangedWeaponsPowerful.length)]),1);
 
-	    	if ( this.weaponMain == null || this.weaponMain.isEmpty() )
-	    	{
+			if ( ToroQuestConfiguration.enchantFirstBanditAndOrcChance > 0 && rand.nextInt(100) < ToroQuestConfiguration.enchantFirstBanditAndOrcChance )
+			{
+				String[] enchant = ToroQuestConfiguration.enchantFirstBanditAndOrcShield[rand.nextInt(ToroQuestConfiguration.enchantFirstBanditAndOrcShield.length)].split(",");
+				this.weaponOff.addEnchantment(Enchantment.getEnchantmentByLocation(enchant[0]), rand.nextInt(Integer.parseInt(enchant[1])) + 1);
+			}
+
+		}
+		else if ( weapon == 2 ) // RANGED
+		{
+			this.weaponMain = new ItemStack(Item.getByNameOrId(ToroQuestConfiguration.orcRangedWeapons[rand.nextInt(ToroQuestConfiguration.orcRangedWeapons.length)]), 1);
+			if ( this.rand.nextInt((int) this.getMaxHealth()) > ToroQuestConfiguration.orcBaseHealth )
+				this.weaponMain = new ItemStack(Item.getByNameOrId(ToroQuestConfiguration.orcRangedWeaponsPowerful[rand.nextInt(ToroQuestConfiguration.orcRangedWeaponsPowerful.length)]), 1);
+
+			if ( this.weaponMain == null || this.weaponMain.isEmpty() )
+			{
 				this.weaponMain = new ItemStack(Items.BOW, 1);
 			}
-	    	
-	    	if (  ToroQuestConfiguration.enchantFirstBanditAndOrcChance > 0 && rand.nextInt(100) < ToroQuestConfiguration.enchantFirstBanditAndOrcChance )
-	    	{
-		    	String[] enchant = ToroQuestConfiguration.enchantFirstBanditAndOrcRanged[rand.nextInt(ToroQuestConfiguration.enchantFirstBanditAndOrcRanged.length)].split(",");
-	    		this.weaponMain.addEnchantment(Enchantment.getEnchantmentByLocation(enchant[0]), rand.nextInt(Integer.parseInt(enchant[1]))+1);
-		    	if (  ToroQuestConfiguration.enchantSecondBanditAndOrcChance > 0 && rand.nextInt(100) < ToroQuestConfiguration.enchantSecondBanditAndOrcChance )
-		    	{
-			    	enchant = ToroQuestConfiguration.enchantSecondBanditAndOrcRanged[rand.nextInt(ToroQuestConfiguration.enchantSecondBanditAndOrcRanged.length)].split(",");
-		    		this.weaponMain.addEnchantment(Enchantment.getEnchantmentByLocation(enchant[0]), rand.nextInt(Integer.parseInt(enchant[1]))+1);
-		    	}
-	    	}
-	    }
-	    
-	    if ( this.weaponMain != null && !this.weaponMain.isEmpty() )
-	    {
-			setHeldItem(EnumHand.MAIN_HAND, this.weaponMain );
-	    }
-	    if ( this.weaponOff != null && !this.weaponOff.isEmpty() )
-	    {
-	    	setHeldItem(EnumHand.OFF_HAND, this.weaponOff );
-	    }
-		
+
+			if ( ToroQuestConfiguration.enchantFirstBanditAndOrcChance > 0 && rand.nextInt(100) < ToroQuestConfiguration.enchantFirstBanditAndOrcChance )
+			{
+				String[] enchant = ToroQuestConfiguration.enchantFirstBanditAndOrcRanged[rand.nextInt(ToroQuestConfiguration.enchantFirstBanditAndOrcRanged.length)].split(",");
+				this.weaponMain.addEnchantment(Enchantment.getEnchantmentByLocation(enchant[0]), rand.nextInt(Integer.parseInt(enchant[1])) + 1);
+				if ( ToroQuestConfiguration.enchantSecondBanditAndOrcChance > 0 && rand.nextInt(100) < ToroQuestConfiguration.enchantSecondBanditAndOrcChance )
+				{
+					enchant = ToroQuestConfiguration.enchantSecondBanditAndOrcRanged[rand.nextInt(ToroQuestConfiguration.enchantSecondBanditAndOrcRanged.length)].split(",");
+					this.weaponMain.addEnchantment(Enchantment.getEnchantmentByLocation(enchant[0]), rand.nextInt(Integer.parseInt(enchant[1])) + 1);
+				}
+			}
+		}
+
+		if ( this.weaponMain != null && !this.weaponMain.isEmpty() )
+		{
+			setHeldItem(EnumHand.MAIN_HAND, this.weaponMain);
+		}
+		if ( this.weaponOff != null && !this.weaponOff.isEmpty() )
+		{
+			setHeldItem(EnumHand.OFF_HAND, this.weaponOff);
+		}
+
 		this.addMask();
-		
+
 		if ( ToroQuestConfiguration.banditsHaveArmorForSpartanWeaponry )
 		{
 			setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(Items.LEATHER_LEGGINGS, 1));
 			setItemStackToSlot(EntityEquipmentSlot.LEGS, new ItemStack(Items.LEATHER_LEGGINGS, 1));
 			setItemStackToSlot(EntityEquipmentSlot.FEET, new ItemStack(Items.LEATHER_BOOTS, 1));
-		} 
-    	this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(ToroQuestConfiguration.orcAttackDamage);
-    }
-	
+		}
+		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(ToroQuestConfiguration.orcAttackDamage);
+	}
+
 	@Override
 	public void dropLoot()
 	{
-		if (!world.isRemote)
+		if ( !world.isRemote )
 		{
 			if ( ToroQuestConfiguration.orcsDropMasks )
 			{
@@ -338,88 +344,88 @@ public class EntityOrc extends EntitySentry implements IRangedAttackMob, IMob
 			}
 			if ( ToroQuestConfiguration.orcsDropEmeralds && rand.nextInt(3) == 0 )
 			{
-				ItemStack stack = new ItemStack(Items.EMERALD, rand.nextInt(4)+1);
+				ItemStack stack = new ItemStack(Items.EMERALD, rand.nextInt(4) + 1);
 				EntityItem dropItem = new EntityItem(world, posX, posY, posZ, stack.copy());
 				world.spawnEntity(dropItem);
 			}
 			if ( rand.nextInt(3) == 0 )
 			{
-				ItemStack stack = new ItemStack(Items.BONE, rand.nextInt(2)+1);
+				ItemStack stack = new ItemStack(Items.BONE, rand.nextInt(2) + 1);
 				EntityItem dropItem = new EntityItem(world, posX, posY, posZ, stack.copy());
 				world.spawnEntity(dropItem);
 			}
 		}
 	}
-	
-	@Override
-    @Nullable
-    protected SoundEvent getAmbientSound()
-    {
-		this.playSound(SoundEvents.ENTITY_ZOMBIE_PIG_AMBIENT, 1.0F, 0.5F + rand.nextFloat()/5.0F );
-        return null;
-    }
 
 	@Override
 	@Nullable
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
-    {
+	protected SoundEvent getAmbientSound()
+	{
+		this.playSound(SoundEvents.ENTITY_ZOMBIE_PIG_AMBIENT, 1.0F, 0.5F + rand.nextFloat() / 5.0F);
+		return null;
+	}
+
+	@Override
+	@Nullable
+	protected SoundEvent getHurtSound( DamageSource damageSourceIn )
+	{
 		if ( rand.nextInt(5) == 0 )
 		{
-			this.playSound(SoundEvents.EVOCATION_ILLAGER_DEATH, 0.8F, 0.7F + rand.nextFloat()/10.0F );
-			this.playSound(SoundEvents.ENTITY_ZOMBIE_PIG_HURT, 1.0F, 0.7F + rand.nextFloat()/5.0F );
+			this.playSound(SoundEvents.EVOCATION_ILLAGER_DEATH, 0.8F, 0.7F + rand.nextFloat() / 10.0F);
+			this.playSound(SoundEvents.ENTITY_ZOMBIE_PIG_HURT, 1.0F, 0.7F + rand.nextFloat() / 5.0F);
 		}
 		else if ( rand.nextInt(4) == 0 )
 		{
-			this.playSound(SoundEvents.ENTITY_ILLAGER_DEATH, 0.8F, 0.7F + rand.nextFloat()/10.0F );
-			this.playSound(SoundEvents.ENTITY_ZOMBIE_PIG_HURT, 1.0F, 0.7F + rand.nextFloat()/5.0F );
+			this.playSound(SoundEvents.ENTITY_ILLAGER_DEATH, 0.8F, 0.7F + rand.nextFloat() / 10.0F);
+			this.playSound(SoundEvents.ENTITY_ZOMBIE_PIG_HURT, 1.0F, 0.7F + rand.nextFloat() / 5.0F);
 		}
 		return null;
-    }
+	}
 
 	@Override
 	@Nullable
-    protected SoundEvent getDeathSound()
-    {
-		this.playSound(SoundEvents.ENTITY_ZOMBIE_PIG_DEATH, 1.0F, 1.0F + rand.nextFloat()/5.0F );
+	protected SoundEvent getDeathSound()
+	{
+		this.playSound(SoundEvents.ENTITY_ZOMBIE_PIG_DEATH, 1.0F, 1.0F + rand.nextFloat() / 5.0F);
 		return null;
-    }
-	
-//	protected final EntityAIRaid areaAI = new EntityAIRaid(this, 0.6D, 48);
-//	public Integer raidX = null;
-//	public Integer raidZ = null;
-//	
-//	public void setRaidLocation(Integer x, Integer z)
-//	{
-//		this.tasks.removeTask(this.areaAI);
-//		if ( x != null && z != null )
-//		{
-//			this.raidX = x;
-//			this.raidZ = z;
-//			this.areaAI.setCenter(x, z);
-//			this.tasks.addTask(11, this.areaAI);
-//			this.writeEntityToNBT(new NBTTagCompound());
-//		}
-//	}
-	
+	}
+
+	// protected final EntityAIRaid areaAI = new EntityAIRaid(this, 0.6D, 48);
+	// public Integer raidX = null;
+	// public Integer raidZ = null;
+	//
+	// public void setRaidLocation(Integer x, Integer z)
+	// {
+	// this.tasks.removeTask(this.areaAI);
+	// if ( x != null && z != null )
+	// {
+	// this.raidX = x;
+	// this.raidZ = z;
+	// this.areaAI.setCenter(x, z);
+	// this.tasks.addTask(11, this.areaAI);
+	// this.writeEntityToNBT(new NBTTagCompound());
+	// }
+	// }
+
 	protected void playAttackSound()
 	{
 		if ( this.rand.nextInt(5) == 0 )
-        {
-			this.playSound( SoundEvents.ENTITY_ZOMBIE_PIG_AMBIENT, 0.9F, 0.55F + rand.nextFloat()/5.0F );
-        }
+		{
+			this.playSound(SoundEvents.ENTITY_ZOMBIE_PIG_AMBIENT, 0.9F, 0.55F + rand.nextFloat() / 5.0F);
+		}
 	}
-	
+
 	@Override
-	protected void callForHelp(EntityLivingBase attacker)
+	protected void callForHelp( EntityLivingBase attacker )
 	{
 		if ( attacker == null || !attacker.isEntityAlive() )
 		{
 			return;
 		}
-		
+
 		List<EntityOrc> help = world.getEntitiesWithinAABB(EntityOrc.class, new AxisAlignedBB(getPosition()).grow(32, 16, 32), new Predicate<EntityOrc>()
 		{
-			public boolean apply(@Nullable EntityOrc entity)
+			public boolean apply( @Nullable EntityOrc entity )
 			{
 				return true;
 			}

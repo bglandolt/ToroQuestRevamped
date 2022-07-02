@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
@@ -30,12 +29,9 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.torocraft.toroquest.civilization.CivilizationHandlers;
-import net.torocraft.toroquest.config.ToroQuestConfiguration;
 import net.torocraft.toroquest.entities.EntityVillageLord;
 
 public class TileEntityToroSpawner extends TileEntity implements ITickable
@@ -44,9 +40,9 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 	protected int triggerDistance = 64;
 	protected List<String> entityIds = new ArrayList<String>();
 	protected int spawnRadius = 0;
-	
+
 	protected int extra = 0; /* above 0 for color */
-	
+
 	protected List<String> entityTags = new ArrayList<String>();
 
 	public TileEntityToroSpawner()
@@ -59,31 +55,33 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 		return spawnRadius;
 	}
 
-	public void setSpawnRadius(int spawnRadius) {
+	public void setSpawnRadius( int spawnRadius )
+	{
 		this.spawnRadius = spawnRadius;
 	}
 
-	public void setTriggerDistance(int triggerDistance) {
+	public void setTriggerDistance( int triggerDistance )
+	{
 		this.triggerDistance = triggerDistance;
 	}
 
-	public void setEntityIds(List<String> entityIds)
+	public void setEntityIds( List<String> entityIds )
 	{
 		this.entityIds = entityIds;
 	}
-	
-	public void setExtra(int c)
+
+	public void setExtra( int c )
 	{
 		this.extra = c;
-		//writeToNBT(new NBTTagCompound());
+		// writeToNBT(new NBTTagCompound());
 	}
 
-	public void readFromNBT(NBTTagCompound compound)
+	public void readFromNBT( NBTTagCompound compound )
 	{
 		super.readFromNBT(compound);
 		triggerDistance = compound.getInteger("trigger_distance");
 		spawnRadius = compound.getInteger("spawn_radius");
-		
+
 		// extra //
 		extra = compound.getInteger("extra");
 
@@ -91,7 +89,7 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 		entityTags = new ArrayList<String>();
 
 		NBTTagList list;
-		
+
 		try
 		{
 			list = (NBTTagList) compound.getTag("entity_ids");
@@ -100,7 +98,7 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 		{
 			list = new NBTTagList();
 		}
-		for (int i = 0; i < list.tagCount(); i++)
+		for ( int i = 0; i < list.tagCount(); i++ )
 		{
 			entityIds.add(list.getStringTagAt(i));
 		}
@@ -113,13 +111,13 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 		{
 			list = new NBTTagList();
 		}
-		for (int i = 0; i < list.tagCount(); i++)
+		for ( int i = 0; i < list.tagCount(); i++ )
 		{
 			entityTags.add(list.getStringTagAt(i));
 		}
 	}
 
-	public NBTTagCompound writeToNBT(NBTTagCompound compound)
+	public NBTTagCompound writeToNBT( NBTTagCompound compound )
 	{
 		super.writeToNBT(compound);
 
@@ -127,26 +125,30 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 		compound.setInteger("spawn_radius", spawnRadius);
 
 		NBTTagList list = new NBTTagList();
-		for (String id : entityIds) {
+		for ( String id : entityIds )
+		{
 			list.appendTag(new NBTTagString(id));
 		}
 		compound.setTag("entity_ids", list);
 
 		list = new NBTTagList();
-		if (entityTags != null) {
-			for (String id : entityTags) {
+		if ( entityTags != null )
+		{
+			for ( String id : entityTags )
+			{
 				list.appendTag(new NBTTagString(id));
 			}
 		}
 		compound.setTag("entity_tags", list);
 		compound.setInteger("extra", extra);
-		
+
 		return compound;
 	}
 
-	protected void storeItemStack(String key, ItemStack stack, NBTTagCompound compound)
+	protected void storeItemStack( String key, ItemStack stack, NBTTagCompound compound )
 	{
-		if (stack == null) {
+		if ( stack == null )
+		{
 			return;
 		}
 		NBTTagCompound c = new NBTTagCompound();
@@ -154,9 +156,9 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 		compound.setTag(key, c);
 	}
 
-	protected ItemStack readItemStack(String key, NBTTagCompound compound)
+	protected ItemStack readItemStack( String key, NBTTagCompound compound )
 	{
-		if (!compound.hasKey(key))
+		if ( !compound.hasKey(key) )
 		{
 			return null;
 		}
@@ -169,13 +171,13 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 		{
 			return;
 		}
-		
+
 		if ( (this.triggerDistance == 0 || this.withinRange()) && (this.getPos() != null && this.getPos() != BlockPos.ORIGIN) )
 		{
 			this.triggerSpawner();
 		}
 	}
-	
+
 	protected void triggerSpawner()
 	{
 		for ( String entityId : this.entityIds )
@@ -187,13 +189,13 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 		this.world.setBlockToAir(this.getPos());
 	}
 
-	public void spawnCreature(String entityID)
+	public void spawnCreature( String entityID )
 	{
 		if ( this.world.isRemote )
 		{
 			return;
 		}
-		
+
 		Entity entity = getEntityForId(getWorld(), entityID);
 
 		if ( !(entity instanceof EntityLivingBase) )
@@ -201,7 +203,7 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 			System.out.println("entity not EntityLivingBase: " + entityID);
 			return;
 		}
-		
+
 		this.spawnEntityLiving((EntityLiving) entity, this.findSuitableSpawnLocation());
 	}
 
@@ -218,14 +220,14 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 
 		BlockPos pos;
 
-		for (int i = 0; i < 16; i++)
+		for ( int i = 0; i < 16; i++ )
 		{
 			distance = rand.nextInt(spawnRadius);
 			degrees = rand.nextInt(360);
 			x = distance * (int) Math.round(Math.cos(Math.toRadians(degrees)));
 			z = distance * (int) Math.round(Math.sin(Math.toRadians(degrees)));
 			pos = findSurface(x, z);
-			if (pos != null)
+			if ( pos != null )
 			{
 				return pos;
 			}
@@ -233,32 +235,35 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 		return getPos();
 	}
 
-	public BlockPos findSurface(int x, int z)
+	public BlockPos findSurface( int x, int z )
 	{
 		BlockPos pos = getPos().add(x, -3, z);
 		IBlockState blockState;
 		int yOffset = 0;
 		boolean groundFound = false;
-		boolean[] airSpace = { false, false };
+		boolean[] airSpace =
+		{
+			false, false
+		};
 
 		while (yOffset <= 16)
 		{
 			blockState = world.getBlockState(pos);
-			if (isGroundBlock(blockState))
+			if ( isGroundBlock(blockState) )
 			{
 				groundFound = true;
 				airSpace[0] = false;
 				airSpace[1] = false;
 
 			}
-			else if (airSpace[0] && airSpace[1] && groundFound)
+			else if ( airSpace[0] && airSpace[1] && groundFound )
 			{
 				return pos.down();
 
 			}
-			else if (Blocks.AIR.equals(blockState.getBlock()))
+			else if ( Blocks.AIR.equals(blockState.getBlock()) )
 			{
-				if (airSpace[0])
+				if ( airSpace[0] )
 				{
 					airSpace[1] = true;
 				}
@@ -273,25 +278,28 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 		return null;
 	}
 
-	protected boolean isGroundBlock(IBlockState blockState)
+	protected boolean isGroundBlock( IBlockState blockState )
 	{
-		if (blockState.getBlock() == Blocks.LEAVES || blockState.getBlock() == Blocks.LEAVES2 || blockState.getBlock() == Blocks.LOG || blockState.getBlock() instanceof BlockBush || blockState.getBlock() == Blocks.WOOL )
+		if ( blockState.getBlock() == Blocks.LEAVES || blockState.getBlock() == Blocks.LEAVES2 || blockState.getBlock() == Blocks.LOG || blockState.getBlock() instanceof BlockBush || blockState.getBlock() == Blocks.WOOL )
 		{
 			return false;
 		}
 		return blockState.isOpaqueCube();
 	}
 
-	public static Entity getEntityForId(World world, String entityID)
+	public static Entity getEntityForId( World world, String entityID )
 	{
 		String[] parts = entityID.split(":");
 
 		String domain, entityName;
 
-		if (parts.length == 2) {
+		if ( parts.length == 2 )
+		{
 			domain = parts[0];
 			entityName = parts[1];
-		} else {
+		}
+		else
+		{
 			domain = "minecraft";
 			entityName = entityID;
 		}
@@ -299,7 +307,7 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 		return EntityList.createEntityByIDFromName(new ResourceLocation(domain, entityName), world);
 	}
 
-	protected boolean spawnEntityLiving(EntityLiving entity, BlockPos pos)
+	protected boolean spawnEntityLiving( EntityLiving entity, BlockPos pos )
 	{
 
 		double x = pos.getX() + 0.5D;
@@ -315,69 +323,77 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 
 		if ( entityTags != null )
 		{
-			for (String tag : entityTags)
+			for ( String tag : entityTags )
 			{
 				entity.addTag(tag);
 			}
 		}
-		
+
 		if ( extra > 0 )
 		{
-			if ( entity instanceof EntityVillageLord && !ToroQuestConfiguration.raidedProvinceTitle.isEmpty() )
+			if ( entity instanceof EntityVillageLord ) // && !ToroQuestConfiguration.raidedProvinceTitle.isEmpty() )
 			{
-				for ( EntityPlayer player : this.world.playerEntities )
-		        {
-		            if ( EntitySelectors.NOT_SPECTATING.apply(player) && player.dimension == 0 && player.getPosition().getY() >= ToroQuestConfiguration.minSpawnHeight && player.getDistanceSq(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ()) <= 5000 )
-		            {
-						Minecraft.getMinecraft().ingameGUI.displayTitle(null, TextFormatting.RED + "" + TextFormatting.BOLD + ToroQuestConfiguration.raidedProvinceTitle, 0, 0, 0);
-						Minecraft.getMinecraft().ingameGUI.displayTitle("", TextFormatting.RED + "" + TextFormatting.BOLD + ToroQuestConfiguration.raidedProvinceTitle, CivilizationHandlers.timeFadeIn, CivilizationHandlers.displayTime, CivilizationHandlers.timeFadeOut);
-		            }
-		        }
+				// for ( EntityPlayer player : this.world.playerEntities )
+				// {
+				// if ( EntitySelectors.NOT_SPECTATING.apply(player) && player.dimension == 0
+				// && player.getPosition().getY() >= ToroQuestConfiguration.minSpawnHeight
+				// && player.getDistanceSq(this.getPos().getX(), this.getPos().getY(),
+				// this.getPos().getZ()) <= 5000 )
+				// {
+				// Minecraft.getMinecraft().ingameGUI.displayTitle(null, TextFormatting.RED + ""
+				// + TextFormatting.BOLD + ToroQuestConfiguration.raidedProvinceTitle, 0, 0, 0);
+				// Minecraft.getMinecraft().ingameGUI.displayTitle("",
+				// TextFormatting.RED + "" + TextFormatting.BOLD
+				// + ToroQuestConfiguration.raidedProvinceTitle,
+				// EventHandlers.timeFadeIn, EventHandlers.displayTime, EventHandlers.timeFadeOut);
+				// }
+				// }
 				this.world.spawnEntity(entity);
-				entity.setHealth(1.0F);
+				entity.setHealth(0.0F);
 			}
 			else if ( entity instanceof EntitySheep )
 			{
-				EntitySheep sheep = (EntitySheep)entity;
-				
-				switch ( extra )
+				EntitySheep sheep = (EntitySheep) entity;
+
+				switch( extra )
 				{
-					case 1:
-					{
-						sheep.setFleeceColor(EnumDyeColor.RED);
-						break;
-					}
-					case 2:
-					{
-						sheep.setFleeceColor(EnumDyeColor.GREEN);
-						break;
-					}
-					case 3:
-					{
-						sheep.setFleeceColor(EnumDyeColor.BLUE);
-						break;
-					}
-					case 4:
-					{
-						sheep.setFleeceColor(EnumDyeColor.BLACK);
-						break;
-					}
-					case 5:
-					{
-						sheep.setFleeceColor(EnumDyeColor.YELLOW);
-						break;
-					}
-					case 6:
-					{
-						sheep.setFleeceColor(EnumDyeColor.BROWN);
-						break;
-					}
-					default:
-					{
-						sheep.setFleeceColor(EnumDyeColor.WHITE);
-						break;
-					}
+				case 1:
+				{
+					sheep.setFleeceColor(EnumDyeColor.RED);
+					break;
 				}
+				case 2:
+				{
+					sheep.setFleeceColor(EnumDyeColor.GREEN);
+					break;
+				}
+				case 3:
+				{
+					sheep.setFleeceColor(EnumDyeColor.BLUE);
+					break;
+				}
+				case 4:
+				{
+					sheep.setFleeceColor(EnumDyeColor.BLACK);
+					break;
+				}
+				case 5:
+				{
+					sheep.setFleeceColor(EnumDyeColor.YELLOW);
+					break;
+				}
+				case 6:
+				{
+					sheep.setFleeceColor(EnumDyeColor.BROWN);
+					break;
+				}
+				default:
+				{
+					sheep.setFleeceColor(EnumDyeColor.WHITE);
+					break;
+				}
+				}
+				sheep.enablePersistence();
 				sheep.setCustomNameTag("§e§l!");
 				sheep.setAlwaysRenderNameTag(true);
 				sheep.setGlowing(true);
@@ -396,24 +412,24 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 	}
 
 	protected int ticksExisted = 0;
-	
+
 	protected boolean withinRange()
 	{
 		return ++this.ticksExisted % 60 == 0 && this.playerNear();
 	}
 
-    public boolean playerNear()
-    {    			
-        for ( EntityPlayer player : this.world.playerEntities )
-        {
-            if ( EntitySelectors.NOT_SPECTATING.apply(player) && player.dimension == 0 && player.getDistanceSq(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ()) <= this.triggerDistance*this.triggerDistance )
-            {
-            	return true;
-            }
-        }
-        return false;
-    }
-    
+	public boolean playerNear()
+	{
+		for ( EntityPlayer player : this.world.playerEntities )
+		{
+			if ( EntitySelectors.NOT_SPECTATING.apply(player) && player.dimension == 0 && player.getDistanceSq(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ()) <= this.triggerDistance * this.triggerDistance )
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	@Nullable
 	public SPacketUpdateTileEntity getUpdatePacket()
 	{
@@ -435,36 +451,36 @@ public class TileEntityToroSpawner extends TileEntity implements ITickable
 		return entityTags;
 	}
 
-	public void setEntityTags(List<String> entityTags)
+	public void setEntityTags( List<String> entityTags )
 	{
 		this.entityTags = entityTags;
 	}
 
-	public void addEntityTag(String tag)
+	public void addEntityTag( String tag )
 	{
-		if (entityTags == null) 
+		if ( entityTags == null )
 		{
 			entityTags = new ArrayList<String>();
 		}
 		entityTags.add(tag);
 	}
-		
-	@SideOnly(Side.CLIENT)
-    public double getMaxRenderDistanceSquared()
-    {
-        return 0.0D;
-    }
-	
+
+	@SideOnly( Side.CLIENT )
+	public double getMaxRenderDistanceSquared()
+	{
+		return 0.0D;
+	}
+
 	@Override
 	public boolean hasFastRenderer()
-    {
-        return true;
-    }
-	
+	{
+		return true;
+	}
+
 	@Override
 	public Block getBlockType()
-    {
+	{
 		return Blocks.AIR.getDefaultState().getBlock();
-    }
+	}
 
 }

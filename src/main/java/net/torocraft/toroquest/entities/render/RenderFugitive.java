@@ -8,20 +8,20 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.torocraft.toroquest.ToroQuest;
 
-@SideOnly(Side.CLIENT)
+@SideOnly( Side.CLIENT )
 public class RenderFugitive extends RenderVillager
 {
-	public RenderFugitive(RenderManager renderManagerIn)
+	public RenderFugitive( RenderManager renderManagerIn )
 	{
 		super(renderManagerIn);
 	}
 
 	private static final ResourceLocation VILLAGER_TEXTURES = new ResourceLocation(ToroQuest.MODID + ":textures/entity/villager.png");
-	
+
 	@Override
-    protected ResourceLocation getEntityTexture(EntityVillager entity)
-    {
-        return VILLAGER_TEXTURES;
-    }
+	protected ResourceLocation getEntityTexture( EntityVillager entity )
+	{
+		return VILLAGER_TEXTURES;
+	}
 
 }

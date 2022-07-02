@@ -13,7 +13,8 @@ import net.torocraft.toroquest.ToroQuest;
 import net.torocraft.toroquest.material.ArmorMaterials;
 
 @Mod.EventBusSubscriber
-public class ItemSamuraiArmor extends ItemArmor {
+public class ItemSamuraiArmor extends ItemArmor
+{
 
 	public static final String NAME = "samurai";
 
@@ -23,7 +24,8 @@ public class ItemSamuraiArmor extends ItemArmor {
 	public static ItemSamuraiArmor bootsItem;
 
 	@SubscribeEvent
-	public static void init(final RegistryEvent.Register<Item> event) {
+	public static void init( final RegistryEvent.Register<Item> event )
+	{
 		bootsItem = new ItemSamuraiArmor(NAME + "_boots", 1, EntityEquipmentSlot.FEET);
 		leggingsItem = new ItemSamuraiArmor(NAME + "_leggings", 2, EntityEquipmentSlot.LEGS);
 		helmetItem = new ItemSamuraiArmor(NAME + "_helmet", 1, EntityEquipmentSlot.HEAD);
@@ -42,34 +44,41 @@ public class ItemSamuraiArmor extends ItemArmor {
 		event.getRegistry().register(chestplateItem);
 	}
 
-	public static void registerRenders() {
+	public static void registerRenders()
+	{
 		registerRendersHelmet();
 		registerRendersChestPlate();
 		registerRendersLeggings();
 		registerRendersBoots();
 	}
 
-	private static void registerRendersBoots() {
+	private static void registerRendersBoots()
+	{
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(bootsItem, 0, model("boots"));
 	}
 
-	private static void registerRendersLeggings() {
+	private static void registerRendersLeggings()
+	{
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(leggingsItem, 0, model("leggings"));
 	}
 
-	private static void registerRendersHelmet() {
+	private static void registerRendersHelmet()
+	{
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(helmetItem, 0, model("helmet"));
 	}
 
-	private static void registerRendersChestPlate() {
+	private static void registerRendersChestPlate()
+	{
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(chestplateItem, 0, model("chestplate"));
 	}
 
-	private static ModelResourceLocation model(String model) {
+	private static ModelResourceLocation model( String model )
+	{
 		return new ModelResourceLocation(ToroQuest.MODID + ":" + NAME + "_" + model, "inventory");
 	}
 
-	public ItemSamuraiArmor(String unlocalizedName, int renderIndexIn, EntityEquipmentSlot equipmentSlotIn) {
+	public ItemSamuraiArmor( String unlocalizedName, int renderIndexIn, EntityEquipmentSlot equipmentSlotIn )
+	{
 		super(ArmorMaterials.SAMURAI, renderIndexIn, equipmentSlotIn);
 		this.setUnlocalizedName(unlocalizedName);
 		setMaxDamage(592);

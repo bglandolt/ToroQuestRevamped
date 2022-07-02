@@ -10,7 +10,7 @@ public class GuiFactoryToroQuest implements IModGuiFactory
 {
 
 	@Override
-	public void initialize(Minecraft minecraftInstance)
+	public void initialize( Minecraft minecraftInstance )
 	{
 
 	}
@@ -22,7 +22,7 @@ public class GuiFactoryToroQuest implements IModGuiFactory
 	}
 
 	@Override
-	public GuiScreen createConfigGui(GuiScreen parentScreen)
+	public GuiScreen createConfigGui( GuiScreen parentScreen )
 	{
 		return new GuiConfigToroQuest(parentScreen);
 	}

@@ -5,7 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-@SideOnly(Side.CLIENT)
+@SideOnly( Side.CLIENT )
 public class ModelVillageLord extends ModelBiped
 {
 	public ModelVillageLord()
@@ -13,7 +13,7 @@ public class ModelVillageLord extends ModelBiped
 		this(0.0F, false);
 	}
 
-	public ModelVillageLord(float modelSize, boolean p_i1168_2_)
+	public ModelVillageLord( float modelSize, boolean p_i1168_2_ )
 	{
 		super(modelSize, 0.0F, 64, p_i1168_2_ ? 32 : 64);
 	}
@@ -24,7 +24,7 @@ public class ModelVillageLord extends ModelBiped
 	 * the time(so that arms and legs swing back and forth) and par2 represents
 	 * how "far" arms and legs can swing at most.
 	 */
-	public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
+	public void setRotationAngles( float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn )
 	{
 		super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
 	}

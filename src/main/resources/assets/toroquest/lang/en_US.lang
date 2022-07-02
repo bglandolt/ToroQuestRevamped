@@ -46,7 +46,8 @@ item.toro_armor_leggings.name=Heavy Leather Leggings
 item.toro_armor_chestplate.name=Heavy Leather Chestplate
 
 item.bandit_helmet.name=Bandit Mask
-item.bandit_helmet.description=Give this item to a Village Lord for reputation [put this item in top-right box], or disguise yourself as a Bandit.
+item.bandit_helmet.description0=Give this item to a Village Lord for reputation [put this item in top-right box]
+item.bandit_helmet.description1=§oBandits are friendly only to those with poor reputation, those who approach with emeralds in hand to hire them, or those wearing a Bandit Mask§r
 item.city_key.name=Key to the City
 item.scroll_null.name=Blank Teleport Scroll
 item.recruitment_papers.name=Recruitment Papers
@@ -59,6 +60,14 @@ item.artifact_green.name=§eAncient Artifact§r
 item.artifact_blue.name=§eAncient Artifact§r
 item.artifact_black.name=§eAncient Artifact§r
 item.artifact_brown.name=§eAncient Artifact§r
+
+item.lord_note.name=Note
+
+item.recruitment_papers.description0=•§9Right-Click§7 a Guard to set their post
+item.recruitment_papers.description1=•§9Shift-Right-Click§7 a Guard to move them to the next highest y-block and set their post
+item.recruitment_papers.description2=•§9Shift-Right-Click§7 a Villager or a Bandit bribed with emeralds to recruit them as a Guard
+item.recruitment_papers.description3=•§9Shift-Right-Click§7 a Villager to recruit them as a Guard
+item.recruitment_papers.description4=•§9Right-Click§7 a Bandit bribed with emeralds to recruit them as a Guard
 
 ################## LEGENDARY HORROR QUEST ##################
 
@@ -170,7 +179,7 @@ civilization.reputation_level.hero=Hero
 civilization.reputation_level.champion=Champion
 
 civilization.reputation_level.exalted=Exalted
-civilization.reputation_level.revered=Revered
+civilization.reputation_level.renowned=Renowned
 civilization.reputation_level.honored=Honored
 civilization.reputation_level.friendly=Friendly
 
@@ -203,16 +212,23 @@ quest.directions=%s blocks at %s, %s
 quests.completereturnitem=Could you also return the tool I gave you? Or 5 emeralds to pay for it. §7[put the items in left column]
 quests.rejectreturnitem=Return the tool I gave you, or 5 emeralds to pay for it. §7[put the items in left column]
 
+################## QUEST HOME ##################
+
+quests.buildHome.title=§lHumble Abode§r
+quests.buildHome.description=§lBuild§r %s villager homes in %s%s§lReward:§r %s%s Reputation
+quests.buildHome.accept=@e is prospering! I need you to build several new homes for the growing population.
+quests.buildHome.complete=Ah yes, thank you. I was growing weary of seeing homeless villagers wandering about.
+quests.buildHome.incomplete=You have not build enough homes, my friend. Return to me when the task is finished.
+quests.buildHome.reject=I understand, homes are expensive. We can't expect all villagers to have their own place. Maybe they should stop spending their emeralds on Haste Potions. Hah!
+
 ################## QUEST COURIER ##################
 
-quests.courier.notetooltip=§7[put this item in top-right box]§r
-quests.courier.notename=Deliver to the Lord of 
 quests.courier.title=§lCourier§r
-quests.courier.description=§lDeliver§r this letter to %s%s and return his reply%s§lReward:§r %s%s Reputation
+quests.courier.description=§lDeliver§r this letter to %s and return to me his reply%s§lReward:§r %s%s Reputation
 quests.courier.accept=I need this letter sent to the lord of @e immediately. Be swift, @p.
 quests.courier.complete=Ah yes, thank you for the reply note, @p.
-quests.courier.incomplete=I need the reply note, @p. §7[put the note in left column]
-quests.courier.description=The lord of %s and I have much to discuss. Make sure this letter gets to him%s§lReward:§r %s%s Reputation
+quests.courier.incomplete=I need the reply, @p. §7[put the note in left column]
+quests.courier.wrong=This is not the correct reply...
 quests.courier.reject=You reject my request? Surely your actions will not bode well for your reputation.
 
 ################## QUEST BANDIT CAMP ##################
@@ -266,7 +282,7 @@ quests.farm.accept3=Our food stocks are dwindling. We need you to plant @e crops
 ################## QUEST BUILD ##################
 
 quests.build.title=§lPut Your Walls Up§r
-quests.build.description=§lBuild§r walls around %s by placing stone blocks. You have currently placed %s out of %s§lReward:§r %s%s Reputation
+quests.build.description=§lBuild§r stone walls bordering %s. You have currently placed %s out of %s blocks%s§lReward:§r %s%s Reputation
 quests.build.complete=Those walls look magnificent! Well done.
 quests.build.incomplete=You haven't built enough of the wall, @p.
 
@@ -320,16 +336,21 @@ quests.killmobs.accept6=We have lost too many villagers to these creatures of th
 ################## QUEST RECRUIT ##################
 
 quests.recruit.title=§lDraft Pick§r
-quests.recruit.description=§lRecruit§r %s %s in %s, you have currently recruited %s§lReward:§r %s%s Reputation
+quests.recruit.description=§lRecruit§r %s guards or golems in %s, you have currently recruited %s§lReward:§r %s%s Reputation
 quests.recruit.reject=You will not help? Without further aid I can only hope we survive the harsh nights to come...
 quests.recruit.complete=Our numbers are strong! Thank you, @p.
-quests.recruit.incomplete=You haven't recruited enough guards!
+quests.recruit.incomplete=You haven't recruited enough guards or golems!
 
 quests.recruit.accept=4
-quests.recruit.accept0=I am not sure how many more nights the village can survive with our current defenses. @p, I need you to recruit and arm several of the villagers.
-quests.recruit.accept1=The villagers are fearful of the nights to come. Recruit several guards to better bolster our defenses.
-quests.recruit.accept2=We have lost good men in the last raid. Recruit more guards to help protect the village.
-quests.recruit.accept3=I need you to recruit more guards. The people respect you, @p, and they are willing to follow you into battle.
+quests.recruit.accept0=I am not sure how many more nights the village can survive with our current defenses. @p, I need you to recruit several guards or golems.
+quests.recruit.accept1=The villagers are fearful of the nights to come. Recruit several guards or golems to better bolster our defenses.
+quests.recruit.accept2=We have lost good men in the last raid. Recruit more guards or golems to help protect the village.
+quests.recruit.accept3=I need you to recruit more guards or golems. The people respect you, @p, and they are willing to follow you into battle.
+
+quests.recruitNonVillagers.accept=3
+quests.recruitNonVillagers.accept0=I need you to recruit more guards. Bribe bandits using emeralds and get them to fight for us!
+quests.recruitNonVillagers.accept1=We have lost good men in the last raid. Hire bandits as mercenaries with emeralds to reinforce our numbers.
+quests.recruitNonVillagers.accept2=The villagers are fearful of the nights to come. Recruit several bandits as guards using emeralds to bolster our defenses.
 
 ################## QUEST MINE ##################
 
@@ -423,7 +444,7 @@ quests.trade.accept2=The market has been stagnant. I need you to trade with some
 
 ################## QUEST CAPTURE SHEEP ##################
 
-quests.capture_entity.title=§lI Had a §oBaaad§r §lDay§r
+quests.capture_entity.title=§lI Had A §oBaaad§r Day§r
 quests.capture_entity.description=§lCapture§r and return to my guards the sheep %s using a lasso%s§lReward:§r %s%s Reputation
 quests.capture_entity.description_null=Oh, woe is me! My prized sheep is gone!
 quests.capture_entity.incomplete=You haven't returned my prized sheep yet!
@@ -464,6 +485,7 @@ civilization.fire.name=Briar
 civilization.moon.name=Moor
 civilization.sun.name=Dawn
 civilization.water.name=Glacier
+civilization.raided.name=Raided
 
 civilization.green.name=Wild
 civilization.brown.name=Mithril
@@ -494,7 +516,7 @@ entity.toroquest.guard.invisible12=W-what is this magic?!
 
 ################## GUARD INSULT ##################
 
-entity.toroquest.guard.insult=47
+entity.toroquest.guard.insult=48
 entity.toroquest.guard.insult0=Taste my steel!
 entity.toroquest.guard.insult1=How dare you show your face here, criminal!
 entity.toroquest.guard.insult2=I will paint the earth red with your blood, filthy outlaw!
@@ -542,8 +564,9 @@ entity.toroquest.guard.insult43=Give up already!
 entity.toroquest.guard.insult44=You're already dead.
 entity.toroquest.guard.insult45=I will cut you down!
 entity.toroquest.guard.insult46=Rot in the Nether, you coward!
+entity.toroquest.guard.insult47=I've fought Mimicrabs tougher than you.
 
-################## GUARD INSULT ##################
+################## GUARD DROP AGGRO ##################
 
 entity.toroquest.guard.dropplayeraggro=23
 entity.toroquest.guard.dropplayeraggro0=That'll show you, coward.
@@ -734,7 +757,7 @@ entity.toroquest.guard.nolord19=The people of @e are in chaos! The village lord 
 entity.toroquest.guard.nolord20=May the lord of @e rest in the Aether...
 entity.toroquest.guard.nolord21=How will we recover with no lord?!
 
-################## FALSE LORD ##################
+################## GUARD FALSE LORD PLAYER ##################
 
 entity.toroquest.guard.falselord=10
 entity.toroquest.guard.falselord0=You are no lord!
@@ -748,7 +771,7 @@ entity.toroquest.guard.falselord7=You hold no claim to @e!
 entity.toroquest.guard.falselord8=You're no village lord!
 entity.toroquest.guard.falselord9=You will NOT overthrow our village lord!
 
-################## FALSE LORD ##################
+################## GUARD LORD PLAYER ##################
 
 entity.toroquest.guard.lord=8
 entity.toroquest.guard.lord0=M'lord.
@@ -1105,6 +1128,16 @@ entity.toroquest.guard.butcher4=What are you doing!?
 entity.toroquest.guard.butcher5=You'll pay for that!
 entity.toroquest.guard.butcher6=That isn't your livestock!
 entity.toroquest.guard.butcher7=Stop! What are you doing?!
+
+################## GUARD CRIME GOLEM ##################
+
+entity.toroquest.guard.golem=5
+entity.toroquest.guard.golem0=I wouldn't mess with that if I were you!
+entity.toroquest.guard.golem1=Don't break our golems!
+entity.toroquest.guard.golem2=You're going to dent it, stop!
+entity.toroquest.guard.golem3=Don't poke the golem, you'll regret it!
+entity.toroquest.guard.golem4=Careful @p! Those golems protect us.
+entity.toroquest.guard.golemKill=@p broke one of our golems, cut them down!
 
 ################## GUARD CRIME CROPS ##################
 

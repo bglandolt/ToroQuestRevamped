@@ -10,11 +10,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.torocraft.toroquest.entities.EntityVampireBat;
 import net.torocraft.toroquest.entities.model.ModelVampireBat;
 
-@SideOnly(Side.CLIENT)
-public class RenderVampireBat extends RenderLiving<EntityVampireBat> {
+@SideOnly( Side.CLIENT )
+public class RenderVampireBat extends RenderLiving<EntityVampireBat>
+{
 	private static final ResourceLocation BAT_TEXTURES = new ResourceLocation("textures/entity/bat.png");
 
-	public RenderVampireBat(RenderManager renderManagerIn) {
+	public RenderVampireBat( RenderManager renderManagerIn )
+	{
 		super(renderManagerIn, new ModelVampireBat(), 0.25F);
 	}
 
@@ -23,7 +25,8 @@ public class RenderVampireBat extends RenderLiving<EntityVampireBat> {
 	 * unless you call Render.bindEntityTexture.
 	 */
 	@Override
-	protected ResourceLocation getEntityTexture(EntityVampireBat entity) {
+	protected ResourceLocation getEntityTexture( EntityVampireBat entity )
+	{
 		return BAT_TEXTURES;
 	}
 
@@ -32,17 +35,20 @@ public class RenderVampireBat extends RenderLiving<EntityVampireBat> {
 	 * rendered.
 	 */
 	@Override
-	protected void preRenderCallback(EntityVampireBat entitylivingbaseIn, float partialTickTime) {
+	protected void preRenderCallback( EntityVampireBat entitylivingbaseIn, float partialTickTime )
+	{
 		GlStateManager.scale(0.666F, 0.666F, 0.666F);
 	}
 
 	@Override
-	protected void applyRotations(EntityVampireBat entityLiving, float p_77043_2_, float p_77043_3_, float partialTicks) {
+	protected void applyRotations( EntityVampireBat entityLiving, float p_77043_2_, float p_77043_3_, float partialTicks )
+	{
 		bounceModel(p_77043_2_);
 		super.applyRotations(entityLiving, p_77043_2_, p_77043_3_, partialTicks);
 	}
 
-	protected void bounceModel(float p_77043_2_) {
+	protected void bounceModel( float p_77043_2_ )
+	{
 		GlStateManager.translate(0.0F, MathHelper.cos(p_77043_2_ * 0.3F) * 0.1F, 0.0F);
 	}
 }

@@ -25,7 +25,7 @@ public class ItemToroArmor extends ItemArmor
 	public static ItemToroArmor bootsItem;
 
 	@SubscribeEvent
-	public static void init(final RegistryEvent.Register<Item> event)
+	public static void init( final RegistryEvent.Register<Item> event )
 	{
 		bootsItem = new ItemToroArmor(NAME + "_boots", 1, EntityEquipmentSlot.FEET);
 		leggingsItem = new ItemToroArmor(NAME + "_leggings", 2, EntityEquipmentSlot.LEGS);
@@ -45,45 +45,52 @@ public class ItemToroArmor extends ItemArmor
 		event.getRegistry().register(chestplateItem);
 	}
 
-	public static void registerRenders() {
+	public static void registerRenders()
+	{
 		registerRendersHelmet();
 		registerRendersChestPlate();
 		registerRendersLeggings();
 		registerRendersBoots();
 	}
 
-	private static void registerRendersBoots() {
+	private static void registerRendersBoots()
+	{
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(bootsItem, 0, model("boots"));
 	}
 
-	private static void registerRendersLeggings() {
+	private static void registerRendersLeggings()
+	{
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(leggingsItem, 0, model("leggings"));
 	}
 
-	private static void registerRendersHelmet() {
+	private static void registerRendersHelmet()
+	{
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(helmetItem, 0, model("helmet"));
 	}
 
-	private static void registerRendersChestPlate() {
+	private static void registerRendersChestPlate()
+	{
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(chestplateItem, 0, model("chestplate"));
 	}
 
-	private static ModelResourceLocation model(String model) {
+	private static ModelResourceLocation model( String model )
+	{
 		return new ModelResourceLocation(ToroQuest.MODID + ":" + NAME + "_" + model, "inventory");
 	}
 
-	public ItemToroArmor(String unlocalizedName, int renderIndexIn, EntityEquipmentSlot equipmentSlotIn)
+	public ItemToroArmor( String unlocalizedName, int renderIndexIn, EntityEquipmentSlot equipmentSlotIn )
 	{
 		super(ArmorMaterials.TORO, renderIndexIn, equipmentSlotIn);
 		this.setUnlocalizedName(unlocalizedName);
 		setMaxDamage(110);
 	}
-	
+
 	@Override
-	public boolean getIsRepairable(ItemStack toRepair, ItemStack repair)
-    {
-        ItemStack mat = new ItemStack( Item.getByNameOrId( "toroquest:toro_leather" ), 1 );
-        if (!mat.isEmpty() && net.minecraftforge.oredict.OreDictionary.itemMatches(mat,repair,false)) return true;
-        return super.getIsRepairable(toRepair, repair);
-    }
+	public boolean getIsRepairable( ItemStack toRepair, ItemStack repair )
+	{
+		ItemStack mat = new ItemStack(Item.getByNameOrId("toroquest:toro_leather"), 1);
+		if ( !mat.isEmpty() && net.minecraftforge.oredict.OreDictionary.itemMatches(mat, repair, false) )
+			return true;
+		return super.getIsRepairable(toRepair, repair);
+	}
 }

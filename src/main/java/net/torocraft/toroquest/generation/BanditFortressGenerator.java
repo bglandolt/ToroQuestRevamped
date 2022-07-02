@@ -18,56 +18,55 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraft.world.storage.loot.LootTableList;
+import net.torocraft.toroquest.EventHandlers;
 import net.torocraft.toroquest.block.BlockToroSpawner;
 import net.torocraft.toroquest.block.TileEntityToroSpawner;
-import net.torocraft.toroquest.civilization.CivilizationHandlers;
 
 public class BanditFortressGenerator extends WorldGenerator
 {
-	
 
 	@Override
-	public boolean generate(World world, Random rand, BlockPos pos)
+	public boolean generate( World world, Random rand, BlockPos pos )
 	{
-		if (pos == null)
+		if ( pos == null )
 		{
 			return false;
 		}
-		
-		clearTrees( world, pos, 32 );
-		
-		
-		
+
+		clearTrees(world, pos, 32);
+
 		return true;
 	}
 
-	protected void placeChest(World world, BlockPos placementPos)
+	protected void placeChest( World world, BlockPos placementPos )
 	{
 		setBlockAndNotifyAdequately(world, placementPos, Blocks.CHEST.getDefaultState());
 		TileEntity tileentity = world.getTileEntity(placementPos);
-		if (tileentity instanceof TileEntityChest)
+		if ( tileentity instanceof TileEntityChest )
 		{
-			if ( rand.nextBoolean() ) ((TileEntityChest) tileentity).setLootTable(LootTableList.CHESTS_STRONGHOLD_CORRIDOR, world.rand.nextLong());
-			else ((TileEntityChest) tileentity).setLootTable(LootTableList.CHESTS_STRONGHOLD_CROSSING, world.rand.nextLong());
+			if ( rand.nextBoolean() )
+				((TileEntityChest) tileentity).setLootTable(LootTableList.CHESTS_STRONGHOLD_CORRIDOR, world.rand.nextLong());
+			else
+				((TileEntityChest) tileentity).setLootTable(LootTableList.CHESTS_STRONGHOLD_CROSSING, world.rand.nextLong());
 
 		}
 	}
-	
-	private void spawnMonolithEye(World world, BlockPos pos)
+
+	private void spawnMonolithEye( World world, BlockPos pos )
 	{
-		
-		addToroSpawner( world, pos, getDefaultEnemies() );
-//		EntityMonolithEye e = new EntityMonolithEye(world);
-//		e.setRaidLocation(pos.getX(), pos.getY(), pos.getZ());
-//		e.setPosition(pos.getX()+0.5,pos.getY()+0.5,pos.getZ()+0.5);
-//		world.spawnEntity(e);
+
+		addToroSpawner(world, pos, getDefaultEnemies());
+		// EntityMonolithEye e = new EntityMonolithEye(world);
+		// e.setRaidLocation(pos.getX(), pos.getY(), pos.getZ());
+		// e.setPosition(pos.getX()+0.5,pos.getY()+0.5,pos.getZ()+0.5);
+		// world.spawnEntity(e);
 	}
-	
-	private void addToroSpawner( World world, BlockPos blockpos, List<String> entities)
+
+	private void addToroSpawner( World world, BlockPos blockpos, List<String> entities )
 	{
 		world.setBlockState(blockpos, BlockToroSpawner.INSTANCE.getDefaultState());
 		TileEntity tileentity = world.getTileEntity(blockpos);
-		if (tileentity instanceof TileEntityToroSpawner)
+		if ( tileentity instanceof TileEntityToroSpawner )
 		{
 			TileEntityToroSpawner spawner = (TileEntityToroSpawner) tileentity;
 			spawner.setTriggerDistance(80);
@@ -88,19 +87,19 @@ public class BanditFortressGenerator extends WorldGenerator
 		entity.add("toroquest:toroquest_sentry");
 		return entity;
 	}
-	
-	private void spawnCrystal(World world, BlockPos pos)
+
+	private void spawnCrystal( World world, BlockPos pos )
 	{
 		EntityEnderCrystal e = new EntityEnderCrystal(world);
-		e.setPosition(pos.getX()+0.5,pos.getY()+0.5,pos.getZ()+0.5);
+		e.setPosition(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
 		world.spawnEntity(e);
 	}
-	
-	private BlockPos findPillarSurface(World world, BlockPos start)
+
+	private BlockPos findPillarSurface( World world, BlockPos start )
 	{
 		IBlockState blockState;
 		BlockPos search = new BlockPos(start.getX(), world.getActualHeight(), start.getZ());
-		while ( search.getY() > 40 )
+		while (search.getY() > 40)
 		{
 			search = search.down();
 			blockState = world.getBlockState(search);
@@ -108,25 +107,24 @@ public class BanditFortressGenerator extends WorldGenerator
 			{
 				break;
 			}
-			if ( (blockState).isOpaqueCube() && !( blockState.getBlock() instanceof BlockLog ) )
+			if ( (blockState).isOpaqueCube() && !(blockState.getBlock() instanceof BlockLog) )
 			{
 				break;
 			}
 		}
 		return search;
 	}
-	
-	public boolean isAir(IBlockState blockState)
+
+	public boolean isAir( IBlockState blockState )
 	{
 		return blockState.getBlock() == Blocks.AIR;
 	}
 
-	private boolean isLiquid(IBlockState blockState) {
+	private boolean isLiquid( IBlockState blockState )
+	{
 		return blockState.getBlock() == Blocks.WATER || blockState.getBlock() == Blocks.LAVA;
 	}
 
-	
-	
 	// walls
 	public void clearTrees( World world, BlockPos start, int radius )
 	{
@@ -138,15 +136,15 @@ public class BanditFortressGenerator extends WorldGenerator
 			{
 				for ( int zz = -radius; zz < radius; zz++ )
 				{
-					int distFromCenter = (int)(MathHelper.sqrt((xx*xx+zz*zz)));
+					int distFromCenter = (int) (MathHelper.sqrt((xx * xx + zz * zz)));
 					if ( radius == (distFromCenter) + 1 )
 					{
-						BlockPos pos = findSurface(world,(int)(x+xx),(int)(z+zz),true);
+						BlockPos pos = findSurface(world, (int) (x + xx), (int) (z + zz), true);
 						if ( pos != null )
 						{
 							if ( i == 2 || rand.nextInt(3) != 0 )
 							{
-								placePillar( world, pos );
+								placePillar(world, pos);
 							}
 						}
 					}
@@ -155,23 +153,23 @@ public class BanditFortressGenerator extends WorldGenerator
 			radius++;
 		}
 	}
-	
-	public BlockPos findSurface(World world, int x, int z, boolean force)
+
+	public BlockPos findSurface( World world, int x, int z, boolean force )
 	{
 		BlockPos pos = new BlockPos(x, world.getActualHeight(), z);
 		IBlockState blockState;
 		while (pos.getY() > 0)
 		{
 			blockState = world.getBlockState(pos);
-			if (!force && ( isLiquid(blockState) || CivilizationHandlers.isStructureBlock(blockState) ))
+			if ( !force && (isLiquid(blockState) || EventHandlers.isStructureBlock(blockState)) )
 			{
 				return null;
 			}
 			else if ( blockState.getBlock() instanceof BlockLog )
 			{
-				
+
 			}
-			else if (isGroundBlock(blockState))
+			else if ( isGroundBlock(blockState) )
 			{
 				break;
 			}
@@ -179,28 +177,30 @@ public class BanditFortressGenerator extends WorldGenerator
 		}
 		return pos.up();
 	}
-	
-	protected boolean isGroundBlock(IBlockState blockState)
+
+	protected boolean isGroundBlock( IBlockState blockState )
 	{
-		if (blockState.getBlock() instanceof BlockLeaves || blockState.getBlock() instanceof BlockLog || blockState.getBlock() instanceof BlockBush || blockState.getBlock() instanceof BlockSlab )
+		if ( blockState.getBlock() instanceof BlockLeaves || blockState.getBlock() instanceof BlockLog || blockState.getBlock() instanceof BlockBush || blockState.getBlock() instanceof BlockSlab )
 		{
 			return false;
 		}
 		return blockState.isOpaqueCube();
 	}
+
 	Random rand = new Random();
-	private void placePillar(World world, BlockPos pos)
+
+	private void placePillar( World world, BlockPos pos )
 	{
-		int height = rand.nextInt(2)+rand.nextInt(2)+rand.nextInt(2)+rand.nextInt(2)+rand.nextInt(2)+rand.nextInt(2)+2;
+		int height = rand.nextInt(2) + rand.nextInt(2) + rand.nextInt(2) + rand.nextInt(2) + rand.nextInt(2) + rand.nextInt(2) + 2;
 		pos = pos.up(height);
-		for ( int i = 0; i < 16+height; i++ )
+		for ( int i = 0; i < 16 + height; i++ )
 		{
 			pos = pos.down();
 			setBlockAndNotifyAdequately(world, pos, Blocks.LOG.getDefaultState());
 		}
 	}
 
-	public void placeBlock(World world, BlockPos pos, net.minecraft.block.Block block)
+	public void placeBlock( World world, BlockPos pos, net.minecraft.block.Block block )
 	{
 		world.setBlockState(pos, block.getDefaultState());
 	}

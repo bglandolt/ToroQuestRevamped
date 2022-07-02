@@ -40,26 +40,31 @@ public class ToroQuestEntityRenders
 		EntityOrc.registerRenders();
 		EntityConstruct.registerRenders();
 		EntityConstructQuest.registerRenders();
-		//EntityAdventurer.registerRenders();
+		// EntityAdventurer.registerRenders();
 	}
-	
+
 	public static void registerMageRenderer()
 	{
-		RenderingRegistry.registerEntityRenderingHandler(EntityMage.class, new IRenderFactory<EntityMage>() {
-			@Override 
-			public Render<EntityMage> createRenderFor(RenderManager manager) { 
-				return new RenderMage(manager); 
+		RenderingRegistry.registerEntityRenderingHandler(EntityMage.class, new IRenderFactory<EntityMage>()
+		{
+			@Override
+			public Render<EntityMage> createRenderFor( RenderManager manager )
+			{
+				return new RenderMage(manager);
 			}
 		});
 	}
-	
-	public static void registerMonolithEyeRenderer() {
-		RenderingRegistry.registerEntityRenderingHandler(EntityMonolithEye.class, new IRenderFactory<EntityMonolithEye>() {
-			@Override 
-			public Render<EntityMonolithEye> createRenderFor(RenderManager manager) { 
-				return new RenderMonolithEye(manager); 
+
+	public static void registerMonolithEyeRenderer()
+	{
+		RenderingRegistry.registerEntityRenderingHandler(EntityMonolithEye.class, new IRenderFactory<EntityMonolithEye>()
+		{
+			@Override
+			public Render<EntityMonolithEye> createRenderFor( RenderManager manager )
+			{
+				return new RenderMonolithEye(manager);
 			}
 		});
 	}
-	
+
 }

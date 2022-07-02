@@ -17,21 +17,22 @@ import net.torocraft.toroquest.civilization.quests.util.QuestData;
 import net.torocraft.toroquest.civilization.quests.util.QuestDelegator;
 import net.torocraft.toroquest.gui.VillageLordGuiContainer;
 
-public class MessageSetQuestInfo implements IMessage {
+public class MessageSetQuestInfo implements IMessage
+{
 
 	private QuestMessage questMessage;
 	private String questMessageJson;
-	
+
 	private Province civ;
 	private QuestData currentQuest;
 	private QuestData nextQuest;
-	
+
 	public MessageSetQuestInfo()
 	{
 
 	}
 
-	public MessageSetQuestInfo(Province civ, QuestData current, QuestData next)
+	public MessageSetQuestInfo( Province civ, QuestData current, QuestData next )
 	{
 		this.civ = civ;
 		this.currentQuest = current;
@@ -39,13 +40,13 @@ public class MessageSetQuestInfo implements IMessage {
 		createMessage();
 		serializeData();
 	}
-	
+
 	private void createMessage()
 	{
 		questMessage = new QuestMessage();
 		questMessage.provinceName = civ.name;
 		questMessage.civl = civ.civilization;
-		
+
 		if ( currentQuest != null )
 		{
 			QuestDelegator quest = new QuestDelegator(currentQuest);
@@ -64,39 +65,45 @@ public class MessageSetQuestInfo implements IMessage {
 			questMessage.completed = false;
 		}
 	}
-	
+
 	@Override
-	public void fromBytes(ByteBuf buf) {
+	public void fromBytes( ByteBuf buf )
+	{
 		questMessageJson = ByteBufUtils.readUTF8String(buf);
 		deserializeData();
 	}
 
 	@Override
-	public void toBytes(ByteBuf buf) {
+	public void toBytes( ByteBuf buf )
+	{
 		ByteBufUtils.writeUTF8String(buf, questMessageJson);
 	}
-	
-	private void serializeData() {
-		if(questMessage != null) {
+
+	private void serializeData()
+	{
+		if ( questMessage != null )
+		{
 			questMessageJson = new Gson().toJson(questMessage, QuestMessage.class);
-		} else {
+		}
+		else
+		{
 			questMessageJson = "";
 		}
 	}
-	
+
 	private void deserializeData()
 	{
 		questMessage = new Gson().fromJson(questMessageJson, QuestMessage.class);
 	}
-	
+
 	public static class Worker
 	{
-		public void work(MessageSetQuestInfo message)
+		public void work( MessageSetQuestInfo message )
 		{
 			Minecraft minecraft = Minecraft.getMinecraft();
 			final EntityPlayer player = minecraft.player;
 
-			if (player == null)
+			if ( player == null )
 			{
 				return;
 			}
@@ -109,27 +116,30 @@ public class MessageSetQuestInfo implements IMessage {
 		}
 	}
 
-	public static class Handler implements IMessageHandler<MessageSetQuestInfo, IMessage> {
+	public static class Handler implements IMessageHandler<MessageSetQuestInfo, IMessage>
+	{
 
 		@Override
-		public IMessage onMessage(final MessageSetQuestInfo message, MessageContext ctx)
+		public IMessage onMessage( final MessageSetQuestInfo message, MessageContext ctx )
 		{
-			if (ctx.side != Side.CLIENT)
+			if ( ctx.side != Side.CLIENT )
 			{
 				return null;
 			}
 
-			Minecraft.getMinecraft().addScheduledTask(new Runnable() {
+			Minecraft.getMinecraft().addScheduledTask(new Runnable()
+			{
 				@Override
-				public void run() {
+				public void run()
+				{
 					new Worker().work(message);
 				}
 			});
 
 			return null;
-		}	
+		}
 	}
-	
+
 	public static class QuestMessage
 	{
 		public String provinceName;

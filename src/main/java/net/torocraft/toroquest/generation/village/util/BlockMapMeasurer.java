@@ -4,9 +4,10 @@ import java.io.IOException;
 
 import net.minecraft.util.math.BlockPos;
 
-public class BlockMapMeasurer extends BlockMapBase {
+public class BlockMapMeasurer extends BlockMapBase
+{
 
-	public BlockMapMeasurer(String name)
+	public BlockMapMeasurer( String name )
 	{
 		super(name);
 	}
@@ -23,7 +24,7 @@ public class BlockMapMeasurer extends BlockMapBase {
 		int yMax = 0;
 		int zMax = 0;
 
-		if (reader == null)
+		if ( reader == null )
 		{
 			return new BlockPos(0, 0, 0);
 		}
@@ -32,7 +33,7 @@ public class BlockMapMeasurer extends BlockMapBase {
 		{
 			while ((line = reader.readLine()) != null)
 			{
-				if (line.matches("#{4,}"))
+				if ( line.matches("#{4,}") )
 				{
 					y++;
 					zMax = Math.max(zMax, z);
@@ -51,6 +52,5 @@ public class BlockMapMeasurer extends BlockMapBase {
 
 		return new BlockPos(xMax, yMax + 1, zMax);
 	}
-
 
 }

@@ -1,0 +1,36 @@
+{
+	"display": {
+		"title": [{
+			"text": "Champion",
+			"color": "light_purple",
+			"bold": false
+		}],
+		"description": [{
+				"text": "Reputation Level V\n",
+				"color": "gray"
+			},
+			{
+				"text": "You are now a Champion; you have unlocked dangerous and rewarding Legendary Quests!",
+				"color": "white"
+			}
+		],
+		"icon": {
+			"item": "toroquest:royal_helmet"
+		},
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"criteria": {
+		"champion": {
+			"trigger": "toroquest:champion"
+		}
+	},
+	"requirements": [
+		[
+			"champion"
+		]
+	],
+	"parent": "toroquest:exalted"
+}

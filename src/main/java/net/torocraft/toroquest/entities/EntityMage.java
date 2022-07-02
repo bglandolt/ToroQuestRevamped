@@ -70,8 +70,9 @@ import net.torocraft.toroquest.config.ToroQuestConfiguration;
 public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 {
 
-	//TODO
-	//public static Achievement MAGE_ACHIEVEMNT = new Achievement("mage", "mage", 0, 0, Items.DIAMOND_SWORD, null).registerStat();
+	// TODO
+	// public static Achievement MAGE_ACHIEVEMNT = new Achievement("mage", "mage",
+	// 0, 0, Items.DIAMOND_SWORD, null).registerStat();
 
 	private static final UUID MODIFIER_UUID = UUID.fromString("5CD17E52-A79A-43D3-A529-90FDE04B181E");
 	private static final AttributeModifier MODIFIER = (new AttributeModifier(MODIFIER_UUID, "Drinking speed penalty", -0.25D, 0)).setSaved(false);
@@ -83,25 +84,28 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 
 	public static String NAME = "mage";
 
-	static {
-		if (ToroQuestConfiguration.specificEntityNames) {
+	static
+	{
+		if ( ToroQuestConfiguration.specificEntityNames )
+		{
 			NAME = ToroQuestEntities.ENTITY_PREFIX + NAME;
 		}
 	}
 
-	private static final DataParameter<Boolean> STAFF_ATTACK = EntityDataManager.<Boolean> createKey(EntityMage.class, DataSerializers.BOOLEAN);
+	private static final DataParameter<Boolean> STAFF_ATTACK = EntityDataManager.<Boolean>createKey(EntityMage.class, DataSerializers.BOOLEAN);
 
-	public static void init(int entityId) {
-		EntityRegistry.registerModEntity(new ResourceLocation(ToroQuest.MODID, NAME), EntityMage.class, NAME, entityId, ToroQuest.INSTANCE, 80, 3,
-				true, 0xff3024, 0xe0d6b9);
+	public static void init( int entityId )
+	{
+		EntityRegistry.registerModEntity(new ResourceLocation(ToroQuest.MODID, NAME), EntityMage.class, NAME, entityId, ToroQuest.INSTANCE, 80, 3, true, 0xff3024, 0xe0d6b9);
 	}
 
 	@Nullable
-	protected ResourceLocation getLootTable() {
+	protected ResourceLocation getLootTable()
+	{
 		return null;
 	}
 
-	public EntityMage(World worldIn)
+	public EntityMage( World worldIn )
 	{
 		super(worldIn);
 		this.enablePersistence();
@@ -110,9 +114,11 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 	}
 
 	@Override
-	public void onDeath(DamageSource cause) {
+	public void onDeath( DamageSource cause )
+	{
 		super.onDeath(cause);
-		if (!world.isRemote) {
+		if ( !world.isRemote )
+		{
 			dropLoot();
 			achievement(cause);
 		}
@@ -120,42 +126,45 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 
 	@Override
 	public boolean getAlwaysRenderNameTag()
-    {
-        return false;
-    }
-	
+	{
+		return false;
+	}
+
 	@Override
-    protected float getWaterSlowDown()
-    {
-        return 0.9F;
-    }
-	
-    public boolean startRiding(Entity entityIn, boolean force)
-    {
-    	return false;
-    }
-    
+	protected float getWaterSlowDown()
+	{
+		return 0.9F;
+	}
+
+	public boolean startRiding( Entity entityIn, boolean force )
+	{
+		return false;
+	}
+
 	@Override
 	protected void updateLeashedState()
-    {
-	   this.clearLeashed(true, true);
-       return;
-    }
-	
+	{
+		this.clearLeashed(true, true);
+		return;
+	}
+
 	@Override
-	public boolean canBeLeashedTo(EntityPlayer player)
-    {
+	public boolean canBeLeashedTo( EntityPlayer player )
+	{
 		return false;
-    }
-	
-	protected void achievement(DamageSource cause) {
-		if (world.isRemote) {
+	}
+
+	protected void achievement( DamageSource cause )
+	{
+		if ( world.isRemote )
+		{
 			return;
 		}
 		Entity entity = cause.getTrueSource();
-		if (entity != null && entity instanceof EntityPlayer) {
-			//TODO
-			//((EntityPlayer) entity).addStat(MAGE_ACHIEVEMNT);
+		if ( entity != null && entity instanceof EntityPlayer )
+		{
+			// TODO
+			// ((EntityPlayer) entity).addStat(MAGE_ACHIEVEMNT);
 		}
 	}
 
@@ -173,14 +182,14 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 		dropLootItem(Items.BOOK, 1);
 	}
 
-	private void dropLootItem(Item item, int amount)
+	private void dropLootItem( Item item, int amount )
 	{
-		if (amount == 0)
+		if ( amount == 0 )
 		{
 			return;
 		}
 
-		for (int i = 0; i < amount; i++)
+		for ( int i = 0; i < amount; i++ )
 		{
 			ItemStack stack = new ItemStack(item);
 			EntityItem dropItem = new EntityItem(world, posX, posY, posZ, stack.copy());
@@ -192,7 +201,7 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 		}
 
 	}
-	
+
 	private void dropTrophy()
 	{
 		ItemStack stack = new ItemStack(Item.getByNameOrId("toroquest:trophy_archmage"));
@@ -206,11 +215,13 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 	}
 
 	@Override
-	protected boolean canDespawn() {
+	protected boolean canDespawn()
+	{
 		return false;
 	}
 
-	protected void initEntityAI() {
+	protected void initEntityAI()
+	{
 		ai();
 	}
 
@@ -224,20 +235,22 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 		targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityPlayer>(this, EntityPlayer.class, true));
 	}
 
-	protected void entityInit() {
+	protected void entityInit()
+	{
 		super.entityInit();
 		getDataManager().register(IS_AGGRESSIVE, Boolean.valueOf(false));
 		dataManager.register(STAFF_ATTACK, Boolean.valueOf(false));
 		isImmuneToFire = true;
 	}
 
-	public boolean isStaffAttacking() {
+	public boolean isStaffAttacking()
+	{
 		return ((Boolean) this.dataManager.get(STAFF_ATTACK)).booleanValue();
 	}
 
-	private void setStaffAttacking(boolean b)
+	private void setStaffAttacking( boolean b )
 	{
-		if (b)
+		if ( b )
 		{
 			staffTimer = 1;
 		}
@@ -266,11 +279,13 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 	/**
 	 * Set whether this witch is aggressive at an entity.
 	 */
-	public void setAggressive(boolean aggressive) {
+	public void setAggressive( boolean aggressive )
+	{
 		this.getDataManager().set(IS_AGGRESSIVE, Boolean.valueOf(aggressive));
 	}
 
-	public boolean isDrinkingPotion() {
+	public boolean isDrinkingPotion()
+	{
 		return ((Boolean) this.getDataManager().get(IS_AGGRESSIVE)).booleanValue();
 	}
 
@@ -284,7 +299,7 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 		this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(10.0D);
 	}
-	
+
 	/**
 	 * Called frequently so the entity can update its state every tick as
 	 * required. For example, zombies and skeletons use this to react to
@@ -297,18 +312,20 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 		super.onLivingUpdate();
 	}
 
-	protected void updateLogic() {
-		if (this.world.isRemote) {
+	protected void updateLogic()
+	{
+		if ( this.world.isRemote )
+		{
 			return;
 		}
-		
-		if (this.ticksExisted % 25 == 0)
+
+		if ( this.ticksExisted % 25 == 0 )
 		{
 			this.heal(ToroQuestConfiguration.bossHealthMultiplier);
-	        this.bossInfo.setPercent(this.getHealth()/this.getMaxHealth());
+			this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
 		}
 
-		if (isDrinkingPotion())
+		if ( isDrinkingPotion() )
 		{
 			this.handleDrinkingPotionUpdate();
 		}
@@ -317,36 +334,46 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 			this.handleAttackLogicUpdate();
 		}
 
-		if (this.rand.nextFloat() < 7.5E-4F) {
+		if ( this.rand.nextFloat() < 7.5E-4F )
+		{
 			this.world.setEntityState(this, (byte) 15);
 		}
 
-		if (staffTimer > 0) {
+		if ( staffTimer > 0 )
+		{
 			staffTimer++;
-			if (staffTimer > 20) {
+			if ( staffTimer > 20 )
+			{
 				this.setStaffAttacking(false);
 			}
 		}
 
 	}
 
-	protected void handleAttackLogicUpdate() {
+	protected void handleAttackLogicUpdate()
+	{
 		PotionType potiontype = null;
 
-		if (this.rand.nextFloat() < 0.15F && this.isInsideOfMaterial(Material.WATER) && !this.isPotionActive(MobEffects.WATER_BREATHING)) {
+		if ( this.rand.nextFloat() < 0.15F && this.isInsideOfMaterial(Material.WATER) && !this.isPotionActive(MobEffects.WATER_BREATHING) )
+		{
 			potiontype = PotionTypes.WATER_BREATHING;
-		} else if (this.rand.nextFloat() < 0.15F && this.isBurning() && !this.isPotionActive(MobEffects.FIRE_RESISTANCE)) {
+		}
+		else if ( this.rand.nextFloat() < 0.15F && this.isBurning() && !this.isPotionActive(MobEffects.FIRE_RESISTANCE) )
+		{
 			potiontype = PotionTypes.FIRE_RESISTANCE;
-		} else if (this.rand.nextFloat() < 0.05F && this.getHealth() < this.getMaxHealth()) {
+		}
+		else if ( this.rand.nextFloat() < 0.05F && this.getHealth() < this.getMaxHealth() )
+		{
 			potiontype = PotionTypes.HEALING;
-		} else if (this.rand.nextFloat() < 0.5F && this.getAttackTarget() != null && !this.isPotionActive(MobEffects.SPEED)
-				&& this.getAttackTarget().getDistanceSq(this) > 121.0D) {
+		}
+		else if ( this.rand.nextFloat() < 0.5F && this.getAttackTarget() != null && !this.isPotionActive(MobEffects.SPEED) && this.getAttackTarget().getDistanceSq(this) > 121.0D )
+		{
 			potiontype = PotionTypes.SWIFTNESS;
 		}
 
-		if (potiontype != null) {
-			this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_WITCH_DRINK, this.getSoundCategory(), 1.0F,
-					0.8F + this.rand.nextFloat() * 0.4F);
+		if ( potiontype != null )
+		{
+			this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_WITCH_DRINK, this.getSoundCategory(), 1.0F, 0.8F + this.rand.nextFloat() * 0.4F);
 			this.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), potiontype));
 			this.attackTimer = 10;
 			this.setAggressive(true);
@@ -356,19 +383,23 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 		}
 	}
 
-	protected void handleDrinkingPotionUpdate() {
-		if (this.attackTimer-- <= 0) {
-			this.world.playSound((EntityPlayer) null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_WITCH_DRINK, this.getSoundCategory(), 1.0F,
-					0.8F + this.rand.nextFloat() * 0.4F);
+	protected void handleDrinkingPotionUpdate()
+	{
+		if ( this.attackTimer-- <= 0 )
+		{
+			this.world.playSound((EntityPlayer) null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_WITCH_DRINK, this.getSoundCategory(), 1.0F, 0.8F + this.rand.nextFloat() * 0.4F);
 			this.setAggressive(false);
 			ItemStack itemstack = this.getHeldItemOffhand();
 			this.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, ItemStack.EMPTY);
 
-			if (itemstack != null && itemstack.getItem() == Items.POTIONITEM) {
+			if ( itemstack != null && itemstack.getItem() == Items.POTIONITEM )
+			{
 				List<PotionEffect> list = PotionUtils.getEffectsFromStack(itemstack);
 
-				if (list != null) {
-					for (PotionEffect potioneffect : list) {
+				if ( list != null )
+				{
+					for ( PotionEffect potioneffect : list )
+					{
 						this.addPotionEffect(new PotionEffect(potioneffect));
 					}
 				}
@@ -378,35 +409,42 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public void handleStatusUpdate(byte id) {
-		if (id == 15) {
+	@SideOnly( Side.CLIENT )
+	public void handleStatusUpdate( byte id )
+	{
+		if ( id == 15 )
+		{
 			spawnWitchParticles();
-		} else {
+		}
+		else
+		{
 			super.handleStatusUpdate(id);
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	protected void spawnWitchParticles() {
-		for (int i = 0; i < this.rand.nextInt(35) + 10; ++i) {
-			this.world.spawnParticle(EnumParticleTypes.SPELL_WITCH, this.posX + this.rand.nextGaussian() * 0.12999999523162842D,
-					this.getEntityBoundingBox().maxY + 0.5D + this.rand.nextGaussian() * 0.12999999523162842D,
-					this.posZ + this.rand.nextGaussian() * 0.12999999523162842D, 0.0D, 0.0D, 0.0D, new int[0]);
+	@SideOnly( Side.CLIENT )
+	protected void spawnWitchParticles()
+	{
+		for ( int i = 0; i < this.rand.nextInt(35) + 10; ++i )
+		{
+			this.world.spawnParticle(EnumParticleTypes.SPELL_WITCH, this.posX + this.rand.nextGaussian() * 0.12999999523162842D, this.getEntityBoundingBox().maxY + 0.5D + this.rand.nextGaussian() * 0.12999999523162842D, this.posZ + this.rand.nextGaussian() * 0.12999999523162842D, 0.0D, 0.0D, 0.0D, new int[0]);
 		}
 	}
 
 	/**
 	 * Reduces damage, depending on potions
 	 */
-	protected float applyPotionDamageCalculations(DamageSource source, float damage) {
+	protected float applyPotionDamageCalculations( DamageSource source, float damage )
+	{
 		damage = super.applyPotionDamageCalculations(source, damage);
 
-		if (source.getTrueSource() == this) {
+		if ( source.getTrueSource() == this )
+		{
 			damage = 0.0F;
 		}
 
-		if (source.isMagicDamage()) {
+		if ( source.isMagicDamage() )
+		{
 			damage = (float) ((double) damage * 0.15D);
 		}
 
@@ -416,9 +454,11 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 	/**
 	 * Attack the specified entity using a ranged attack.
 	 */
-	public void attackEntityWithRangedAttack(EntityLivingBase target, float p_82196_2_) {
+	public void attackEntityWithRangedAttack( EntityLivingBase target, float p_82196_2_ )
+	{
 
-		if (isDrinkingPotion()) {
+		if ( isDrinkingPotion() )
+		{
 			return;
 		}
 
@@ -426,38 +466,53 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 
 		this.setStaffAttacking(true);
 
-		if (roll < 60) {
+		if ( roll < 60 )
+		{
 			this.attackWithPotion(target);
 
-		} else if (roll < 90) {
+		}
+		else if ( roll < 90 )
+		{
 
-			if (getDistanceSq(target) > 16 && rand.nextInt(100) > 60) {
+			if ( getDistanceSq(target) > 16 && rand.nextInt(100) > 60 )
+			{
 				world.addWeatherEffect(new EntityLightningBolt(world, target.posX, target.posY, target.posZ, false));
-			} else {
+			}
+			else
+			{
 				this.attackWithForce(target);
 			}
 
-		} else {
+		}
+		else
+		{
 			this.attackWithMobSpawn(target);
 		}
 	}
 
 	@Override
-	public void setSwingingArms(boolean swingingArms) {
+	public void setSwingingArms( boolean swingingArms )
+	{
 
 	}
 
-	private void attackWithMobSpawn(EntityLivingBase target) {
+	private void attackWithMobSpawn( EntityLivingBase target )
+	{
 
 		int roll = rand.nextInt(100);
 
 		Entity mob = null;
 
-		if (roll < 45) {
+		if ( roll < 45 )
+		{
 			mob = new EntitySkeleton(world);
-		} else if (roll < 90) {
+		}
+		else if ( roll < 90 )
+		{
 			mob = new EntityZombie(world);
-		} else {
+		}
+		else
+		{
 			mob = new EntityWitch(world);
 		}
 
@@ -467,7 +522,8 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 		world.spawnEntity(mob);
 	}
 
-	private void attackWithForce(EntityLivingBase target) {
+	private void attackWithForce( EntityLivingBase target )
+	{
 		setStaffAttacking(true);
 
 		double force = 8;
@@ -486,21 +542,23 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 		this.playSound(SoundEvents.ENTITY_ENDERDRAGON_FLAP, 2.0F, 0.5F);
 	}
 
-//	private void spawnParticles(double xSpeed, double ySpeed, double zSpeed) {
-//
-//		// TODO figure out how to spawn particles
-//
-//		if (this.world.isRemote) {
-//			for (int i = 0; i < 32; ++i) {
-//				world.spawnParticle(EnumParticleTypes.PORTAL, posX, posY, posZ, xSpeed, ySpeed, zSpeed, new int[0]);
-//			}
-//		} else {
-//			this.world.setEntityState(this, (byte) 42);
-//		}
-//
-//	}
+	// private void spawnParticles(double xSpeed, double ySpeed, double zSpeed) {
+	//
+	// // TODO figure out how to spawn particles
+	//
+	// if (this.world.isRemote) {
+	// for (int i = 0; i < 32; ++i) {
+	// world.spawnParticle(EnumParticleTypes.PORTAL, posX, posY, posZ, xSpeed,
+	// ySpeed, zSpeed, new int[0]);
+	// }
+	// } else {
+	// this.world.setEntityState(this, (byte) 42);
+	// }
+	//
+	// }
 
-	protected void attackWithPotion(EntityLivingBase target) {
+	protected void attackWithPotion( EntityLivingBase target )
+	{
 		double targetY = target.posY + (double) target.getEyeHeight() - 1.100000023841858D;
 		double targetX = target.posX + target.motionX - this.posX;
 		double d2 = targetY - this.posY;
@@ -509,25 +567,29 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 		float f = MathHelper.sqrt(targetX * targetX + targetZ * targetZ);
 		PotionType potiontype = PotionTypes.HARMING;
 
-		if (f >= 8.0F && !target.isPotionActive(MobEffects.SLOWNESS)) {
+		if ( f >= 8.0F && !target.isPotionActive(MobEffects.SLOWNESS) )
+		{
 			potiontype = PotionTypes.SLOWNESS;
-		} else if (target.getHealth() >= 8.0F && !target.isPotionActive(MobEffects.POISON)) {
+		}
+		else if ( target.getHealth() >= 8.0F && !target.isPotionActive(MobEffects.POISON) )
+		{
 			potiontype = PotionTypes.POISON;
-		} else if (f <= 3.0F && !target.isPotionActive(MobEffects.WEAKNESS) && this.rand.nextFloat() < 0.25F) {
+		}
+		else if ( f <= 3.0F && !target.isPotionActive(MobEffects.WEAKNESS) && this.rand.nextFloat() < 0.25F )
+		{
 			potiontype = PotionTypes.WEAKNESS;
 		}
 
-		EntityPotion entitypotion = new EntityPotion(this.world, this,
-				PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), potiontype));
+		EntityPotion entitypotion = new EntityPotion(this.world, this, PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), potiontype));
 		entitypotion.rotationPitch -= -20.0F;
 		entitypotion.shoot(targetX, d2 + (double) (f * 0.2F), targetZ, 0.75F, 8.0F);
 
-		this.world.playSound((EntityPlayer) null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_WITCH_THROW, this.getSoundCategory(), 1.0F,
-				0.8F + this.rand.nextFloat() * 0.4F);
+		this.world.playSound((EntityPlayer) null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_WITCH_THROW, this.getSoundCategory(), 1.0F, 0.8F + this.rand.nextFloat() * 0.4F);
 		this.world.spawnEntity(entitypotion);
 	}
 
-	protected void attackWithArrow(EntityLivingBase target) {
+	protected void attackWithArrow( EntityLivingBase target )
+	{
 
 		int charge = 2 + rand.nextInt(10);
 
@@ -536,22 +598,23 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 		double d1 = target.getEntityBoundingBox().minY + (double) (target.height / 3.0F) - entityarrow.posY;
 		double d2 = target.posZ - this.posZ;
 		double d3 = (double) MathHelper.sqrt(d0 * d0 + d2 * d2);
-		entityarrow.shoot(d0, d1 + d3 * 0.20000000298023224D, d2, 1.6F,
-				(float) (14 - this.world.getDifficulty().getDifficultyId() * 4));
+		entityarrow.shoot(d0, d1 + d3 * 0.20000000298023224D, d2, 1.6F, (float) (14 - this.world.getDifficulty().getDifficultyId() * 4));
 		int i = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.POWER, this);
 		int j = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.PUNCH, this);
-		entityarrow.setDamage((double) (charge * 2.0F) + this.rand.nextGaussian() * 0.25D
-				+ (double) ((float) this.world.getDifficulty().getDifficultyId() * 0.11F));
+		entityarrow.setDamage((double) (charge * 2.0F) + this.rand.nextGaussian() * 0.25D + (double) ((float) this.world.getDifficulty().getDifficultyId() * 0.11F));
 
-		if (i > 0) {
+		if ( i > 0 )
+		{
 			entityarrow.setDamage(entityarrow.getDamage() + (double) i * 0.5D + 0.5D);
 		}
 
-		if (j > 0) {
+		if ( j > 0 )
+		{
 			entityarrow.setKnockbackStrength(j);
 		}
 
-		if (rand.nextBoolean()) {
+		if ( rand.nextBoolean() )
+		{
 			entityarrow.setFire(100);
 		}
 
@@ -559,30 +622,37 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 		this.world.spawnEntity(entityarrow);
 	}
 
-	public float getEyeHeight() {
+	public float getEyeHeight()
+	{
 		return 1.62F;
 	}
 
-	public boolean attackEntityFrom(DamageSource source, float amount) {
-		if (this.isEntityInvulnerable(source)) {
-			return false;
-		}
-		
+	public boolean attackEntityFrom( DamageSource source, float amount )
+	{
+		if ( this.isEntityInvulnerable(source) )
 		{
-	        this.bossInfo.setPercent(this.getHealth()/this.getMaxHealth());
+			return false;
 		}
 
-		if (source instanceof EntityDamageSourceIndirect) {
+		{
+			this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
+		}
+
+		if ( source instanceof EntityDamageSourceIndirect )
+		{
 			redirectArrowAtAttacker(source);
 			return false;
-		} else {
+		}
+		else
+		{
 			amount = redirectAttack(source, amount);
 		}
 
 		return super.attackEntityFrom(source, amount);
 	}
 
-	protected float redirectAttack(DamageSource source, float amount) {
+	protected float redirectAttack( DamageSource source, float amount )
+	{
 		float reflectFactor = rand.nextFloat();
 
 		float reflectAmount = amount * reflectFactor;
@@ -591,46 +661,53 @@ public class EntityMage extends EntityMob implements IRangedAttackMob, IMob
 		reflectAmount *= ToroQuestConfiguration.bossAttackDamageMultiplier;
 
 		Entity attacker = source.getTrueSource();
-		if (attacker != null) {
+		if ( attacker != null )
+		{
 			attacker.attackEntityFrom(source, reflectAmount);
 		}
 		this.world.setEntityState(this, (byte) 15);
 		return passAmount;
 	}
 
-	protected void redirectArrowAtAttacker(DamageSource source) {
-		if ("arrow".equals(source.getDamageType())) {
+	protected void redirectArrowAtAttacker( DamageSource source )
+	{
+		if ( "arrow".equals(source.getDamageType()) )
+		{
 
-			if (source.getTrueSource() != null && source.getTrueSource() instanceof EntityLivingBase) {
+			if ( source.getTrueSource() != null && source.getTrueSource() instanceof EntityLivingBase )
+			{
 				attackWithArrow((EntityLivingBase) source.getTrueSource());
 			}
 
-			if (source.getImmediateSource() != null) {
+			if ( source.getImmediateSource() != null )
+			{
 				source.getImmediateSource().setDead();
 			}
 
 		}
 	}
-	
-	private final BossInfoServer bossInfo = (BossInfoServer)(new BossInfoServer(this.getDisplayName(), BossInfo.Color.PURPLE, BossInfo.Overlay.PROGRESS)).setDarkenSky(true);
+
+	private final BossInfoServer bossInfo = (BossInfoServer) (new BossInfoServer(this.getDisplayName(), BossInfo.Color.PURPLE, BossInfo.Overlay.PROGRESS)).setDarkenSky(true);
 
 	/**
-     * Add the given player to the list of players tracking this entity. For instance, a player may track a boss in
-     * order to view its associated boss bar.
-     */
-    public void addTrackingPlayer(EntityPlayerMP player)
-    {
-        super.addTrackingPlayer(player);
-        this.bossInfo.addPlayer(player);
-    }
+	 * Add the given player to the list of players tracking this entity. For
+	 * instance, a player may track a boss in
+	 * order to view its associated boss bar.
+	 */
+	public void addTrackingPlayer( EntityPlayerMP player )
+	{
+		super.addTrackingPlayer(player);
+		this.bossInfo.addPlayer(player);
+	}
 
-    /**
-     * Removes the given player from the list of players tracking this entity. See {@link Entity#addTrackingPlayer} for
-     * more information on tracking.
-     */
-    public void removeTrackingPlayer(EntityPlayerMP player)
-    {
-        super.removeTrackingPlayer(player);
-        this.bossInfo.removePlayer(player);
-    }
+	/**
+	 * Removes the given player from the list of players tracking this entity. See
+	 * {@link Entity#addTrackingPlayer} for
+	 * more information on tracking.
+	 */
+	public void removeTrackingPlayer( EntityPlayerMP player )
+	{
+		super.removeTrackingPlayer(player);
+		this.bossInfo.removePlayer(player);
+	}
 }

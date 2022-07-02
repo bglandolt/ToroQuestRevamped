@@ -17,7 +17,7 @@ public abstract class BlockMapBase
 
 	protected String line;
 
-	public BlockMapBase(String name)
+	public BlockMapBase( String name )
 	{
 		this.name = name;
 	}
@@ -30,15 +30,18 @@ public abstract class BlockMapBase
 		}
 		catch (Exception e)
 		{
-//			try
-//			{
-//				reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("assets/" + ToroQuest.MODID + "/structures/" + "keep" + ".txt"), "UTF-8"));
-//			}
-//			catch (Exception e1)
-//			{
-//				reader = null;
-//				System.out.println("Unable to load village piece File NAME[" + name + "]: " + e.getMessage());
-//			}
+			// try
+			// {
+			// reader = new BufferedReader(new
+			// InputStreamReader(getClass().getClassLoader().getResourceAsStream("assets/" +
+			// ToroQuest.MODID + "/structures/" + "keep" + ".txt"), "UTF-8"));
+			// }
+			// catch (Exception e1)
+			// {
+			// reader = null;
+			// System.out.println("Unable to load village piece File NAME[" + name + "]: " +
+			// e.getMessage());
+			// }
 		}
 	}
 

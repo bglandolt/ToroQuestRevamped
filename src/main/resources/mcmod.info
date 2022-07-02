@@ -1,14 +1,14 @@
 [
 {
   "modid": "toroquest",
-  "name": "ToroQuest",
-  "description": "ToroQuest",
+  "name": "ToroQuest Revampd",
+  "description": "Quests, Bandits, Guards & more!",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["torocraft"],
-  "credits": "The Forge and FML guys, for making Forge and FML",
+  "authorList": ["torocraft", "benchwench (burgy)"],
+  "credits": "The Forge and FML guys, for making Forge and FML. Thank you torocraft for the original toroquest mod!",
   "logoFile": "",
   "screenshots": []
 }

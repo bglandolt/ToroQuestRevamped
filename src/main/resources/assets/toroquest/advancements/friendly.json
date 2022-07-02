@@ -1,0 +1,36 @@
+{
+	"display": {
+		"title": [{
+			"text": "Friendly",
+			"color": "0x001199",
+			"bold": false
+		}],
+		"description": [{
+				"text": "Reputation Level I\n",
+				"color": "gray"
+			},
+			{
+				"text": "You are now Friendly; you have gained permission to harvest crops!",
+				"color": "white"
+			}
+		],
+		"icon": {
+			"item": "toroquest:royal_helmet"
+		},
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"criteria": {
+		"friendly": {
+			"trigger": "toroquest:friendly"
+		}
+	},
+	"requirements": [
+		[
+			"friendly"
+		]
+	],
+	"parent": "toroquest:base"
+}

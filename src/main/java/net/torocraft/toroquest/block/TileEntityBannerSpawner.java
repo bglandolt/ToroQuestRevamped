@@ -25,7 +25,7 @@ public class TileEntityBannerSpawner extends TileEntity implements ITickable
 	{
 		this.triggerSpawner();
 	}
-	
+
 	protected void triggerSpawner()
 	{
 		try
@@ -36,50 +36,50 @@ public class TileEntityBannerSpawner extends TileEntity implements ITickable
 				this.world.removeTileEntity(this.getPos());
 				if ( banner instanceof BlockSmartBanner )
 				{
-					VillagePieceBlockMap.setBannerRotation(this.getWorld(), this.getPos(), ((BlockSmartBanner)banner).getFacing() );
+					VillagePieceBlockMap.setBannerRotation(this.getWorld(), this.getPos(), ((BlockSmartBanner) banner).getFacing());
 				}
 			}
 		}
 		catch (Exception e)
 		{
-			
+
 		}
 	}
-	
-	protected boolean isGroundBlock(IBlockState blockState)
+
+	protected boolean isGroundBlock( IBlockState blockState )
 	{
 		return blockState.isOpaqueCube();
 	}
-	
+
 	@Nullable
 	public SPacketUpdateTileEntity getUpdatePacket()
 	{
 		return new SPacketUpdateTileEntity(this.getPos(), 1, getUpdateTag());
 	}
-	
+
 	public NBTTagCompound getUpdateTag()
 	{
 		NBTTagCompound nbttagcompound = this.writeToNBT(new NBTTagCompound());
 		// nbttagcompound.removeTag("SpawnPotentials");
 		return nbttagcompound;
 	}
-		
-	@SideOnly(Side.CLIENT)
-    public double getMaxRenderDistanceSquared()
-    {
-        return 0.0D;
-    }
-	
+
+	@SideOnly( Side.CLIENT )
+	public double getMaxRenderDistanceSquared()
+	{
+		return 0.0D;
+	}
+
 	@Override
 	public boolean hasFastRenderer()
-    {
-        return true;
-    }
-	
+	{
+		return true;
+	}
+
 	@Override
 	public Block getBlockType()
-    {
+	{
 		return Blocks.AIR.getDefaultState().getBlock();
-    }
+	}
 
 }

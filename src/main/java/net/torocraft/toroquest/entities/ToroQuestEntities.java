@@ -2,7 +2,6 @@ package net.torocraft.toroquest.entities;
 
 public class ToroQuestEntities
 {
-
 	public static final String ENTITY_PREFIX = "toroquest_";
 
 	public static void init()
@@ -30,6 +29,5 @@ public class ToroQuestEntities
 		EntityOrc.init(id++);
 		EntityConstruct.init(id++);
 		EntityConstructQuest.init(id++);
-		//EntityAdventurer.init(id++);
 	}
 }

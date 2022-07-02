@@ -9,34 +9,35 @@ import net.torocraft.toroquest.ToroQuest;
 import net.torocraft.toroquest.entities.EntityBas;
 import net.torocraft.toroquest.entities.model.ModelVampireLord;
 
-@SideOnly(Side.CLIENT)
+@SideOnly( Side.CLIENT )
 public class RenderBas extends RenderLiving<EntityBas>
 {
 	private static final ResourceLocation SKELETON_TEXTURE = new ResourceLocation(ToroQuest.MODID + ":textures/entity/vampire_lord.png");
 
-	public RenderBas(RenderManager renderManagerIn)
+	public RenderBas( RenderManager renderManagerIn )
 	{
 		super(renderManagerIn, new ModelVampireLord(), 1.0F);
 		// this.addLayer(new LayerHeldItem(this));
 	}
 
-//	@Override
-//	protected void preRenderCallback(EntityBas entitylivingbaseIn, float partialTickTime)
-//	{
-//		GlStateManager.scale(1.0F, 1.0F, 1.0F);
-//	}
+	// @Override
+	// protected void preRenderCallback(EntityBas entitylivingbaseIn, float
+	// partialTickTime)
+	// {
+	// GlStateManager.scale(1.0F, 1.0F, 1.0F);
+	// }
 
-//	public void transformHeldFull3DItemLayer()
-//	{
-//		GlStateManager.translate(0.09375F, 0.1875F, 0.0F);
-//	}
+	// public void transformHeldFull3DItemLayer()
+	// {
+	// GlStateManager.translate(0.09375F, 0.1875F, 0.0F);
+	// }
 
 	/**
 	 * Returns the location of an entity's texture. Doesn't seem to be called
 	 * unless you call Render.bindEntityTexture.
 	 */
 	@Override
-	protected ResourceLocation getEntityTexture(EntityBas entity)
+	protected ResourceLocation getEntityTexture( EntityBas entity )
 	{
 		return SKELETON_TEXTURE;
 	}

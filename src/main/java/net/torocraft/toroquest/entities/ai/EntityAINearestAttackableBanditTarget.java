@@ -28,35 +28,35 @@ import net.torocraft.toroquest.entities.EntityToroNpc;
 
 public class EntityAINearestAttackableBanditTarget extends EntityAITarget
 {
-	
-    protected final EntityAINearestAttackableTarget.Sorter sorter;
+
+	protected final EntityAINearestAttackableTarget.Sorter sorter;
 	protected final Predicate<EntityLiving> targetEntitySelector;
 	protected EntityLiving targetEntity;
 
 	protected EntityGuard taskOwner;
-	
+
 	public EntityAINearestAttackableBanditTarget( EntityGuard npc )
 	{
-		//    checkSight, onlyNearby
-		super( npc, false, false );
+		// checkSight, onlyNearby
+		super(npc, false, false);
 		this.taskOwner = npc;
 		this.sorter = new EntityAINearestAttackableTarget.Sorter(npc);
 		this.setMutexBits(1);
-		
+
 		this.targetEntitySelector = new Predicate<EntityLiving>()
 		{
-			public boolean apply(@Nullable EntityLiving target)
+			public boolean apply( @Nullable EntityLiving target )
 			{
-				if (!isSuitableTarget(taskOwner, target, false, false))
+				if ( !isSuitableTarget(taskOwner, target, false, false) )
 				{
 					return false;
 				}
-				
+
 				if ( target.getAttackTarget() instanceof EntityToroNpc || target.getAttackTarget() instanceof EntityVillager )
 				{
 					return true;
 				}
-				
+
 				if ( !taskOwner.getPlayerGuard().equals("") )
 				{
 					if ( target.getAttackTarget() instanceof EntityPlayer )
@@ -66,7 +66,7 @@ public class EntityAINearestAttackableBanditTarget extends EntityAITarget
 							return true;
 						}
 					}
-					
+
 					if ( target.getRevengeTarget() instanceof EntityPlayer )
 					{
 						if ( target.getRevengeTarget().getName().equals(taskOwner.getPlayerGuard()) )
@@ -74,12 +74,12 @@ public class EntityAINearestAttackableBanditTarget extends EntityAITarget
 							return true;
 						}
 					}
-					
+
 					if ( target instanceof IMob || target instanceof EntityMob )
 					{
 						if ( target instanceof EntitySentry && !(target instanceof EntityOrc) )
 						{
-							EntitySentry t = (EntitySentry)(target);
+							EntitySentry t = (EntitySentry) (target);
 							if ( t.getBribed() || t.passiveTimer > 0 )
 							{
 								return false;
@@ -109,21 +109,21 @@ public class EntityAINearestAttackableBanditTarget extends EntityAITarget
 						}
 					}
 				}
-				
+
 				if ( target instanceof EntityTameable )
 				{
 					EntityTameable tameable = (EntityTameable) target;
-										
+
 					if ( !tameable.isTamed() && target.getHealth() > 0 )
 					{
 						if ( target.getEntityData().hasKey("ModelDead") )
 						{
 							return !target.getEntityData().getBoolean("ModelDead");
 						}
-						
+
 						if ( target.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE) != null && target.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue() >= 1 )
 						{
-						    return true;
+							return true;
 						}
 					}
 				}
@@ -133,19 +133,19 @@ public class EntityAINearestAttackableBanditTarget extends EntityAITarget
 	}
 
 	Random rand = new Random();
-	
+
 	@Override
 	public boolean shouldExecute()
 	{
 		if ( !this.taskOwner.searchNextEnemy && rand.nextInt(16) != 0 )
-        {
+		{
 			return false;
-	    }
-		
+		}
+
 		this.taskOwner.searchNextEnemy = false;
-		
+
 		List<EntityLiving> list = this.taskOwner.world.<EntityLiving>getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(this.taskOwner.getPosition()).grow(25, 12, 25), this.targetEntitySelector);
-	
+
 		if ( list.isEmpty() )
 		{
 			return false;
@@ -173,33 +173,34 @@ public class EntityAINearestAttackableBanditTarget extends EntityAITarget
 			return false;
 		}
 	}
-	
-//	protected AxisAlignedBB getTargetableArea(double targetDistance)
-//	{
-//		return this.taskOwner.getEntityBoundingBox().grow(targetDistance, 32, targetDistance);
-//	}
+
+	// protected AxisAlignedBB getTargetableArea(double targetDistance)
+	// {
+	// return this.taskOwner.getEntityBoundingBox().grow(targetDistance, 32,
+	// targetDistance);
+	// }
 
 	public static class Sorter implements Comparator<Entity>
 	{
 		private final Entity theEntity;
 
-		public Sorter(Entity theEntityIn)
+		public Sorter( Entity theEntityIn )
 		{
 			this.theEntity = theEntityIn;
 		}
 
-		public int compare(Entity entity1, Entity entity2)
+		public int compare( Entity entity1, Entity entity2 )
 		{
-			double d0 = this.theEntity.getDistanceSq( entity1 );
-			double d1 = this.theEntity.getDistanceSq( entity2 );
+			double d0 = this.theEntity.getDistanceSq(entity1);
+			double d1 = this.theEntity.getDistanceSq(entity2);
 			return d0 < d1 ? -1 : (d0 > d1 ? 1 : 0);
 		}
 	}
-	
+
 	@Override
-    public void startExecuting()
-    {
-        this.taskOwner.setAttackTarget(this.targetEntity);
-        super.startExecuting();
-    }
+	public void startExecuting()
+	{
+		this.taskOwner.setAttackTarget(this.targetEntity);
+		super.startExecuting();
+	}
 }

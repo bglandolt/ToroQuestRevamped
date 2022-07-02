@@ -25,25 +25,27 @@ import net.torocraft.toroquest.civilization.quests.QuestMine;
 import net.torocraft.toroquest.civilization.quests.QuestRecruit;
 import net.torocraft.toroquest.civilization.quests.QuestTradeWithVillagers;
 
-public class Quests {
+public class Quests
+{
 
 	private static final Map<Integer, Quest> REGISTRY = new HashMap<Integer, Quest>();
 
-	public static void registerQuest(int id, Quest instance)
+	public static void registerQuest( int id, Quest instance )
 	{
 		REGISTRY.put(id, instance);
 	}
 
-	public static Quest getQuestForId(Integer id)
+	public static Quest getQuestForId( Integer id )
 	{
-		if (id == null)
+		if ( id == null )
 		{
 			throw new NullPointerException("quest ID is null");
 		}
 		return REGISTRY.get(id);
 	}
 
-	// ============================================== POSSIBLE QUESTS TO GIVE ===============================================================
+	// ============================================== POSSIBLE QUESTS TO GIVE
+	// ===============================================================
 
 	public static void init()
 	{
@@ -71,6 +73,7 @@ public class Quests {
 		QuestKillBossMonolithEye.init(++id);
 		QuestBuild.init(++id);
 		QuestEnemyGolem.init(++id);
+		// QuestBuildHome.init(++id);
 	}
 
 }

@@ -9,9 +9,9 @@ import net.torocraft.toroquest.configuration.ConfigurationHandler;
 
 public class GuiConfigToroQuest extends GuiConfig
 {
-	public GuiConfigToroQuest(GuiScreen parent)
+	public GuiConfigToroQuest( GuiScreen parent )
 	{
-		super (parent, new ConfigElement(ConfigurationHandler.config.getCategory(Configuration.CATEGORY_CLIENT)).getChildElements(),ToroQuest.MODID,false,false,"ToroQuest");
+		super(parent, new ConfigElement(ConfigurationHandler.config.getCategory(Configuration.CATEGORY_CLIENT)).getChildElements(), ToroQuest.MODID, false, false, "ToroQuest");
 		titleLine2 = ConfigurationHandler.config.getConfigFile().getAbsolutePath();
 	}
 }

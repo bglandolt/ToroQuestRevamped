@@ -30,7 +30,7 @@ public class ItemEnderIdol extends Item
 	private static ResourceLocation REGISTRY_NAME = new ResourceLocation(ToroQuest.MODID, NAME);
 
 	@SubscribeEvent
-	public static void init(final RegistryEvent.Register<Item> event)
+	public static void init( final RegistryEvent.Register<Item> event )
 	{
 		INSTANCE = new ItemEnderIdol();
 		INSTANCE.setRegistryName(REGISTRY_NAME);
@@ -45,16 +45,17 @@ public class ItemEnderIdol extends Item
 		renderItem.getItemModelMesher().register(INSTANCE, 0, new ModelResourceLocation(ToroQuest.MODID + ":" + NAME, "inventory"));
 	}
 
-	public ItemEnderIdol() {
+	public ItemEnderIdol()
+	{
 		setUnlocalizedName(NAME);
 		this.maxStackSize = 1;
 		this.setCreativeTab(CreativeTabs.MATERIALS);
 	}
-	
+
 	@Override
-    @SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
-    {
+	@SideOnly( Side.CLIENT )
+	public void addInformation( ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn )
+	{
 		if ( ToroQuestConfiguration.enderIdolTeleport )
 		{
 			tooltip.add("This idol shatters on death, teleporting you to the nearest safe location instead.");
@@ -63,6 +64,6 @@ public class ItemEnderIdol extends Item
 		{
 			tooltip.add("If this item is in your inventory when you die, every other item is returned to you in the next life.");
 		}
-    }
+	}
 
 }

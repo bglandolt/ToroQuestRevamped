@@ -8,7 +8,7 @@ public class CivilizationEvent extends PlayerEvent
 
 	public final CivilizationType civilization;
 
-	public CivilizationEvent(EntityPlayer player, CivilizationType civilization)
+	public CivilizationEvent( EntityPlayer player, CivilizationType civilization )
 	{
 		super(player);
 		this.civilization = civilization;
@@ -18,7 +18,7 @@ public class CivilizationEvent extends PlayerEvent
 	{
 		public final Province province;
 
-		public Enter(EntityPlayer player, Province province)
+		public Enter( EntityPlayer player, Province province )
 		{
 			super(player, province.civilization);
 			this.province = province;
@@ -29,7 +29,7 @@ public class CivilizationEvent extends PlayerEvent
 	{
 		public final Province province;
 
-		public Leave(EntityPlayer player, Province province)
+		public Leave( EntityPlayer player, Province province )
 		{
 			super(player, province.civilization);
 			this.province = province;
@@ -40,7 +40,7 @@ public class CivilizationEvent extends PlayerEvent
 	{
 		private final int reputation;
 
-		public ReputationChange(EntityPlayer player, CivilizationType civilization, int reputation)
+		public ReputationChange( EntityPlayer player, CivilizationType civilization, int reputation )
 		{
 			super(player, civilization);
 			this.reputation = reputation;

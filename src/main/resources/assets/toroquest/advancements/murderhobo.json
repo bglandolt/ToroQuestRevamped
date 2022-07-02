@@ -1,0 +1,36 @@
+{
+	"display": {
+		"title": [{
+			"text": "Murderhobo",
+			"color": "red",
+			"bold": false
+		}],
+		"description": [{
+				"text": "Kill a Village Lord from each House\n",
+				"color": "gray"
+			},
+			{
+				"text": "I have an intelligence of 6, I know what I’m doing.",
+				"color": "white"
+			}
+		],
+		"icon": {
+			"item": "toroquest:bandit_helmet"
+		},
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"criteria": {
+		"murderhobo": {
+			"trigger": "toroquest:murderhobo"
+		}
+	},
+	"requirements": [
+		[
+			"murderhobo"
+		]
+	],
+	"parent": "toroquest:base"
+}

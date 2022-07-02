@@ -1,14 +1,3 @@
-./gradlew eclipse
-./gradlew setupDecompWorkspace eclipse
-
-import...
-Existing Projects into Workspace
-Browse... file
-
-make sure Build Path is modid/bin, not modid/bin/default
-
-./gradlew --refresh-dependencies
-
 -------------------------------------------
 Source installation information for modders
 -------------------------------------------
@@ -32,10 +21,20 @@ Step 1: Open your command-line and browse to the folder where you extracted the 
 
 Step 2: Once you have a command window up in the folder that the downloaded material was placed, type:
 
-./gradlew setupDecompWorkspace
-./gradlew eclipse
+Windows: "gradlew setupDecompWorkspace"
+Linux/Mac OS: "./gradlew setupDecompWorkspace"
 
-Step 3: The final step is to open Eclipse and switch your workspace to /eclipse/
+Step 3: After all that finished, you're left with a choice.
+For eclipse, run "gradlew eclipse" (./gradlew eclipse if you are on Mac/Linux)
+
+If you prefer to use IntelliJ, steps are a little different.
+1. Open IDEA, and import project.
+2. Select your build.gradle file and have it import.
+3. Once it's finished you must close IntelliJ and run the following command:
+
+"gradlew genIntellijRuns" (./gradlew genIntellijRuns if you are on Mac/Linux)
+
+Step 4: The final step is to open Eclipse and switch your workspace to /eclipse/ (if you use IDEA, it should automatically start on your project)
 
 If at any point you are missing libraries in your IDE, or you've run into problems you can run "gradlew --refresh-dependencies" to refresh the local cache. "gradlew clean" to reset everything {this does not affect your code} and then start the processs again.
 

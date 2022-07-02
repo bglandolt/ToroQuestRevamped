@@ -23,15 +23,15 @@ public class EntityAIMoveIntoArea extends EntityAIBase
 	boolean enabled = false;
 	Random rand = new Random();
 
-	public EntityAIMoveIntoArea(EntityCreature entity, double speedIn, int radius)
+	public EntityAIMoveIntoArea( EntityCreature entity, double speedIn, int radius )
 	{
 		this.entity = entity;
 		this.movementSpeed = speedIn;
 		this.radiusSq = radius * radius;
 		this.setMutexBits(1);
 	}
-	
-	public EntityAIMoveIntoArea(EntityCreature entity, double speedIn, int radius, int rangeXZ, int rangeY, int freq)
+
+	public EntityAIMoveIntoArea( EntityCreature entity, double speedIn, int radius, int rangeXZ, int rangeY, int freq )
 	{
 		this.entity = entity;
 		this.movementSpeed = speedIn;
@@ -52,7 +52,7 @@ public class EntityAIMoveIntoArea extends EntityAIBase
 		enabled = false;
 	}
 
-	public void setCenter(int centerX, int centerZ)
+	public void setCenter( int centerX, int centerZ )
 	{
 		this.centerX = centerX;
 		this.centerZ = centerZ;
@@ -65,8 +65,8 @@ public class EntityAIMoveIntoArea extends EntityAIBase
 		{
 			return false;
 		}
-		
-		if ( !(this.entity.getNavigator().noPath()) && rand.nextInt(this.freq/2) == 0 )
+
+		if ( !(this.entity.getNavigator().noPath()) && rand.nextInt(this.freq / 2) == 0 )
 		{
 			int r = (rand.nextInt(this.freq));
 			Vec3d vec3d = null;
@@ -75,11 +75,11 @@ public class EntityAIMoveIntoArea extends EntityAIBase
 				vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this.entity, this.rangeXZ, this.rangeY, new Vec3d((double) centerX, (double) entity.posY, (double) centerZ));
 			}
 			else if ( this.entity.isInWater() || this.entity.isInLava() )
-	        {
-	            vec3d = RandomPositionGenerator.getLandPos(this.entity, 16, 16);
-	        }
-			
-			if (vec3d == null)
+			{
+				vec3d = RandomPositionGenerator.getLandPos(this.entity, 16, 16);
+			}
+
+			if ( vec3d == null )
 			{
 				return false;
 			}
@@ -107,7 +107,7 @@ public class EntityAIMoveIntoArea extends EntityAIBase
 	 */
 	public boolean continueExecuting()
 	{
-		return !this.entity.getNavigator().noPath() || rand.nextInt(32)==0;
+		return !this.entity.getNavigator().noPath() || rand.nextInt(32) == 0;
 	}
 
 	/**

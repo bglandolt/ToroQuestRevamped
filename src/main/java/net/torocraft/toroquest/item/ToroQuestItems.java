@@ -13,7 +13,7 @@ import net.torocraft.toroquest.item.armor.ItemToroArmor;
 public class ToroQuestItems
 {
 
-	@SideOnly(Side.CLIENT)
+	@SideOnly( Side.CLIENT )
 	public static final void registerRenders()
 	{
 		ItemRoyalArmor.registerRenders();
@@ -45,10 +45,8 @@ public class ToroQuestItems
 		ItemArtifactBrown.registerRenders();
 		ItemArtifactYellow.registerRenders();
 		ItemDwarvenArtifact.registerRenders();
+		ItemLordNote.registerRenders();
+		ItemLordReply.registerRenders();
+		ItemTrophy.registerRenders();
 	}
-	
-	
-	
-	
-	
 }

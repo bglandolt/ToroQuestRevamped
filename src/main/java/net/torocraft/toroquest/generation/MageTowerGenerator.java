@@ -19,13 +19,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraft.world.storage.loot.LootTableList;
+import net.torocraft.toroquest.EventHandlers;
 import net.torocraft.toroquest.block.BlockToroSpawner;
 import net.torocraft.toroquest.block.TileEntityToroSpawner;
-import net.torocraft.toroquest.civilization.CivilizationHandlers;
 import net.torocraft.toroquest.entities.EntityMage;
-import net.torocraft.toroquest.entities.EntityMonolithEye;
 
-public class MageTowerGenerator extends WorldGenerator {
+public class MageTowerGenerator extends WorldGenerator
+{
 
 	private int floorHieght = 0;// 8;
 	private int radius = 0;// 12;
@@ -33,10 +33,22 @@ public class MageTowerGenerator extends WorldGenerator {
 
 	private int height = 0;// floors * floorHieght + 2;
 
-	protected IBlockState[] aFloorBlock = { Blocks.NETHER_BRICK.getDefaultState(), Blocks.COBBLESTONE.getDefaultState(), ((BlockStoneBrick) Blocks.STONEBRICK).getStateFromMeta(1), Blocks.BRICK_BLOCK.getDefaultState() };
-	protected IBlockState aWallDecorationBlock[] = { Blocks.GLOWSTONE.getDefaultState(), Blocks.SEA_LANTERN.getDefaultState() };
-	protected IBlockState[] aWallBlock = { Blocks.QUARTZ_BLOCK.getDefaultState(), Blocks.STONEBRICK.getDefaultState() };
-	protected IBlockState[] aWallRandBlock = { ((BlockQuartz) Blocks.QUARTZ_BLOCK).getStateFromMeta(1), Blocks.COBBLESTONE.getDefaultState() };
+	protected IBlockState[] aFloorBlock =
+	{
+		Blocks.NETHER_BRICK.getDefaultState(), Blocks.COBBLESTONE.getDefaultState(), ((BlockStoneBrick) Blocks.STONEBRICK).getStateFromMeta(1), Blocks.BRICK_BLOCK.getDefaultState()
+	};
+	protected IBlockState aWallDecorationBlock[] =
+	{
+		Blocks.GLOWSTONE.getDefaultState(), Blocks.SEA_LANTERN.getDefaultState()
+	};
+	protected IBlockState[] aWallBlock =
+	{
+		Blocks.QUARTZ_BLOCK.getDefaultState(), Blocks.STONEBRICK.getDefaultState()
+	};
+	protected IBlockState[] aWallRandBlock =
+	{
+		((BlockQuartz) Blocks.QUARTZ_BLOCK).getStateFromMeta(1), Blocks.COBBLESTONE.getDefaultState()
+	};
 
 	protected BlockStairs stairsBlock = (BlockStairs) Blocks.QUARTZ_STAIRS;
 	protected IBlockState stairsFoundationBlock = ((BlockStoneBrick) Blocks.STONEBRICK).getStateFromMeta(1);
@@ -50,7 +62,7 @@ public class MageTowerGenerator extends WorldGenerator {
 
 	protected IBlockState windowBlock = Blocks.DARK_OAK_FENCE.getDefaultState();
 
-	public boolean generate(int floors, int radius, int floorHieght, World world, Random rand, BlockPos pos)
+	public boolean generate( int floors, int radius, int floorHieght, World world, Random rand, BlockPos pos )
 	{
 		this.radius = radius;
 		this.floors = floors;
@@ -60,47 +72,48 @@ public class MageTowerGenerator extends WorldGenerator {
 	}
 
 	@Override
-	public boolean generate(World world, Random rand, BlockPos pos)
+	public boolean generate( World world, Random rand, BlockPos pos )
 	{
 		randomizeBlocks(rand);
 		randomizeParameters(rand);
 		BlockPos surface = findSurface(world, pos, false);
 		int i = 0;
-		
-		while ( surface == null && 32 > i )
+
+		while (surface == null && 32 > i)
 		{
-			surface = findSurface(world, pos.add(i*8*(rand.nextInt(2)*2-1), 0, i*8*(rand.nextInt(2)*2-1)), false);
+			surface = findSurface(world, pos.add(i * 8 * (rand.nextInt(2) * 2 - 1), 0, i * 8 * (rand.nextInt(2) * 2 - 1)), false);
 			i++;
 		}
-		
+
 		if ( surface == null )
 		{
-			while ( surface == null && 32 > i )
+			while (surface == null && 32 > i)
 			{
-				surface = findSurface(world, pos.add(i*16*(rand.nextInt(2)*2-1), 0, i*16*(rand.nextInt(2)*2-1)), true);
+				surface = findSurface(world, pos.add(i * 16 * (rand.nextInt(2) * 2 - 1), 0, i * 16 * (rand.nextInt(2) * 2 - 1)), true);
 				i++;
 			}
-			if ( surface == null ) return false;
+			if ( surface == null )
+				return false;
 		}
-		
+
 		placeTower(world, rand, surface);
 		spawnMage(world, surface);
 		return true;
 	}
 
-	protected void randomizeParameters(Random rand)
+	protected void randomizeParameters( Random rand )
 	{
-		if (radius == 0)
+		if ( radius == 0 )
 		{
 			radius = 7 + rand.nextInt(12);
 		}
 
-		if (floors == 0)
+		if ( floors == 0 )
 		{
 			floors = 3 + rand.nextInt(7);
 		}
 
-		if (floorHieght == 0)
+		if ( floorHieght == 0 )
 		{
 			floorHieght = 5 + rand.nextInt(5);
 		}
@@ -108,7 +121,7 @@ public class MageTowerGenerator extends WorldGenerator {
 		this.height = floors * floorHieght + 2;
 	}
 
-	private void randomizeBlocks(Random rand)
+	private void randomizeBlocks( Random rand )
 	{
 		wallBlock = randomPick(rand, aWallBlock);
 		wallRandBlock = randomPick(rand, aWallRandBlock);
@@ -116,23 +129,24 @@ public class MageTowerGenerator extends WorldGenerator {
 		wallDecorationBlock = randomPick(rand, aWallDecorationBlock);
 	}
 
-	private IBlockState randomPick(Random rand, IBlockState[] a) {
+	private IBlockState randomPick( Random rand, IBlockState[] a )
+	{
 		// return a[rand.nextInt(a.length)];
 		return a[0];
 	}
-	
-	private void spawnMage(World world, BlockPos pos)
+
+	private void spawnMage( World world, BlockPos pos )
 	{
-		addToroSpawner( world, pos, getDefaultEnemies() );
+		addToroSpawner(world, pos, getDefaultEnemies());
 	}
-	
-	private void addToroSpawner( World world, BlockPos blockpos, List<String> entities)
+
+	private void addToroSpawner( World world, BlockPos blockpos, List<String> entities )
 	{
 		blockpos = new BlockPos(blockpos.getX() + 3, blockpos.getY() + (floors * floorHieght) + 1, blockpos.getZ() + 3);
 
 		world.setBlockState(blockpos, BlockToroSpawner.INSTANCE.getDefaultState());
 		TileEntity tileentity = world.getTileEntity(blockpos);
-		if (tileentity instanceof TileEntityToroSpawner)
+		if ( tileentity instanceof TileEntityToroSpawner )
 		{
 			TileEntityToroSpawner spawner = (TileEntityToroSpawner) tileentity;
 			spawner.setTriggerDistance(80);
@@ -142,7 +156,7 @@ public class MageTowerGenerator extends WorldGenerator {
 		else
 		{
 			EntityMage e = new EntityMage(world);
-			e.setPosition(blockpos.getX()+0.5,blockpos.getY()+0.5,blockpos.getZ()+0.5);
+			e.setPosition(blockpos.getX() + 0.5, blockpos.getY() + 0.5, blockpos.getZ() + 0.5);
 			world.spawnEntity(e);
 			System.out.println("tile entity is missing");
 		}
@@ -154,20 +168,20 @@ public class MageTowerGenerator extends WorldGenerator {
 		entity.add("toroquest:toroquest_mage");
 		return entity;
 	}
-	
-	private BlockPos findSurface(World world, BlockPos start, boolean force)
+
+	private BlockPos findSurface( World world, BlockPos start, boolean force )
 	{
 		IBlockState blockState;
-		BlockPos search = new BlockPos(start.getX(), world.getActualHeight()/2, start.getZ());
+		BlockPos search = new BlockPos(start.getX(), world.getActualHeight() / 2, start.getZ());
 		while (search.getY() > 0)
 		{
 			search = search.down();
 			blockState = world.getBlockState(search);
-			if ( !force && (isLiquid(blockState) || CivilizationHandlers.isStructureBlock(blockState)) )
+			if ( !force && (isLiquid(blockState) || EventHandlers.isStructureBlock(blockState)) )
 			{
 				return null;
 			}
-			if ((blockState).isOpaqueCube())
+			if ( (blockState).isOpaqueCube() )
 			{
 				break;
 			}
@@ -175,108 +189,119 @@ public class MageTowerGenerator extends WorldGenerator {
 		return search;
 	}
 
-//	private BlockPos findSurface(World world, BlockPos start)
-//	{
-//
-//		int minY = world.getActualHeight();
-//		int maxY = 0;
-//
-//		BlockPos pos;
-//
-//		int radiusSquared = radius * radius;
-//		int magSq;
-//		IBlockState blockState;
-//		int verticalSpace;
-//
-//		for (int x = -radius - 1; x <= radius + 1; x++)
-//		{
-//			for (int z = -radius - 1; z <= radius + 1; z++)
-//			{
-//				magSq = (x * x) + (z * z);
-//				if (isOutsideTower(radiusSquared, magSq, 0))
-//				{
-//					continue;
-//				}
-//
-//				verticalSpace = 0;
-//
-//				for (int y = world.getActualHeight(); y > 0; y--)
-//				{
-//
-//					pos = new BlockPos(start.getX() + x, y, start.getZ() + z);
-//					blockState = world.getBlockState(pos);
-//
-//					if (isLiquid(blockState))
-//					{
-//						return null;
-//					}
-//
-//					if (isGroundBlock(blockState))
-//					{
-//						if (y < minY) {
-//							minY = y;
-//						}
-//						if (y > maxY) {
-//							maxY = y;
-//						}
-//
-//						if (verticalSpace < height)
-//						{
-//							return null;
-//						}
-//
-//						break;
-//					}
-//
-//					verticalSpace++;
-//				}
-//
-//			}
-//		}
-//
-//		if (maxY - minY > 4)
-//		{
-//			return null;
-//		}
-//
-//		return new BlockPos(start.getX(), minY, start.getZ());
-//	}
+	// private BlockPos findSurface(World world, BlockPos start)
+	// {
+	//
+	// int minY = world.getActualHeight();
+	// int maxY = 0;
+	//
+	// BlockPos pos;
+	//
+	// int radiusSquared = radius * radius;
+	// int magSq;
+	// IBlockState blockState;
+	// int verticalSpace;
+	//
+	// for (int x = -radius - 1; x <= radius + 1; x++)
+	// {
+	// for (int z = -radius - 1; z <= radius + 1; z++)
+	// {
+	// magSq = (x * x) + (z * z);
+	// if (isOutsideTower(radiusSquared, magSq, 0))
+	// {
+	// continue;
+	// }
+	//
+	// verticalSpace = 0;
+	//
+	// for (int y = world.getActualHeight(); y > 0; y--)
+	// {
+	//
+	// pos = new BlockPos(start.getX() + x, y, start.getZ() + z);
+	// blockState = world.getBlockState(pos);
+	//
+	// if (isLiquid(blockState))
+	// {
+	// return null;
+	// }
+	//
+	// if (isGroundBlock(blockState))
+	// {
+	// if (y < minY) {
+	// minY = y;
+	// }
+	// if (y > maxY) {
+	// maxY = y;
+	// }
+	//
+	// if (verticalSpace < height)
+	// {
+	// return null;
+	// }
+	//
+	// break;
+	// }
+	//
+	// verticalSpace++;
+	// }
+	//
+	// }
+	// }
+	//
+	// if (maxY - minY > 4)
+	// {
+	// return null;
+	// }
+	//
+	// return new BlockPos(start.getX(), minY, start.getZ());
+	// }
 
-	private boolean isLiquid(IBlockState blockState) {
+	private boolean isLiquid( IBlockState blockState )
+	{
 		return blockState.getBlock() == Blocks.WATER || blockState.getBlock() == Blocks.LAVA;
 	}
 
-//	private boolean isGroundBlock(IBlockState blockState) {
-//		Block b = blockState.getBlock();
-//		if ( b == null )
-//		{
-//			return false;
-//		}
-//		if ( b instanceof BlockGrass ||  b instanceof BlockDirt ||  b == Blocks.STONE ||  b instanceof BlockSand || b instanceof BlockSnow || b instanceof BlockClay || b instanceof BlockGravel || b instanceof BlockMycelium || b instanceof BlockSand || b instanceof BlockSandStone )
-//		{
-//			return blockState.isOpaqueCube();
-//		}
-//		return false;
-//	}
+	// private boolean isGroundBlock(IBlockState blockState) {
+	// Block b = blockState.getBlock();
+	// if ( b == null )
+	// {
+	// return false;
+	// }
+	// if ( b instanceof BlockGrass || b instanceof BlockDirt || b == Blocks.STONE
+	// || b instanceof BlockSand || b instanceof BlockSnow || b instanceof BlockClay
+	// || b instanceof BlockGravel || b instanceof BlockMycelium || b instanceof
+	// BlockSand || b instanceof BlockSandStone )
+	// {
+	// return blockState.isOpaqueCube();
+	// }
+	// return false;
+	// }
 
-	private void placeTower(World world, Random rand, BlockPos pos) {
+	private void placeTower( World world, Random rand, BlockPos pos )
+	{
 		int radiusSquared = radius * radius;
 		int innerRadiusSquared = (radius - 2) * radius;
 		// int magSq;
 
 		spawners = new ArrayList<BlockPos>();
 
-		for (int y = 0; y < 6; y++) {
-			for (int x = -radius - 1; x <= radius + 1; x++) {
-				for (int z = -radius - 1; z <= radius + 1; z++) {
+		for ( int y = 0; y < 6; y++ )
+		{
+			for ( int x = -radius - 1; x <= radius + 1; x++ )
+			{
+				for ( int z = -radius - 1; z <= radius + 1; z++ )
+				{
 					placeTowerBlock(world, rand, pos, radiusSquared, innerRadiusSquared, y, x, z);
 				}
 			}
 		}
 
-		for (int y = 6; y < height; y++) {
-			for (int x = -radius; x <= radius; x++) {
-				for (int z = -radius; z <= radius; z++) {
+		for ( int y = 6; y < height; y++ )
+		{
+			for ( int x = -radius; x <= radius; x++ )
+			{
+				for ( int z = -radius; z <= radius; z++ )
+				{
 					placeTowerBlock(world, rand, pos, radiusSquared, innerRadiusSquared, y, x, z);
 				}
 			}
@@ -284,36 +309,39 @@ public class MageTowerGenerator extends WorldGenerator {
 
 		// placeSpikes(world, pos);
 
-		for (BlockPos p : spawners) {
+		for ( BlockPos p : spawners )
+		{
 			placeSpawner(world, p.add(pos), randomMob(rand));
 		}
 
 	}
 
-//	private void placeSpikes(World world, BlockPos pos) {
-//		int l = radius / 2;
-//		int h = Long.valueOf(Math.round(l * 1.5)).intValue();
-//
-//		BlockPos locPos = pos.add(0, height - 1, 0);
-//		int z = 0;
-//		for (int y = 0; y <= h; y++) {
-//			for (int x = l; x <= radius + 1; x++) {
-//
-//				if ((x - l - 1) > (y / 2) || x == radius + 1) {
-//					setBlockAndNotifyAdequately(world, locPos.add(x, y, z), wallBlock);
-//					setBlockAndNotifyAdequately(world, locPos.add(-x, y, z), wallBlock);
-//
-//					setBlockAndNotifyAdequately(world, locPos.add(z, y, x), wallBlock);
-//					setBlockAndNotifyAdequately(world, locPos.add(z, y, -x), wallBlock);
-//				}
-//
-//			}
-//		}
-//
-//	}
+	// private void placeSpikes(World world, BlockPos pos) {
+	// int l = radius / 2;
+	// int h = Long.valueOf(Math.round(l * 1.5)).intValue();
+	//
+	// BlockPos locPos = pos.add(0, height - 1, 0);
+	// int z = 0;
+	// for (int y = 0; y <= h; y++) {
+	// for (int x = l; x <= radius + 1; x++) {
+	//
+	// if ((x - l - 1) > (y / 2) || x == radius + 1) {
+	// setBlockAndNotifyAdequately(world, locPos.add(x, y, z), wallBlock);
+	// setBlockAndNotifyAdequately(world, locPos.add(-x, y, z), wallBlock);
+	//
+	// setBlockAndNotifyAdequately(world, locPos.add(z, y, x), wallBlock);
+	// setBlockAndNotifyAdequately(world, locPos.add(z, y, -x), wallBlock);
+	// }
+	//
+	// }
+	// }
+	//
+	// }
 
-	private String randomMob(Random rand) {
-		switch (rand.nextInt(7)) {
+	private String randomMob( Random rand )
+	{
+		switch( rand.nextInt(7) )
+		{
 		case 0:
 			return "cave_spider";
 		case 1:
@@ -330,63 +358,77 @@ public class MageTowerGenerator extends WorldGenerator {
 		return "zombie";
 	}
 
-	public static void placeSpawner(World world, BlockPos pos, String mob) {
+	public static void placeSpawner( World world, BlockPos pos, String mob )
+	{
 		placeBlock(world, pos, Blocks.MOB_SPAWNER);
 		TileEntityMobSpawner theSpawner = (TileEntityMobSpawner) world.getTileEntity(pos);
 		MobSpawnerBaseLogic logic = theSpawner.getSpawnerBaseLogic();
 		logic.setEntityId(new ResourceLocation(mob));
 	}
 
-	public static void placeBlock(World world, BlockPos pos, net.minecraft.block.Block block) {
+	public static void placeBlock( World world, BlockPos pos, net.minecraft.block.Block block )
+	{
 		world.setBlockState(pos, block.getDefaultState());
 	}
 
-	private void placeTowerBlock(World world, Random rand, BlockPos pos, int radiusSquared, int innerRadiusSquared, int y, int x, int z) {
+	private void placeTowerBlock( World world, Random rand, BlockPos pos, int radiusSquared, int innerRadiusSquared, int y, int x, int z )
+	{
 
 		int magSq;
 		IBlockState block = null;
 		magSq = (x * x) + (z * z);
 
-		if (!isOutsideTower(radiusSquared, magSq, y)) {
+		if ( !isOutsideTower(radiusSquared, magSq, y) )
+		{
 			block = Blocks.AIR.getDefaultState();
 			block = getBlockAtLocation(rand, innerRadiusSquared, magSq, block, y, x, z);
-		} else if (y == 0) {
+		}
+		else if ( y == 0 )
+		{
 			block = stairsFoundationBlock;
 		}
 
-		if (isDoorwayLocation(x, y, z)) {
+		if ( isDoorwayLocation(x, y, z) )
+		{
 			block = getDoorwayBlock(x, y, z);
 		}
 
-		if (block != null) {
+		if ( block != null )
+		{
 			BlockPos placementPos = pos.add(x, y, z);
 			setBlockAndNotifyAdequately(world, placementPos, block);
 			addLootToChest(world, block, placementPos);
 		}
 	}
 
-	protected void addLootToChest(World world, IBlockState block, BlockPos placementPos) {
-		if (block.getBlock() == Blocks.CHEST) {
+	protected void addLootToChest( World world, IBlockState block, BlockPos placementPos )
+	{
+		if ( block.getBlock() == Blocks.CHEST )
+		{
 			TileEntity tileentity = world.getTileEntity(placementPos);
 
-			if (tileentity instanceof TileEntityChest) {
+			if ( tileentity instanceof TileEntityChest )
+			{
 				((TileEntityChest) tileentity).setLootTable(LootTableList.CHESTS_END_CITY_TREASURE, world.rand.nextLong());
 			}
 		}
 	}
 
-	private IBlockState getDoorwayBlock(int x, int y, int z) {
+	private IBlockState getDoorwayBlock( int x, int y, int z )
+	{
 		IBlockState block;
 		block = Blocks.AIR.getDefaultState();
 
 		int xm = Math.abs(x);
 		int zm = Math.abs(z);
 
-		if (y == 5 || y == 0) {
+		if ( y == 5 || y == 0 )
+		{
 			block = wallBlock;
 		}
 
-		if (xm == 2 || zm == 2) {
+		if ( xm == 2 || zm == 2 )
+		{
 			block = wallBlock;
 		}
 		return block;
@@ -394,33 +436,41 @@ public class MageTowerGenerator extends WorldGenerator {
 
 	List<BlockPos> spawners;
 
-	private IBlockState getBlockAtLocation(Random rand, int innerRadiusSquared, int magSq, IBlockState currentBlock, int y, int x, int z) {
+	private IBlockState getBlockAtLocation( Random rand, int innerRadiusSquared, int magSq, IBlockState currentBlock, int y, int x, int z )
+	{
 
-		if (isFloor(y)) {
+		if ( isFloor(y) )
+		{
 			currentBlock = floorBlock;
 		}
 
-		if (isWallLocation(innerRadiusSquared, magSq)) {
+		if ( isWallLocation(innerRadiusSquared, magSq) )
+		{
 			currentBlock = getWallBlock(rand, y, x, z);
 		}
 
-		if (isChestLocation(rand, x, y, z)) {
+		if ( isChestLocation(rand, x, y, z) )
+		{
 			currentBlock = getChestBlock(x, z);
 		}
 
-		if (isStairsLocation(x, y, z)) {
+		if ( isStairsLocation(x, y, z) )
+		{
 			currentBlock = getStairBlock(x, y, z);
 		}
 
-		if (isSpawnerLocation(x, y, z)) {
+		if ( isSpawnerLocation(x, y, z) )
+		{
 			spawners.add(new BlockPos(x, y, z));
 		}
 
 		return currentBlock;
 	}
 
-	private boolean isDoorwayLocation(int x, int y, int z) {
-		if (y >= 0 && y < 6) {
+	private boolean isDoorwayLocation( int x, int y, int z )
+	{
+		if ( y >= 0 && y < 6 )
+		{
 			int xm = Math.abs(x);
 			int zm = Math.abs(z);
 			return isXDoorwayLocation(xm, zm) || isZDoorwayLocation(xm, zm);
@@ -428,42 +478,64 @@ public class MageTowerGenerator extends WorldGenerator {
 		return false;
 	}
 
-	private boolean isXDoorwayLocation(int xm, int zm) {
+	private boolean isXDoorwayLocation( int xm, int zm )
+	{
 		return (xm <= 2 && zm >= (radius - 2));
 	}
 
-	private boolean isZDoorwayLocation(int xm, int zm) {
+	private boolean isZDoorwayLocation( int xm, int zm )
+	{
 		return (zm <= 2 && xm >= (radius - 2));
 	}
 
-	private IBlockState getChestBlock(int x, int z) {
+	private IBlockState getChestBlock( int x, int z )
+	{
 		IBlockState currentBlock;
-		if (x > 1) {
+		if ( x > 1 )
+		{
 			currentBlock = ((BlockChest) Blocks.CHEST).getStateFromMeta(4);
-		} else if (x < -1) {
+		}
+		else if ( x < -1 )
+		{
 			currentBlock = ((BlockChest) Blocks.CHEST).getStateFromMeta(5);
-		} else if (z > 1) {
+		}
+		else if ( z > 1 )
+		{
 			currentBlock = ((BlockChest) Blocks.CHEST).getStateFromMeta(2);
-		} else if (z < -1) {
+		}
+		else if ( z < -1 )
+		{
 			currentBlock = ((BlockChest) Blocks.CHEST).getStateFromMeta(3);
-		} else {
+		}
+		else
+		{
 			currentBlock = Blocks.AIR.getDefaultState();
 		}
 
 		return currentBlock;
 	}
 
-	private IBlockState getWallBlock(Random rand, int y, int x, int z) {
+	private IBlockState getWallBlock( Random rand, int y, int x, int z )
+	{
 		IBlockState currentBlock;
-		if (isWindowLocation(x, y, z)) {
+		if ( isWindowLocation(x, y, z) )
+		{
 			currentBlock = windowBlock;
-		} else {
-			if (isHelixLocation(y, x, z)) {
+		}
+		else
+		{
+			if ( isHelixLocation(y, x, z) )
+			{
 				currentBlock = wallDecorationBlock;
-			} else {
-				if (rand.nextInt(100) > 10) {
+			}
+			else
+			{
+				if ( rand.nextInt(100) > 10 )
+				{
 					currentBlock = wallBlock;
-				} else {
+				}
+				else
+				{
 					currentBlock = wallRandBlock;
 				}
 			}
@@ -471,52 +543,65 @@ public class MageTowerGenerator extends WorldGenerator {
 		return currentBlock;
 	}
 
-	private IBlockState getStairBlock(int x, int y, int z) {
+	private IBlockState getStairBlock( int x, int y, int z )
+	{
 
-		if (y > height - 2) {
+		if ( y > height - 2 )
+		{
 			return Blocks.AIR.getDefaultState();
 		}
 
-		if (y < 1) {
+		if ( y < 1 )
+		{
 			return stairsFoundationBlock;
 		}
 
-		if (x == 0 && z == 0) {
+		if ( x == 0 && z == 0 )
+		{
 			return stairsColumnBlock;
 		}
 
 		int yAdj = (y + 1) % 4;
 
-		switch (yAdj) {
+		switch( yAdj )
+		{
 		case 0:
-			if (x == 1 && z == 0) {
+			if ( x == 1 && z == 0 )
+			{
 				return stairsBlock.getStateFromMeta(2);
 			}
-			if (x == 1 && z == 1) {
+			if ( x == 1 && z == 1 )
+			{
 				return stairsConnectorBlock;
 			}
 			break;
 		case 1:
-			if (x == 0 && z == 1) {
+			if ( x == 0 && z == 1 )
+			{
 				return stairsBlock.getStateFromMeta(1);
 			}
-			if (x == -1 && z == 1) {
+			if ( x == -1 && z == 1 )
+			{
 				return stairsConnectorBlock;
 			}
 			break;
 		case 2:
-			if (x == -1 && z == 0) {
+			if ( x == -1 && z == 0 )
+			{
 				return stairsBlock.getStateFromMeta(3);
 			}
-			if (x == -1 && z == -1) {
+			if ( x == -1 && z == -1 )
+			{
 				return stairsConnectorBlock;
 			}
 			break;
 		case 3:
-			if (x == 0 && z == -1) {
+			if ( x == 0 && z == -1 )
+			{
 				return stairsBlock.getStateFromMeta(0);
 			}
-			if (x == 1 && z == -1) {
+			if ( x == 1 && z == -1 )
+			{
 				return stairsConnectorBlock;
 			}
 			break;
@@ -526,63 +611,77 @@ public class MageTowerGenerator extends WorldGenerator {
 		return Blocks.AIR.getDefaultState();
 	}
 
-	private boolean isStairsLocation(int x, int y, int z) {
+	private boolean isStairsLocation( int x, int y, int z )
+	{
 		return Math.abs(x) < 2 && Math.abs(z) < 2;
 	}
 
-	private boolean isHelixLocation(int y, int x, int z) {
+	private boolean isHelixLocation( int y, int x, int z )
+	{
 		int angle = (int) Math.round(getAngle(x, z));
 		// int coAngle = coAngle(angle);
 		int yAdj = (y * 16) % 360;
 		return isClose(yAdj, angle, 20) || isClose(yAdj, coAngle(angle), 20);
 	}
 
-	private int coAngle(int angle) {
+	private int coAngle( int angle )
+	{
 		int a = angle - 180;
 
-		if (a < 0) {
+		if ( a < 0 )
+		{
 			a += 360;
 		}
 
 		return a;
 	}
 
-	public static boolean isClose(int a, int b, int tolerance) {
+	public static boolean isClose( int a, int b, int tolerance )
+	{
 		return Math.abs(a - b) <= tolerance;
 	}
 
-	public static double getAngle(int x, int z) {
+	public static double getAngle( int x, int z )
+	{
 		double angle = Math.toDegrees(Math.atan2((double) z, (double) x));
-		if (angle < 0) {
+		if ( angle < 0 )
+		{
 			angle += 360;
 		}
 		return angle;
 	}
 
-	private boolean isWallLocation(int innerRadiusSquared, int magSq) {
+	private boolean isWallLocation( int innerRadiusSquared, int magSq )
+	{
 		return magSq >= innerRadiusSquared;
 	}
 
-	private boolean isChestLocation(Random rand, int x, int y, int z) {
+	private boolean isChestLocation( Random rand, int x, int y, int z )
+	{
 
-		if (y < height - 4 && rand.nextInt(10) > 1) {
+		if ( y < height - 4 && rand.nextInt(10) > 1 )
+		{
 			return false;
 		}
 
-		if (y % floorHieght != 1) {
+		if ( y % floorHieght != 1 )
+		{
 			return false;
 		}
 		return (Math.abs(x) == radius - 2 && z == 0) || (Math.abs(z) == radius - 2 && x == 0);
 	}
 
-	private boolean isSpawnerLocation(int x, int y, int z) {
-		if (y % floorHieght != floorHieght - 2) {
+	private boolean isSpawnerLocation( int x, int y, int z )
+	{
+		if ( y % floorHieght != floorHieght - 2 )
+		{
 			return false;
 		}
 		return (Math.abs(x) == radius - (radius / 2) && z == 0) || (Math.abs(z) == radius - (radius / 2) && x == 0);
 	}
 
-	private boolean isWindowLocation(int x, int y, int z) {
+	private boolean isWindowLocation( int x, int y, int z )
+	{
 		/*
 		 * int offset = y % FLOOR_HEIGHT; return offset > 1 && offset < 5 &&
 		 * (Math.abs(x) >= radius - 1 || Math.abs(z) >= radius - 1);
@@ -590,16 +689,19 @@ public class MageTowerGenerator extends WorldGenerator {
 		return false;
 	}
 
-	private boolean isOutsideTower(int radiusSquared, int magSq, int y) {
+	private boolean isOutsideTower( int radiusSquared, int magSq, int y )
+	{
 
-		if (y < height - 3) {
+		if ( y < height - 3 )
+		{
 			return magSq > radiusSquared - 2;
 		}
 
 		return magSq > radiusSquared + 25;
 	}
 
-	private boolean isFloor(int y) {
+	private boolean isFloor( int y )
+	{
 		return y % floorHieght == 0;// || y % FLOOR_HEIGHT == FLOOR_HEIGHT - 2;
 	}
 

@@ -6,9 +6,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityExpBottle;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityChicken;
@@ -16,23 +13,14 @@ import net.minecraft.entity.passive.EntityCow;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.init.PotionTypes;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.torocraft.toroquest.civilization.CivilizationHandlers;
+import net.torocraft.toroquest.EventHandlers;
 import net.torocraft.toroquest.civilization.Province;
-import net.torocraft.toroquest.civilization.player.PlayerCivilizationCapability;
 import net.torocraft.toroquest.civilization.player.PlayerCivilizationCapabilityImpl;
-import net.torocraft.toroquest.civilization.quests.QuestCaptureEntity.DataWrapper;
 import net.torocraft.toroquest.civilization.quests.util.Quest;
 import net.torocraft.toroquest.civilization.quests.util.QuestData;
 import net.torocraft.toroquest.civilization.quests.util.Quests;
@@ -43,24 +31,24 @@ public class QuestBreed extends QuestBase implements Quest
 	public static QuestBreed INSTANCE;
 	public static int ID;
 
-	public static void init(int id)
+	public static void init( int id )
 	{
 		INSTANCE = new QuestBreed();
 		Quests.registerQuest(id, INSTANCE);
 		MinecraftForge.EVENT_BUS.register(INSTANCE);
 		ID = id;
 	}
-	
-	public void onBreed(EntityPlayer player, EntityAnimal animal)
+
+	public void onBreed( EntityPlayer player, EntityAnimal animal )
 	{
 		if ( player == null || animal == null )
 		{
 			return;
 		}
-		
+
 		Province province = PlayerCivilizationCapabilityImpl.get(player).getInCivilization();
 
-		if (province == null || province.civilization == null)
+		if ( province == null || province.civilization == null )
 		{
 			return;
 		}
@@ -68,27 +56,32 @@ public class QuestBreed extends QuestBase implements Quest
 		handleBreed(player, province, animal);
 	}
 
-	private void handleBreed(EntityPlayer player, Province province, EntityAnimal animal)
+	private void handleBreed( EntityPlayer player, Province province, EntityAnimal animal )
 	{
-		if ( player == null || province == null || animal == null ) return;
-		
+		if ( player == null || province == null || animal == null )
+			return;
+
 		Set<QuestData> quests = PlayerCivilizationCapabilityImpl.get(player).getCurrentQuests();
 
 		DataWrapper quest = new DataWrapper();
-		
-		for (QuestData data : quests)
+
+		for ( QuestData data : quests )
 		{
 			try
 			{
 				quest.setData(data);
 				quest.province = province;
-				
+
 				int animalType = 0;
-				if ( animal instanceof EntityChicken ) animalType = 1;
-				else if ( animal instanceof EntityPig ) animalType = 2;
-				else if ( animal instanceof EntitySheep ) animalType = 3;
-				else if ( animal instanceof EntityCow ) animalType = 4;
-				
+				if ( animal instanceof EntityChicken )
+					animalType = 1;
+				else if ( animal instanceof EntityPig )
+					animalType = 2;
+				else if ( animal instanceof EntitySheep )
+					animalType = 3;
+				else if ( animal instanceof EntityCow )
+					animalType = 4;
+
 				if ( quest.getAnimalType() == 0 || quest.getAnimalType() == animalType )
 				{
 					if ( perform(quest) )
@@ -99,21 +92,22 @@ public class QuestBreed extends QuestBase implements Quest
 			}
 			catch (Exception e)
 			{
-				//e.printStackTrace();
+				// e.printStackTrace();
 			}
 		}
 	}
-	
-	// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= QUEST STATUS =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-	
-	private boolean perform(DataWrapper quest)
+
+	// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= QUEST STATUS
+	// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+	private boolean perform( DataWrapper quest )
 	{
-		if (quest.getData().getPlayer().world.isRemote)
+		if ( quest.getData().getPlayer().world.isRemote )
 		{
 			return false;
 		}
 
-		if (!quest.isApplicable())
+		if ( !quest.isApplicable() )
 		{
 			return false;
 		}
@@ -121,10 +115,13 @@ public class QuestBreed extends QuestBase implements Quest
 		if ( !quest.getData().getCompleted() )
 		{
 			quest.setCurrentAmount(quest.getCurrentAmount() + 1);
-			quest.getData().getPlayer().sendStatusMessage( new TextComponentString(MathHelper.clamp(quest.getCurrentAmount(), 0, quest.getTargetAmount())+"/"+quest.getTargetAmount()), true);
-			//quest.getData().getPlayer().sendStatusMessage( new TextComponentString("Bred " + MathHelper.clamp(quest.getCurrentAmount(), 0, quest.getTargetAmount())+" out of "+quest.getTargetAmount()+ " " + getAnimalName(quest.getData())), true);
+			quest.getData().getPlayer().sendStatusMessage(new TextComponentString(MathHelper.clamp(quest.getCurrentAmount(), 0, quest.getTargetAmount()) + "/" + quest.getTargetAmount()), true);
+			// quest.getData().getPlayer().sendStatusMessage( new TextComponentString("Bred
+			// " + MathHelper.clamp(quest.getCurrentAmount(), 0, quest.getTargetAmount())+"
+			// out of "+quest.getTargetAmount()+ " " + getAnimalName(quest.getData())),
+			// true);
 
-			if (quest.getCurrentAmount() >= quest.getTargetAmount())
+			if ( quest.getCurrentAmount() >= quest.getTargetAmount() )
 			{
 				quest.getData().setCompleted(true);
 				chatCompletedQuest(quest.getData());
@@ -133,190 +130,182 @@ public class QuestBreed extends QuestBase implements Quest
 		}
 		return false;
 	}
-	
+
 	// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 	@Override
-	public List<ItemStack> complete(QuestData quest, List<ItemStack> items)
+	public List<ItemStack> complete( QuestData quest, List<ItemStack> items )
 	{
 		Province province = loadProvince(quest.getPlayer().world, quest.getPlayer().getPosition());
 
-		if (province == null || province.id == null || !province.id.equals(quest.getProvinceId()))
+		if ( province == null || province.id == null || !province.id.equals(quest.getProvinceId()) )
 		{
 			return null;
 		}
-		
+
 		if ( !quest.getCompleted() )
 		{
 			if ( quest.getChatStack() == "" )
 			{
-				quest.setChatStack( "breed.incomplete", quest.getPlayer(), null );
+				quest.setChatStack("breed.incomplete", quest.getPlayer(), null);
 				this.setData(quest);
 			}
 			// quest.getPlayer().closeScreen();
 			return null;
 		}
 
-		CivilizationHandlers.adjustPlayerRep(quest.getPlayer(), quest.getCiv(), getRewardRep(quest));
-		
-		if ( PlayerCivilizationCapabilityImpl.get(quest.getPlayer()).getReputation(province.civilization) >= 3000 )
-		{
-			if (!quest.getPlayer().world.isRemote)
-	        {
-	            int i = getRewardRep(quest)*2;
+		EventHandlers.adjustPlayerRep(quest.getPlayer(), quest.getCiv(), getRewardRep(quest));
 
-	            while (i > 0)
-	            {
-	                int j = EntityXPOrb.getXPSplit(i);
-	                i -= j;
-	                quest.getPlayer().world.spawnEntity(new EntityXPOrb(quest.getPlayer().world, quest.getPlayer().posX+((rand.nextInt(2)*2-1)*2), quest.getPlayer().posY, quest.getPlayer().posZ+((rand.nextInt(2)*2-1)*2), j));
-	            }
-	        }
+		if ( PlayerCivilizationCapabilityImpl.get(quest.getPlayer()).getReputation(province.civilization) >= 2000 )
+		{
+			if ( !quest.getPlayer().world.isRemote )
+			{
+				int i = getRewardRep(quest) * 2;
+
+				while (i > 0)
+				{
+					int j = EntityXPOrb.getXPSplit(i);
+					i -= j;
+					quest.getPlayer().world.spawnEntity(new EntityXPOrb(quest.getPlayer().world, quest.getPlayer().posX + ((rand.nextInt(2) * 2 - 1) * 2), quest.getPlayer().posY, quest.getPlayer().posZ + ((rand.nextInt(2) * 2 - 1) * 2), j));
+				}
+			}
 		}
-		
+
 		List<ItemStack> rewards = getRewardItems(quest);
-		
-		if (rewards != null)
+
+		if ( rewards != null )
 		{
 			items.addAll(rewards);
 		}
-		
-		quest.setChatStack( "breed.complete", quest.getPlayer(), null );
+
+		quest.setChatStack("breed.complete", quest.getPlayer(), null);
 		this.setData(quest);
 		return items;
 	}
-		
+
 	@Override
-	public List<ItemStack> accept(QuestData data, List<ItemStack> in)
+	public List<ItemStack> accept( QuestData data, List<ItemStack> in )
 	{
-		switch ( i(data.getiData().get("animalType")) )
+		switch( i(data.getiData().get("animalType")) )
 		{
-			case 0:
-			{
-				data.setChatStack( "breed.acceptany", data.getPlayer(), null );
-				break;
-			}
-			case 1:
-			{
-				data.setChatStack( "breed.acceptchicken", data.getPlayer(), null );
-				break;
-			}
-			case 2:
-			{
-				data.setChatStack( "breed.acceptpig", data.getPlayer(), null );
-				break;
-			}
-			case 3:
-			{
-				data.setChatStack( "breed.acceptsheep", data.getPlayer(), null );
-				break;
-			}
-			case 4:
-			{
-				data.setChatStack( "breed.acceptcow", data.getPlayer(), null );
-				break;
-			}
+		case 0:
+		{
+			data.setChatStack("breed.acceptany", data.getPlayer(), null);
+			break;
+		}
+		case 1:
+		{
+			data.setChatStack("breed.acceptchicken", data.getPlayer(), null);
+			break;
+		}
+		case 2:
+		{
+			data.setChatStack("breed.acceptpig", data.getPlayer(), null);
+			break;
+		}
+		case 3:
+		{
+			data.setChatStack("breed.acceptsheep", data.getPlayer(), null);
+			break;
+		}
+		case 4:
+		{
+			data.setChatStack("breed.acceptcow", data.getPlayer(), null);
+			break;
+		}
 		}
 		this.setData(data);
 		return in;
 	}
-	
-	private String getAnimalName( QuestData d )
-	{
-		switch ( i(d.getiData().get("animalType")) )
-		{
-			case 0:
-			{
-				return "livestock";
-			}
-			case 1:
-			{
-				return "chickens";
-			}
-			case 2:
-			{
-				return "pigs";
-			}
-			case 3:
-			{
-				return "sheep";
-			}
-			case 4:
-			{
-				return "cows";
-			}
-			default:
-			{
-				return "livestock";
-			}
-		}
-	}
 
 	@Override
-	public List<ItemStack> reject(QuestData data, List<ItemStack> in)
+	public List<ItemStack> reject( QuestData data, List<ItemStack> in )
 	{
 		if ( data.getCompleted() )
 		{
 			return null;
 		}
-		
-		data.setChatStack( "breed.reject", data.getPlayer(), null );
+
+		data.setChatStack("breed.reject", data.getPlayer(), null);
 		this.setData(data);
 		data.getPlayer().closeScreen();
 		return in;
 	}
-	
+
 	// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-	
+
 	@Override
-	public String getTitle(QuestData data)
+	public String getTitle( QuestData data )
 	{
 		return "quests.breed.title";
 	}
 
 	@Override
-	public String getDescription(QuestData data)
+	public String getDescription( QuestData data )
 	{
-		if (data == null)
+		if ( data == null )
 		{
 			return "";
 		}
 		DataWrapper q = new DataWrapper().setData(data);
 		StringBuilder s = new StringBuilder();
 		String animalType = "livestock";
-		switch ( i(data.getiData().get("animalType")) )
+		switch( i(data.getiData().get("animalType")) )
 		{
-			case 0:{animalType = "livestock";break;}
-			case 1:{animalType = "chickens";break;}
-			case 2:{animalType = "pigs";break;}
-			case 3:{animalType = "sheep";break;}
-			case 4:{animalType = "cows";break;}
-			default:{animalType = "livestock";break;}
+			case 0:
+			{
+				animalType = "livestock";
+				break;
+			}
+			case 1:
+			{
+				animalType = "chickens";
+				break;
+			}
+			case 2:
+			{
+				animalType = "pigs";
+				break;
+			}
+			case 3:
+			{
+				animalType = "sheep";
+				break;
+			}
+			case 4:
+			{
+				animalType = "cows";
+				break;
+			}
+			default:
+			{
+				animalType = "livestock";
+				break;
+			}
 		}
 		s.append("quests.breed.description");
 		s.append("|").append(q.getTargetAmount());
 		s.append("|").append(animalType);
 		s.append("|").append(getProvinceName(data.getPlayer(), data.getProvinceId()));
-		s.append("|").append(q.getCurrentAmount()  + "\n\n" );
-		s.append("|").append(listItems(getRewardItems(q.getData()))  + ",\n" );
+		s.append("|").append(q.getCurrentAmount() + "\n\n");
+		s.append("|").append(listItems(getRewardItems(q.getData())) + ",\n");
 		s.append("|").append(getRewardRep(data));
 		return s.toString();
 	}
 
 	@Override
-	public QuestData generateQuestFor(EntityPlayer player, Province province)
+	public QuestData generateQuestFor( EntityPlayer player, Province province )
 	{
 		Random rand = new Random();
 		DataWrapper q = new DataWrapper();
-		
+
 		q.getData().setCiv(province.civilization);
 		q.getData().setPlayer(player);
 		q.getData().setProvinceId(province.id);
 		q.getData().setQuestId(UUID.randomUUID());
 		q.getData().setQuestType(ID);
 		q.getData().setCompleted(false);
-		
-		
+
 		// Quest changes based on reputation
 		int rep = PlayerCivilizationCapabilityImpl.get(player).getReputation(province.civilization);
 		if ( rep < 0 )
@@ -337,11 +326,11 @@ public class QuestBreed extends QuestBase implements Quest
 			// 4 = cow
 		}
 		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-		
-		int roll = MathHelper.clamp(rand.nextInt(5)*2+4+(Math.round(rep/200)*2),8,24);
-		int em = Math.round(roll/3)+6;
-		q.setRewardRep(em*2);
-		if ( PlayerCivilizationCapabilityImpl.get(player).getReputation(province.civilization) >= 2000 )
+
+		int roll = MathHelper.clamp(rand.nextInt(5) * 2 + 4 + (Math.round(rep / 200) * 2), 8, 24);
+		int em = Math.round(roll / 3) + 6;
+		q.setRewardRep(em * 2);
+		if ( PlayerCivilizationCapabilityImpl.get(player).getReputation(province.civilization) >= 3000 )
 		{
 			em *= 2;
 		}
@@ -365,7 +354,7 @@ public class QuestBreed extends QuestBase implements Quest
 			return data;
 		}
 
-		public DataWrapper setData(QuestData data)
+		public DataWrapper setData( QuestData data )
 		{
 			this.data = data;
 			return this;
@@ -376,18 +365,17 @@ public class QuestBreed extends QuestBase implements Quest
 			return province;
 		}
 
-		public void setProvinceHuntedIn(Province provinceHuntedIn)
+		public void setProvinceHuntedIn( Province provinceHuntedIn )
 		{
 			this.province = provinceHuntedIn;
 		}
-		
 
 		public Integer getTargetAmount()
 		{
 			return i(data.getiData().get("target"));
 		}
 
-		public void setTargetAmount(Integer targetAmount)
+		public void setTargetAmount( Integer targetAmount )
 		{
 			data.getiData().put("target", targetAmount);
 		}
@@ -397,7 +385,7 @@ public class QuestBreed extends QuestBase implements Quest
 			return i(data.getiData().get("amount"));
 		}
 
-		public void setCurrentAmount(Integer currentAmount)
+		public void setCurrentAmount( Integer currentAmount )
 		{
 			data.getiData().put("amount", currentAmount);
 		}
@@ -407,22 +395,22 @@ public class QuestBreed extends QuestBase implements Quest
 			return i(data.getiData().get("rep"));
 		}
 
-		public void setRewardRep(Integer rewardRep)
+		public void setRewardRep( Integer rewardRep )
 		{
 			data.getiData().put("rep", rewardRep);
 		}
-		
+
 		public Integer getAnimalType()
 		{
 			return i(data.getiData().get("animalType"));
 		}
 
-		public void setAnimalType(Integer type)
+		public void setAnimalType( Integer type )
 		{
 			data.getiData().put("animalType", type);
 		}
 
-		private Integer i(Object o)
+		private Integer i( Object o )
 		{
 			try
 			{

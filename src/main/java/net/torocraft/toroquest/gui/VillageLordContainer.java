@@ -30,22 +30,22 @@ public class VillageLordContainer extends Container
 	private final int HOTBAR_SLOT_COUNT = 9;
 	private final int INVENTORY_ROW_COUNT = 3;
 	private final int INVENTORY_COLUMN_COUNT = 9;
-	
+
 	private final int DONATE_ITEM_ROW_COUNT = 1;
 	private final int DONATE_ITEM_COLUMN_COUNT = 1;
-	
+
 	private final int QUEST_INPUT_ITEM_ROW_COUNT = 4;
 	private final int QUEST_INPUT_ITEM_COLUMN_COUNT = 1;
-	
+
 	private final int QUEST_OUTPUT_ITEM_ROW_COUNT = 1; // TODO changed from 4
 	private final int QUEST_OUTPUT_ITEM_COLUMN_COUNT = 1;
-	
+
 	private final int TROPHY_ROW_COUNT = 4;
 	private final int TROPHY_COLUMN_COUNT = 2;
-	
+
 	// this equals all non-vanilla slots combined
-	private final int LORD_INVENTORY_SLOT_COUNT = TROPHY_ROW_COUNT*TROPHY_COLUMN_COUNT + QUEST_INPUT_ITEM_ROW_COUNT*QUEST_INPUT_ITEM_COLUMN_COUNT + DONATE_ITEM_ROW_COUNT*DONATE_ITEM_COLUMN_COUNT;
-	
+	private final int LORD_INVENTORY_SLOT_COUNT = TROPHY_ROW_COUNT * TROPHY_COLUMN_COUNT + QUEST_INPUT_ITEM_ROW_COUNT * QUEST_INPUT_ITEM_COLUMN_COUNT + DONATE_ITEM_ROW_COUNT * DONATE_ITEM_COLUMN_COUNT;
+
 	private final int VANILLA_SLOT_COUNT = HOTBAR_SLOT_COUNT + (INVENTORY_COLUMN_COUNT * INVENTORY_ROW_COUNT);
 
 	private final int VANILLA_FIRST_SLOT_INDEX = 0;
@@ -80,7 +80,7 @@ public class VillageLordContainer extends Container
 	private final List<Integer> outputSlot = new ArrayList<Integer>();
 	private int donationGuiSlotId;
 
-	public VillageLordContainer(EntityPlayer player, IVillageLordInventory inventory, World world)
+	public VillageLordContainer( EntityPlayer player, IVillageLordInventory inventory, World world )
 	{
 		this.player = player;
 		this.inventory = inventory;
@@ -90,17 +90,18 @@ public class VillageLordContainer extends Container
 		updateDonationInfo();
 
 		int guiSlotIndex = 0;
-		
-		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= Vanilla Inventory =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-		for (int x = 0; x < HOTBAR_SLOT_COUNT; x++)
+
+		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= Vanilla Inventory
+		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+		for ( int x = 0; x < HOTBAR_SLOT_COUNT; x++ )
 		{
 			addSlotToContainer(new Slot(player.inventory, x, HOTBAR_XPOS + SLOT_X_SPACING * x, HOTBAR_YPOS));
 			guiSlotIndex++;
 		}
 
-		for (int x = 0; x < INVENTORY_ROW_COUNT; x++)
+		for ( int x = 0; x < INVENTORY_ROW_COUNT; x++ )
 		{
-			for (int y = 0; y < INVENTORY_COLUMN_COUNT; y++)
+			for ( int y = 0; y < INVENTORY_COLUMN_COUNT; y++ )
 			{
 				int slotNumber = HOTBAR_SLOT_COUNT + x * INVENTORY_COLUMN_COUNT + y;
 				int xPos = INVENTORY_XPOS + y * SLOT_X_SPACING;
@@ -110,11 +111,11 @@ public class VillageLordContainer extends Container
 			}
 		}
 		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-		
+
 		// Index = 0,1,2,3
-		for (int x = 0; x < QUEST_INPUT_ITEM_ROW_COUNT; x++)
+		for ( int x = 0; x < QUEST_INPUT_ITEM_ROW_COUNT; x++ )
 		{
-			for (int y = 0; y < QUEST_INPUT_ITEM_COLUMN_COUNT; y++)
+			for ( int y = 0; y < QUEST_INPUT_ITEM_COLUMN_COUNT; y++ )
 			{
 				int slotNumber = x * QUEST_INPUT_ITEM_COLUMN_COUNT + y;
 				int xPos = QUEST_INPUT_ITEM_XPOS + y * SLOT_X_SPACING;
@@ -124,11 +125,11 @@ public class VillageLordContainer extends Container
 				guiSlotIndex++;
 			}
 		}
-		
+
 		// Index = 4
-		for (int x = 0; x < DONATE_ITEM_ROW_COUNT; x++)
+		for ( int x = 0; x < DONATE_ITEM_ROW_COUNT; x++ )
 		{
-			for (int y = 0; y < DONATE_ITEM_COLUMN_COUNT; y++)
+			for ( int y = 0; y < DONATE_ITEM_COLUMN_COUNT; y++ )
 			{
 				int slotNumber = x * DONATE_ITEM_COLUMN_COUNT + y + 4;
 				int xPos = DONATE_ITEM_XPOS + y * SLOT_X_SPACING;
@@ -138,11 +139,11 @@ public class VillageLordContainer extends Container
 				guiSlotIndex++;
 			}
 		}
-		
+
 		// Index = 5
-		for (int x = 0; x < QUEST_OUTPUT_ITEM_ROW_COUNT; x++)
+		for ( int x = 0; x < QUEST_OUTPUT_ITEM_ROW_COUNT; x++ )
 		{
-			for (int y = 0; y < QUEST_OUTPUT_ITEM_COLUMN_COUNT; y++)
+			for ( int y = 0; y < QUEST_OUTPUT_ITEM_COLUMN_COUNT; y++ )
 			{
 				int slotNumber = x * QUEST_OUTPUT_ITEM_COLUMN_COUNT + y + 5;
 				int xPos = QUEST_OUTPUT_ITEM_XPOS + y * SLOT_X_SPACING;
@@ -152,16 +153,16 @@ public class VillageLordContainer extends Container
 				guiSlotIndex++;
 			}
 		}
-		
+
 		// Index = 6,7,8,9,10,11,12,13
-		for (int x = 0; x < TROPHY_ROW_COUNT; x++)
+		for ( int x = 0; x < TROPHY_ROW_COUNT; x++ )
 		{
-			for (int y = 0; y < TROPHY_COLUMN_COUNT; y++)
+			for ( int y = 0; y < TROPHY_COLUMN_COUNT; y++ )
 			{
-				//System.out.println("===================" + guiSlotIndex);
+				// System.out.println("===================" + guiSlotIndex);
 
 				int slotNumber = x * TROPHY_COLUMN_COUNT + y + 6;
-				//System.out.println("----------- " + slotNumber);
+				// System.out.println("----------- " + slotNumber);
 
 				int xPos = TROPHY_ITEM_XPOS + y * (SLOT_X_SPACING + 2);
 				int yPos = TROPHY_ITEM_YPOS + x * SLOT_Y_SPACING;
@@ -175,42 +176,44 @@ public class VillageLordContainer extends Container
 		{
 
 			@Override
-			public void sendAllContents(Container containerToSend, NonNullList<ItemStack> itemsList)
+			public void sendAllContents( Container containerToSend, NonNullList<ItemStack> itemsList )
 			{
 				// XXX
 			}
 
 			@Override
-			public void sendSlotContents(Container containerToSend, int slotInd, ItemStack stack)
+			public void sendSlotContents( Container containerToSend, int slotInd, ItemStack stack )
 			{
-				if (slotInd == donationGuiSlotId)
+				if ( slotInd == donationGuiSlotId )
 				{
 					donationItemUpdated(stack);
 				}
 			}
 
 			@Override
-			public void sendWindowProperty(Container containerIn, int varToUpdate, int newValue) {
+			public void sendWindowProperty( Container containerIn, int varToUpdate, int newValue )
+			{
 
 			}
 
 			@Override
-			public void sendAllWindowProperties(Container containerIn, IInventory inventory) {
+			public void sendAllWindowProperties( Container containerIn, IInventory inventory )
+			{
 
 			}
 		});
 	}
-	
-	private void donationItemUpdated(ItemStack stack)
+
+	private void donationItemUpdated( ItemStack stack )
 	{
 		updateDonationInfo();
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer player, int index)
+	public ItemStack transferStackInSlot( EntityPlayer player, int index )
 	{
 		Slot slot = (Slot) this.inventorySlots.get(index);
-		if (slot == null || !slot.getHasStack())
+		if ( slot == null || !slot.getHasStack() )
 		{
 			return ItemStack.EMPTY;
 		}
@@ -218,16 +221,16 @@ public class VillageLordContainer extends Container
 		ItemStack sourceStack = slot.getStack();
 		ItemStack copyOfSourceStack = sourceStack.copy();
 
-		if (indexIsForAVanillaSlot(index))
+		if ( indexIsForAVanillaSlot(index) )
 		{
-			if (!mergeItemStack(sourceStack, LORD_INVENTORY_FIRST_SLOT_INDEX, LORD_INVENTORY_FIRST_SLOT_INDEX + LORD_INVENTORY_SLOT_COUNT, false))
+			if ( !mergeItemStack(sourceStack, LORD_INVENTORY_FIRST_SLOT_INDEX, LORD_INVENTORY_FIRST_SLOT_INDEX + LORD_INVENTORY_SLOT_COUNT, false) )
 			{
 				return ItemStack.EMPTY;
 			}
 		}
-		else if (indexIsForALordInventorySlot(index) || indexIsForLordOutputSlot(index))
+		else if ( indexIsForALordInventorySlot(index) || indexIsForLordOutputSlot(index) )
 		{
-			if (!mergeStackFromLordToPlayer(sourceStack))
+			if ( !mergeStackFromLordToPlayer(sourceStack) )
 			{
 				return ItemStack.EMPTY;
 			}
@@ -239,7 +242,7 @@ public class VillageLordContainer extends Container
 
 		int stackSize = sourceStack.getCount();
 
-		if (stackSize == 0)
+		if ( stackSize == 0 )
 		{
 			slot.putStack(ItemStack.EMPTY);
 		}
@@ -250,40 +253,40 @@ public class VillageLordContainer extends Container
 		return copyOfSourceStack;
 	}
 
-	private boolean mergeStackFromLordToPlayer(ItemStack sourceStack)
+	private boolean mergeStackFromLordToPlayer( ItemStack sourceStack )
 	{
 		return mergeItemStack(sourceStack, VANILLA_FIRST_SLOT_INDEX, VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT, false);
 	}
 
-	private boolean indexIsForAVanillaSlot(int index)
+	private boolean indexIsForAVanillaSlot( int index )
 	{
 		return index >= VANILLA_FIRST_SLOT_INDEX && index < VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
 	}
 
-	private boolean indexIsForALordInventorySlot(int index)
+	private boolean indexIsForALordInventorySlot( int index )
 	{
 		return index >= LORD_INVENTORY_FIRST_SLOT_INDEX && index < LORD_INVENTORY_FIRST_SLOT_INDEX + LORD_INVENTORY_SLOT_COUNT;
 	}
 
-	private boolean indexIsForLordOutputSlot(int index)
+	private boolean indexIsForLordOutputSlot( int index )
 	{
 		// 0-3 input, 4 don, 5 out, 6-13 tro
 		return index == LORD_INVENTORY_FIRST_SLOT_INDEX + 5;
 	}
-	
-	private boolean indexIsForLordTrophySlot(int index)
+
+	private boolean indexIsForLordTrophySlot( int index )
 	{
 		return index > LORD_INVENTORY_FIRST_SLOT_INDEX + 5;
 	}
 
 	@Override
-	public boolean canInteractWith(EntityPlayer playerIn)
+	public boolean canInteractWith( EntityPlayer playerIn )
 	{
 		return true;
 	}
 
 	@Override
-	public void onContainerClosed(EntityPlayer player)
+	public void onContainerClosed( EntityPlayer player )
 	{
 		super.onContainerClosed(player);
 		this.inventory.closeInventory(player);
@@ -291,54 +294,57 @@ public class VillageLordContainer extends Container
 
 	public class SlotOutput extends Slot
 	{
-		
-		public SlotOutput(IInventory inventoryIn, int index, int xPosition, int yPosition)
+
+		public SlotOutput( IInventory inventoryIn, int index, int xPosition, int yPosition )
 		{
 			super(inventoryIn, index, xPosition, yPosition);
 		}
 
 		@Override
-		public boolean isItemValid(ItemStack stack)
+		public boolean isItemValid( ItemStack stack )
 		{
 			return false;
 		}
 	}
-	
+
 	public class SlotTrophy extends Slot
 	{
-		
-		public SlotTrophy(IInventory inventoryIn, int index, int xPosition, int yPosition)
+
+		public SlotTrophy( IInventory inventoryIn, int index, int xPosition, int yPosition )
 		{
 			super(inventoryIn, index, xPosition, yPosition);
 		}
 
 		@Override
-		public boolean isItemValid(ItemStack stack)
+		public boolean isItemValid( ItemStack stack )
 		{
 			return false;
 		}
-		
+
 		@Override
-		public boolean canTakeStack(EntityPlayer playerIn)
-	    {
-	        return false;
-	    }
+		public boolean canTakeStack( EntityPlayer playerIn )
+		{
+			return false;
+		}
 	}
 
 	private void updateDonationInfo()
 	{
-		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= TROPHY =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= TROPHY
+		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 		if ( this.player != null && this.inventory != null )
 		{
-			if ( !this.player.world.isRemote ) ToroQuestPacketHandler.INSTANCE.sendTo(new MessageSetItemReputationAmount(this.inventory), (EntityPlayerMP) this.player);
+			if ( !this.player.world.isRemote )
+				ToroQuestPacketHandler.INSTANCE.sendTo(new MessageSetItemReputationAmount(this.inventory), (EntityPlayerMP) this.player);
 			Province province = CivilizationUtil.getProvinceAt(this.player.getEntityWorld(), this.player.chunkCoordX, this.player.chunkCoordZ);
 			if ( province == null )
 			{
 				return;
 			}
 
-			// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= Reputation Perks =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-			
+			// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= Reputation Perks
+			// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 			// harvest crops
 			// cull livestock
 			// grief
@@ -346,9 +352,9 @@ public class VillageLordContainer extends Container
 			// legendary quests
 			// teleport scroll not consumed
 			// additional quest rewards
-			
+
 			// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-			
+
 			CivilizationDataAccessor worldData = CivilizationsWorldSaveData.get(this.player.world);
 			if ( worldData == null )
 			{
@@ -396,10 +402,10 @@ public class VillageLordContainer extends Container
 			}
 		}
 	}
-	
+
 	private void updateClientQuest()
 	{
-		if (!player.world.isRemote)
+		if ( !player.world.isRemote )
 		{
 			Province province = CivilizationUtil.getProvinceAt(player.getEntityWorld(), player.chunkCoordX, player.chunkCoordZ);
 			QuestData currentQuest = PlayerCivilizationCapabilityImpl.get(player).getCurrentQuestFor(province);

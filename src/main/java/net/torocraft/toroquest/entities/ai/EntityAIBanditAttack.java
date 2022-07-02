@@ -45,42 +45,45 @@ public class EntityAIBanditAttack extends EntityAITarget
 
 	protected EntityToroMob taskOwner;
 
-	public EntityAIBanditAttack(EntityToroMob npc)
+	public EntityAIBanditAttack( EntityToroMob npc )
 	{
 		// checkSight, onlyNearby
 		super(npc, false, false);
 		this.taskOwner = npc;
 		this.theNearestAttackableTargetSorter = new EntityAINearestAttackableTarget.Sorter(taskOwner);
 		this.setMutexBits(1);
-		
+
 		this.targetEntitySelector = new Predicate<EntityLivingBase>()
 		{
-			public boolean apply(@Nullable EntityLivingBase target)
+			public boolean apply( @Nullable EntityLivingBase target )
 			{
-				if (!isSuitableTarget(taskOwner, target, false, false))
+				if ( !isSuitableTarget(taskOwner, target, false, false) )
 				{
 					return false;
 				}
-				
+
 				if ( target instanceof EntityGuard )
 				{
 					if ( taskOwner instanceof EntityOrc )
 					{
 						return true;
 					}
-					
-					EntityGuard g = (EntityGuard)target;
+
+					EntityGuard g = (EntityGuard) target;
 					if ( !g.getPlayerGuard().equals("") && g.spawnedNearBandits )
 					{
 						return false;
 					}
 				}
-				
-				if ( target instanceof EntityToroNpc || target instanceof EntityVillager || ( target instanceof EntityPlayer && shouldAttackPlayer((EntityPlayer)target) ) ) // || target instanceof EntityAdventurer )
+
+				if ( target instanceof EntityToroNpc || target instanceof EntityVillager || (target instanceof EntityPlayer && shouldAttackPlayer((EntityPlayer) target)) ) // || target
+																																											 // instanceof
+																																											 // EntityAdventurer
+																																											 // )
 				{
 					return true;
 				}
-				
+
 				if ( target instanceof EntitySentry )
 				{
 					if ( target instanceof EntityOrc )
@@ -92,28 +95,28 @@ public class EntityAIBanditAttack extends EntityAITarget
 						return taskOwner instanceof EntityOrc;
 					}
 				}
-				
+
 				return false;
 			}
 		};
 	}
-	
+
 	protected Province province;
-	
+
 	public boolean shouldAttackPlayer( EntityPlayer player )
-    {
-		//EntityPlayer player = (EntityPlayer)target;
-		
+	{
+		// EntityPlayer player = (EntityPlayer)target;
+
 		if ( taskOwner.getRevengeTarget() != null && taskOwner.getRevengeTarget() == player )
 		{
 			return true;
 		}
-		
+
 		if ( taskOwner.enemy == player )
 		{
 			return true;
 		}
-		
+
 		if ( this.taskOwner instanceof EntityOrc )
 		{
 			if ( !ToroQuestConfiguration.orcsDropMasks )
@@ -123,46 +126,47 @@ public class EntityAIBanditAttack extends EntityAITarget
 				{
 					return false;
 				}
-				
+
 				return true;
 			}
 		}
 		else if ( this.taskOwner instanceof EntitySentry )
 		{
-			EntitySentry sentry = (EntitySentry)taskOwner;
-			if ( sentry.enemy == player ) return true;
-			
+			EntitySentry sentry = (EntitySentry) taskOwner;
+			if ( sentry.enemy == player )
+				return true;
+
 			if ( player.getHeldItemMainhand().getItem() == Items.EMERALD || player.getHeldItemOffhand().getItem() == Items.EMERALD )
 			{
 				if ( !sentry.getBribed() && sentry.passiveTimer == -1 )
 				{
 					sentry.passiveTimer = 4;
-					sentry.getNavigator().tryMoveToEntityLiving(player, 0.45D+rand.nextDouble()/10.0D);
+					sentry.getNavigator().tryMoveToEntityLiving(player, 0.45D + rand.nextDouble() / 10.0D);
 
 					boolean flag = true;
-					
+
 					if ( sentry.emeraldGreeting && sentry.getDistance(player) < 12 )
 					{
 						sentry.chat(player, "emeralds", null);
 						sentry.emeraldGreeting = false;
 					}
-					
+
 					List<EntitySentry> bandits = sentry.world.<EntitySentry>getEntitiesWithinAABB(EntitySentry.class, new AxisAlignedBB(sentry.getPosition()).grow(25, 12, 25));
-		    		{
-		    			for ( EntitySentry bandit : bandits )
-		    			{
-		    				if ( !bandit.getBribed() && bandit.passiveTimer == -1 )
-		    				{
-		    					bandit.passiveTimer = 4;
-		        				bandit.getNavigator().tryMoveToEntityLiving(player, 0.45D+rand.nextDouble()/10.0D);
-		        				bandit.emeraldGreeting = flag;
-		    				}
-		    			}
-		    		}
+					{
+						for ( EntitySentry bandit : bandits )
+						{
+							if ( !bandit.getBribed() && bandit.passiveTimer == -1 )
+							{
+								bandit.passiveTimer = 4;
+								bandit.getNavigator().tryMoveToEntityLiving(player, 0.45D + rand.nextDouble() / 10.0D);
+								bandit.emeraldGreeting = flag;
+							}
+						}
+					}
 					return false;
 				}
 			}
-			
+
 			if ( sentry.getBribed() || sentry.passiveTimer > 0 )
 			{
 				return false;
@@ -174,34 +178,36 @@ public class EntityAIBanditAttack extends EntityAITarget
 				{
 					return false;
 				}
-				
+
 				sentry.chat(player, "betray", null);
 				return true;
 			}
-		
+
 			int totalRep = PlayerCivilizationCapabilityImpl.get(player).getReputation(CivilizationType.EARTH);
 			totalRep += PlayerCivilizationCapabilityImpl.get(player).getReputation(CivilizationType.FIRE);
 			totalRep += PlayerCivilizationCapabilityImpl.get(player).getReputation(CivilizationType.MOON);
 			totalRep += PlayerCivilizationCapabilityImpl.get(player).getReputation(CivilizationType.WATER);
 			totalRep += PlayerCivilizationCapabilityImpl.get(player).getReputation(CivilizationType.SUN);
 			totalRep += PlayerCivilizationCapabilityImpl.get(player).getReputation(CivilizationType.WIND);
-			
+
 			if ( totalRep <= -50 )
 			{
-//				sentry.passiveTimer = 4;
-//				
-//				List<EntitySentry> bandits = sentry.world.<EntitySentry>getEntitiesWithinAABB(EntitySentry.class, new AxisAlignedBB(sentry.getPosition()).grow(25, 12, 25));
-//	    		{
-//	    			for ( EntitySentry bandit : bandits )
-//	    			{
-//	    				bandit.passiveTimer = 4;
-//	    			}
-//	    		}
+				// sentry.passiveTimer = 4;
+				//
+				// List<EntitySentry> bandits =
+				// sentry.world.<EntitySentry>getEntitiesWithinAABB(EntitySentry.class, new
+				// AxisAlignedBB(sentry.getPosition()).grow(25, 12, 25));
+				// {
+				// for ( EntitySentry bandit : bandits )
+				// {
+				// bandit.passiveTimer = 4;
+				// }
+				// }
 
 				String bandit = "";
-				
+
 				totalRep = 0;
-	
+
 				if ( PlayerCivilizationCapabilityImpl.get(player).getReputation(CivilizationType.EARTH) < totalRep )
 				{
 					totalRep = PlayerCivilizationCapabilityImpl.get(player).getReputation(CivilizationType.EARTH);
@@ -232,47 +238,44 @@ public class EntityAIBanditAttack extends EntityAITarget
 					totalRep = PlayerCivilizationCapabilityImpl.get(player).getReputation(CivilizationType.WIND);
 					bandit = TextComponentHelper.createComponentTranslation(player, "civilization.wind.name", new Object[0]).toString();
 				}
-				
+
 				sentry.chat(player, "outlaw", TextComponentHelper.createComponentTranslation(player, "civilization.house.name", new Object[0]).toString() + " " + bandit);
 				return false;
 			}
-			
-			for ( ItemStack i: player.inventory.armorInventory )
+
+			for ( ItemStack i : player.inventory.armorInventory )
 			{
 				if ( i.getItem() instanceof ItemBanditArmor || i.getItem() instanceof ItemLegendaryBanditArmor )
 				{
-					boolean flag = true;
-					
 					if ( sentry.helloGreeting && sentry.getDistance(player) < 12 )
 					{
 						sentry.chat(player, "hello", null);
 						sentry.helloGreeting = false;
+						List<EntitySentry> bandits = sentry.world.<EntitySentry>getEntitiesWithinAABB(EntitySentry.class, new AxisAlignedBB(sentry.getPosition()).grow(25, 12, 25));
+						{
+							for ( EntitySentry bandit : bandits )
+							{
+								bandit.helloGreeting = false;
+							}
+						}
 					}
-					
-					List<EntitySentry> bandits = sentry.world.<EntitySentry>getEntitiesWithinAABB(EntitySentry.class, new AxisAlignedBB(sentry.getPosition()).grow(25, 12, 25));
-		    		{
-		    			for ( EntitySentry bandit : bandits )
-		    			{
-		    				bandit.helloGreeting = flag;
-		    			}
-		    		}
-		    		
+
 					return false;
 				}
 			}
 		}
-		
+
 		// PEACEFUL
 		if ( taskOwner.world.getDifficulty() == EnumDifficulty.PEACEFUL )
 		{
 			return false;
 		}
-		
+
 		return true;
-    }
-	
+	}
+
 	Random rand = new Random();
-	
+
 	/**
 	 * Returns whether the EntityAIBase should begin execution.
 	 */
@@ -281,11 +284,11 @@ public class EntityAIBanditAttack extends EntityAITarget
 		if ( this.taskOwner.getAttackTarget() != null || this.rand.nextInt(12) != 0 )
 		{
 			return false;
-	    }
-		
+		}
+
 		List<EntityLivingBase> list = this.taskOwner.world.<EntityLivingBase>getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(this.taskOwner.getPosition()).grow(30, 12, 30), this.targetEntitySelector);
-		
-		if (list.isEmpty())
+
+		if ( list.isEmpty() )
 		{
 			return false;
 		}
@@ -296,7 +299,7 @@ public class EntityAIBanditAttack extends EntityAITarget
 		{
 			if ( this.taskOwner.canEntityBeSeen(npc) && !npc.isInvisible() )
 			{
-				if ( npc instanceof EntityPlayer && ( !npc.isSprinting() && this.rand.nextInt((int)this.taskOwner.getDistance(npc)+8) > (npc.isSneaking()?16:8) ) )
+				if ( npc instanceof EntityPlayer && (!npc.isSprinting() && this.rand.nextInt((int) this.taskOwner.getDistance(npc) + 8) > (npc.isSneaking() ? 16 : 8)) )
 				{
 					continue;
 				}
@@ -329,52 +332,53 @@ public class EntityAIBanditAttack extends EntityAITarget
 	{
 		private final Entity theEntity;
 
-		public Sorter(Entity theEntityIn)
+		public Sorter( Entity theEntityIn )
 		{
 			this.theEntity = theEntityIn;
 		}
 
-		public int compare(Entity p_compare_1_, Entity p_compare_2_) {
+		public int compare( Entity p_compare_1_, Entity p_compare_2_ )
+		{
 			double d0 = this.theEntity.getDistanceSq(p_compare_1_);
 			double d1 = this.theEntity.getDistanceSq(p_compare_2_);
 			return d0 < d1 ? -1 : (d0 > d1 ? 1 : 0);
 		}
 	}
-	
- 	@Nullable
-    private BlockPos getRandPos(World worldIn, Entity entityIn, int horizontalRange, int verticalRange)
-    {
-        BlockPos blockpos = new BlockPos(entityIn);
-        int i = blockpos.getX();
-        int j = blockpos.getY();
-        int k = blockpos.getZ();
-        float f = (float)(horizontalRange * horizontalRange * verticalRange * 2);
-        BlockPos blockpos1 = null;
-        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 
-        for (int l = i - horizontalRange; l <= i + horizontalRange; ++l)
-        {
-            for (int i1 = j - verticalRange; i1 <= j + verticalRange; ++i1)
-            {
-                for (int j1 = k - horizontalRange; j1 <= k + horizontalRange; ++j1)
-                {
-                    blockpos$mutableblockpos.setPos(l, i1, j1);
-                    IBlockState iblockstate = worldIn.getBlockState(blockpos$mutableblockpos);
+	@Nullable
+	private BlockPos getRandPos( World worldIn, Entity entityIn, int horizontalRange, int verticalRange )
+	{
+		BlockPos blockpos = new BlockPos(entityIn);
+		int i = blockpos.getX();
+		int j = blockpos.getY();
+		int k = blockpos.getZ();
+		float f = (float) (horizontalRange * horizontalRange * verticalRange * 2);
+		BlockPos blockpos1 = null;
+		BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 
-                    if (iblockstate.getMaterial() == Material.WATER)
-                    {
-                        float f1 = (float)((l - i) * (l - i) + (i1 - j) * (i1 - j) + (j1 - k) * (j1 - k));
+		for ( int l = i - horizontalRange; l <= i + horizontalRange; ++l )
+		{
+			for ( int i1 = j - verticalRange; i1 <= j + verticalRange; ++i1 )
+			{
+				for ( int j1 = k - horizontalRange; j1 <= k + horizontalRange; ++j1 )
+				{
+					blockpos$mutableblockpos.setPos(l, i1, j1);
+					IBlockState iblockstate = worldIn.getBlockState(blockpos$mutableblockpos);
 
-                        if (f1 < f)
-                        {
-                            f = f1;
-                            blockpos1 = new BlockPos(blockpos$mutableblockpos);
-                        }
-                    }
-                }
-            }
-        }
+					if ( iblockstate.getMaterial() == Material.WATER )
+					{
+						float f1 = (float) ((l - i) * (l - i) + (i1 - j) * (i1 - j) + (j1 - k) * (j1 - k));
 
-        return blockpos1;
-    }
+						if ( f1 < f )
+						{
+							f = f1;
+							blockpos1 = new BlockPos(blockpos$mutableblockpos);
+						}
+					}
+				}
+			}
+		}
+
+		return blockpos1;
+	}
 }

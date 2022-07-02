@@ -1,0 +1,36 @@
+{
+	"display": {
+		"title": [{
+			"text": "Exalted",
+			"color": "dark_green",
+			"bold": false
+		}],
+		"description": [{
+				"text": "Reputation Level IV\n",
+				"color": "gray"
+			},
+			{
+				"text": "You are now Exalted; You are reputable enough to rename provinces under the rule of this civilization!",
+				"color": "white"
+			}
+		],
+		"icon": {
+			"item": "toroquest:royal_helmet"
+		},
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"criteria": {
+		"exalted": {
+			"trigger": "toroquest:exalted"
+		}
+	},
+	"requirements": [
+		[
+			"exalted"
+		]
+	],
+	"parent": "toroquest:renowned"
+}

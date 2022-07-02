@@ -7,16 +7,16 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.toroquest.ToroQuest;
 
-public class ConfigurationHandler {
-
-	public static String repDisplayPosition;
-	public static Integer repDisplayX;
-	public static Integer repDisplayY;
-	public static Integer titleDisplayY;
+public class ConfigurationHandler
+{
+	public static String repDisplayPosition = "BOTTOM LEFT";
+	public static Integer repDisplayX = 0;
+	public static Integer repDisplayY = 0;
+	public static Integer titleDisplayY = 32;
 
 	public static Configuration config;
 
-	public static void init(File configFile)
+	public static void init( File configFile )
 	{
 		config = new Configuration(configFile);
 		loadConfiguration();
@@ -26,10 +26,9 @@ public class ConfigurationHandler {
 	{
 		try
 		{
-			repDisplayPosition = config.getString("Rep Badge Position", Configuration.CATEGORY_CLIENT, "BOTTOM LEFT", "Location of Rep Badge",
-			new String[]
+			repDisplayPosition = config.getString("Rep Badge Position", Configuration.CATEGORY_CLIENT, "BOTTOM LEFT", "Location of Rep Badge", new String[]
 			{
-					"TOP LEFT", "TOP CENTER", "TOP RIGHT", "BOTTOM LEFT", "BOTTOM RIGHT", "OFF"
+				"TOP LEFT", "TOP CENTER", "TOP RIGHT", "BOTTOM LEFT", "BOTTOM RIGHT", "OFF"
 			});
 			repDisplayX = config.getInt("Rep Badge X", Configuration.CATEGORY_CLIENT, 0, -20000, 20000, "Sets X offset of Rep Badge");
 			repDisplayY = config.getInt("Rep Badge Y", Configuration.CATEGORY_CLIENT, 0, -20000, 20000, "Sets Y offset of Rep Badge");
@@ -41,7 +40,7 @@ public class ConfigurationHandler {
 		}
 		finally
 		{
-			if (config.hasChanged())
+			if ( config.hasChanged() )
 			{
 				config.save();
 			}
@@ -49,9 +48,9 @@ public class ConfigurationHandler {
 	}
 
 	@SubscribeEvent
-	public void onConfigChangeEvent(ConfigChangedEvent.OnConfigChangedEvent event)
+	public void onConfigChangeEvent( ConfigChangedEvent.OnConfigChangedEvent event )
 	{
-		if (event.getModID().equalsIgnoreCase(ToroQuest.MODID))
+		if ( event.getModID().equalsIgnoreCase(ToroQuest.MODID) )
 		{
 			loadConfiguration();
 		}

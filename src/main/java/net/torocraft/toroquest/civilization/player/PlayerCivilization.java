@@ -38,18 +38,24 @@ public abstract class PlayerCivilization
 		c.setTag("nextQuests", buildQuestCompound(nextQuests));
 		c.setInteger("completedQuests", completedQuests);
 		c.setTag("completedQuestsByProvince", buildCompletedQuestsByProvince());
-		if (inCiv != null) {
+		if ( inCiv != null )
+		{
 			c.setTag("inCiv", inCiv.writeNBT());
-		} else {
+		}
+		else
+		{
 			c.removeTag("inCiv");
 		}
 		return c;
 	}
 
-	protected NBTTagList buildNBTReputationList() {
+	protected NBTTagList buildNBTReputationList()
+	{
 		NBTTagList repList = new NBTTagList();
-		for (Entry<CivilizationType, Integer> rep : reputations.entrySet()) {
-			if (rep.getValue() == null || rep.getKey() == null) {
+		for ( Entry<CivilizationType, Integer> rep : reputations.entrySet() )
+		{
+			if ( rep.getValue() == null || rep.getKey() == null )
+			{
 				continue;
 			}
 			repList.appendTag(buildNBTReputationListItem(rep.getKey(), rep.getValue()));
@@ -57,13 +63,17 @@ public abstract class PlayerCivilization
 		return repList;
 	}
 
-	private NBTTagList buildQuestCompound(Set<QuestData> quests) {
+	private NBTTagList buildQuestCompound( Set<QuestData> quests )
+	{
 		NBTTagList repList = new NBTTagList();
-		for (QuestData data : quests) {
-			if (data == null) {
+		for ( QuestData data : quests )
+		{
+			if ( data == null )
+			{
 				continue;
 			}
-			if (!data.isValid()) {
+			if ( !data.isValid() )
+			{
 				continue;
 			}
 			repList.appendTag(data.writeNBT());
@@ -71,41 +81,53 @@ public abstract class PlayerCivilization
 		return repList;
 	}
 
-	private NBTTagCompound buildCompletedQuestsByProvince() {
+	private NBTTagCompound buildCompletedQuestsByProvince()
+	{
 		NBTTagCompound c = new NBTTagCompound();
-		for (Entry<UUID, Integer> e : completedQuestsByProvince.entrySet()) {
-			if (e.getKey() != null && e.getValue() != null) {
+		for ( Entry<UUID, Integer> e : completedQuestsByProvince.entrySet() )
+		{
+			if ( e.getKey() != null && e.getValue() != null )
+			{
 				c.setInteger(e.getKey().toString(), e.getValue());
 			}
 		}
 
 		return c;
 	}
-	private static String s(CivilizationType civ) {
-		try {
+
+	private static String s( CivilizationType civ )
+	{
+		try
+		{
 			return civ.toString();
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			return "";
 		}
 	}
 
-	public static NBTTagCompound buildNBTReputationListItem(CivilizationType civ, int rep) {
+	public static NBTTagCompound buildNBTReputationListItem( CivilizationType civ, int rep )
+	{
 		NBTTagCompound c = new NBTTagCompound();
 		c.setString("civ", s(civ));
 		c.setInteger("amount", rep);
 		return c;
 	}
 
-	private HashMap<CivilizationType, Integer> defaultRepMap() {
+	private HashMap<CivilizationType, Integer> defaultRepMap()
+	{
 		HashMap<CivilizationType, Integer> repMap = new HashMap<CivilizationType, Integer>();
-		for (CivilizationType civ : CivilizationType.values()) {
+		for ( CivilizationType civ : CivilizationType.values() )
+		{
 			repMap.put(civ, 0);
 		}
 		return repMap;
 	}
 
-	public void readNBT(NBTBase nbt) {
-		if (nbt == null || !(nbt instanceof NBTTagCompound))
+	public void readNBT( NBTBase nbt )
+	{
+		if ( nbt == null || !(nbt instanceof NBTTagCompound) )
 		{
 			reputations = defaultRepMap();
 			inCiv = null;
@@ -120,24 +142,31 @@ public abstract class PlayerCivilization
 		completedQuestsByProvince = readCompletedQuestsByProvince(b.getCompoundTag("completedQuestsByProvince"));
 
 		NBTBase civTag = b.getTag("inCiv");
-		if (civTag != null && civTag instanceof NBTTagCompound) {
+		if ( civTag != null && civTag instanceof NBTTagCompound )
+		{
 			inCiv = new Province();
 			inCiv.readNBT((NBTTagCompound) civTag);
-		} else {
+		}
+		else
+		{
 			inCiv = null;
 		}
 	}
 
-	private Set<QuestData> readQuests(NBTBase tag) {
+	private Set<QuestData> readQuests( NBTBase tag )
+	{
 		Set<QuestData> quests = new HashSet<QuestData>();
-		if (tag == null || !(tag instanceof NBTTagList)) {
+		if ( tag == null || !(tag instanceof NBTTagList) )
+		{
 			return quests;
 		}
 		NBTTagList list = (NBTTagList) tag;
-		for (int i = 0; i < list.tagCount(); i++) {
+		for ( int i = 0; i < list.tagCount(); i++ )
+		{
 			QuestData d = new QuestData();
 			d.readNBT(list.getCompoundTagAt(i), getPlayer());
-			if (!d.isValid()) {
+			if ( !d.isValid() )
+			{
 				continue;
 			}
 			quests.add(d);
@@ -145,49 +174,62 @@ public abstract class PlayerCivilization
 		return quests;
 	}
 
-	private Map<CivilizationType, Integer> readNBTReputationList(NBTBase tag) {
+	private Map<CivilizationType, Integer> readNBTReputationList( NBTBase tag )
+	{
 		Map<CivilizationType, Integer> reputations = defaultRepMap();
-		if (tag == null || !(tag instanceof NBTTagList)) {
+		if ( tag == null || !(tag instanceof NBTTagList) )
+		{
 			return reputations;
 		}
 		NBTTagList list = (NBTTagList) tag;
-		for (int i = 0; i < list.tagCount(); i++) {
+		for ( int i = 0; i < list.tagCount(); i++ )
+		{
 			NBTTagCompound c = list.getCompoundTagAt(i);
 			reputations.put(e(c.getString("civ")), c.getInteger("amount"));
 		}
 		return reputations;
 	}
 
-	private Map<UUID, Integer> readCompletedQuestsByProvince(NBTTagCompound tag) {
+	private Map<UUID, Integer> readCompletedQuestsByProvince( NBTTagCompound tag )
+	{
 		Map<UUID, Integer> m = new HashMap<UUID, Integer>();
-		for (String provinceId : tag.getKeySet()) {
-			try {
+		for ( String provinceId : tag.getKeySet() )
+		{
+			try
+			{
 				m.put(UUID.fromString(provinceId), tag.getInteger(provinceId));
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 			}
 		}
 		return m;
 	}
 
-	private CivilizationType e(String s) {
-		try {
+	private CivilizationType e( String s )
+	{
+		try
+		{
 			return CivilizationType.valueOf(s);
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			return null;
 		}
 	}
 
-	public static class PlayerCivilizationStorage implements IStorage<PlayerCivilizationCapability> {
+	public static class PlayerCivilizationStorage implements IStorage<PlayerCivilizationCapability>
+	{
 
 		@Override
-		public NBTBase writeNBT(Capability<PlayerCivilizationCapability> capability,
-				PlayerCivilizationCapability instance, EnumFacing side) {
+		public NBTBase writeNBT( Capability<PlayerCivilizationCapability> capability, PlayerCivilizationCapability instance, EnumFacing side )
+		{
 			return instance.writeNBT();
 		}
 
 		@Override
-		public void readNBT(Capability<PlayerCivilizationCapability> capability, PlayerCivilizationCapability instance,
-				EnumFacing side, NBTBase nbt) {
+		public void readNBT( Capability<PlayerCivilizationCapability> capability, PlayerCivilizationCapability instance, EnumFacing side, NBTBase nbt )
+		{
 			instance.readNBT(nbt);
 		}
 

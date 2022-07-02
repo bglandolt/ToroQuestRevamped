@@ -1,4 +1,5 @@
 package net.torocraft.toroquest.entities.model;
+
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
@@ -8,7 +9,6 @@ import net.minecraft.util.math.MathHelper;
 // Made with Blockbench 3.8.4
 // Exported for Minecraft version 1.7 - 1.12
 // Paste this class into your mod and generate all required imports
-
 
 public class ModelGraveTitan extends ModelBase
 {
@@ -164,7 +164,6 @@ public class ModelGraveTitan extends ModelBase
 
 		mainBody = new ModelRenderer(this);
 		mainBody.setRotationPoint(0.0F, 63.0F, -0.5F);
-		
 
 		body1 = new ModelRenderer(this);
 		body1.setRotationPoint(0.0F, 0.0F, 0.0F);
@@ -176,7 +175,6 @@ public class ModelGraveTitan extends ModelBase
 		limbs = new ModelRenderer(this);
 		limbs.setRotationPoint(0.0F, 0.0F, 0.0F);
 		body1.addChild(limbs);
-		
 
 		body_r1 = new ModelRenderer(this);
 		body_r1.setRotationPoint(2.7614F, -98.0549F, -11.1069F);
@@ -488,7 +486,6 @@ public class ModelGraveTitan extends ModelBase
 		bone2.setRotationPoint(0.0F, -7.5F, 1.25F);
 		zombie1.addChild(bone2);
 		setRotationAngle(bone2, -2.9234F, 0.0F, 0.0F);
-		
 
 		leftArm_r1 = new ModelRenderer(this);
 		leftArm_r1.setRotationPoint(0.0F, 18.0F, 0.0F);
@@ -570,7 +567,6 @@ public class ModelGraveTitan extends ModelBase
 
 		legs = new ModelRenderer(this);
 		legs.setRotationPoint(0.0F, 53.5F, 0.0F);
-		
 
 		rightLeg1 = new ModelRenderer(this);
 		rightLeg1.setRotationPoint(-13.0F, -85.0F, -15.0F);
@@ -580,7 +576,6 @@ public class ModelGraveTitan extends ModelBase
 		top = new ModelRenderer(this);
 		top.setRotationPoint(0.0F, 0.0F, 0.0F);
 		rightLeg1.addChild(top);
-		
 
 		zombie7 = new ModelRenderer(this);
 		zombie7.setRotationPoint(-12.0F, 0.0F, -3.0F);
@@ -637,7 +632,6 @@ public class ModelGraveTitan extends ModelBase
 		bot = new ModelRenderer(this);
 		bot.setRotationPoint(0.0F, 35.0F, 0.0F);
 		rightLeg1.addChild(bot);
-		
 
 		zombie8 = new ModelRenderer(this);
 		zombie8.setRotationPoint(-6.0F, 14.0F, -4.6667F);
@@ -697,7 +691,6 @@ public class ModelGraveTitan extends ModelBase
 		top3 = new ModelRenderer(this);
 		top3.setRotationPoint(0.0F, 0.0F, 0.0F);
 		leftLeg1.addChild(top3);
-		
 
 		zombie22 = new ModelRenderer(this);
 		zombie22.setRotationPoint(-12.0F, 0.0F, -3.0F);
@@ -754,7 +747,6 @@ public class ModelGraveTitan extends ModelBase
 		bot3 = new ModelRenderer(this);
 		bot3.setRotationPoint(0.0F, 35.0F, 0.0F);
 		leftLeg1.addChild(bot3);
-		
 
 		zombie26 = new ModelRenderer(this);
 		zombie26.setRotationPoint(-6.0F, 14.0F, -4.6667F);
@@ -814,7 +806,6 @@ public class ModelGraveTitan extends ModelBase
 		top2 = new ModelRenderer(this);
 		top2.setRotationPoint(0.0F, 0.0F, 0.0F);
 		rightLeg2.addChild(top2);
-		
 
 		zombie14 = new ModelRenderer(this);
 		zombie14.setRotationPoint(-12.0F, 0.0F, -3.0F);
@@ -871,7 +862,6 @@ public class ModelGraveTitan extends ModelBase
 		bot2 = new ModelRenderer(this);
 		bot2.setRotationPoint(0.0F, 35.0F, 0.0F);
 		rightLeg2.addChild(bot2);
-		
 
 		zombie18 = new ModelRenderer(this);
 		zombie18.setRotationPoint(-6.0F, 14.0F, -4.6667F);
@@ -931,7 +921,6 @@ public class ModelGraveTitan extends ModelBase
 		top4 = new ModelRenderer(this);
 		top4.setRotationPoint(0.0F, 0.0F, 0.0F);
 		leftLeg2.addChild(top4);
-		
 
 		zombie30 = new ModelRenderer(this);
 		zombie30.setRotationPoint(-12.0F, 0.0F, -3.0F);
@@ -988,7 +977,6 @@ public class ModelGraveTitan extends ModelBase
 		bot4 = new ModelRenderer(this);
 		bot4.setRotationPoint(0.0F, 35.0F, 0.0F);
 		leftLeg2.addChild(bot4);
-		
 
 		zombie34 = new ModelRenderer(this);
 		zombie34.setRotationPoint(-6.0F, 14.0F, -4.6667F);
@@ -1042,163 +1030,166 @@ public class ModelGraveTitan extends ModelBase
 	}
 
 	@Override
-	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
+	public void render( Entity entity, float f, float f1, float f2, float f3, float f4, float f5 )
 	{
 		mainBody.render(f5);
 		legs.render(f5);
 	}
 
-	public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+	public void setRotationAngle( ModelRenderer modelRenderer, float x, float y, float z )
+	{
 		modelRenderer.rotateAngleX = x;
 		modelRenderer.rotateAngleY = y;
 		modelRenderer.rotateAngleZ = z;
 	}
-	
-	public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
-    {
-		
-//		this.right_leg.rotateAngleX = MathHelper.cos(limbSwing * 66F62F) * limbSwingAmount;
-//      this.left_leg.rotateAngleX = MathHelper.cos(limbSwing * 66F62F + (float)Math.PI) * limbSwingAmount;
-        
-		
+
+	public void setRotationAngles( float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn )
+	{
+
+		// this.right_leg.rotateAngleX = MathHelper.cos(limbSwing * 66F62F) *
+		// limbSwingAmount;
+		// this.left_leg.rotateAngleX = MathHelper.cos(limbSwing * 66F62F +
+		// (float)Math.PI) * limbSwingAmount;
+
 		// 0.6662F
-		
-		
+
 		// B
-		this.rightLeg1.rotateAngleX = MathHelper.cos(limbSwing * 0.56F) * limbSwingAmount/2.0F - 0.25F;
+		this.rightLeg1.rotateAngleX = MathHelper.cos(limbSwing * 0.56F) * limbSwingAmount / 2.0F - 0.25F;
 		this.rightLeg1.rotateAngleY = 0.25F * limbSwingAmount + 0.25F;
-        this.rightLeg1.rotateAngleZ = 0.25F * limbSwingAmount + 0.5F;
-        
-        this.bot.rotateAngleX = -MathHelper.cos(limbSwing * 0.76F) * limbSwingAmount/4.0F + 6.6F;
-        this.bot.rotateAngleY = MathHelper.cos(limbSwing * 0.6F) * limbSwingAmount/4.0F - 12.0F;
-        this.bot.rotateAngleZ = MathHelper.cos(limbSwing * 0.7F) * limbSwingAmount/4.0F;
+		this.rightLeg1.rotateAngleZ = 0.25F * limbSwingAmount + 0.5F;
 
-        // AA
-        this.rightLeg2.rotateAngleX = -MathHelper.cos(limbSwing * 0.56F) * limbSwingAmount/2.0F - 10.0F;
+		this.bot.rotateAngleX = -MathHelper.cos(limbSwing * 0.76F) * limbSwingAmount / 4.0F + 6.6F;
+		this.bot.rotateAngleY = MathHelper.cos(limbSwing * 0.6F) * limbSwingAmount / 4.0F - 12.0F;
+		this.bot.rotateAngleZ = MathHelper.cos(limbSwing * 0.7F) * limbSwingAmount / 4.0F;
+
+		// AA
+		this.rightLeg2.rotateAngleX = -MathHelper.cos(limbSwing * 0.56F) * limbSwingAmount / 2.0F - 10.0F;
 		this.rightLeg2.rotateAngleY = 0.25F * limbSwingAmount + 20.0F;
-        this.rightLeg2.rotateAngleZ = 0.25F * limbSwingAmount + 9.5F; //
-        
-        this.bot2.rotateAngleX = MathHelper.cos(limbSwing * 0.76F) * limbSwingAmount/4.0F - 5.5F;
-        this.bot2.rotateAngleY = MathHelper.cos(limbSwing * 0.6F) * limbSwingAmount/4.0F;
-        this.bot2.rotateAngleZ = MathHelper.cos(limbSwing * 0.7F) * limbSwingAmount/4.0F + 6.0F;
+		this.rightLeg2.rotateAngleZ = 0.25F * limbSwingAmount + 9.5F; //
 
-        // B
-        this.leftLeg1.rotateAngleX = -MathHelper.cos(limbSwing * 0.56F + (float)Math.PI) * limbSwingAmount/2.0F - 0.25F;
+		this.bot2.rotateAngleX = MathHelper.cos(limbSwing * 0.76F) * limbSwingAmount / 4.0F - 5.5F;
+		this.bot2.rotateAngleY = MathHelper.cos(limbSwing * 0.6F) * limbSwingAmount / 4.0F;
+		this.bot2.rotateAngleZ = MathHelper.cos(limbSwing * 0.7F) * limbSwingAmount / 4.0F + 6.0F;
+
+		// B
+		this.leftLeg1.rotateAngleX = -MathHelper.cos(limbSwing * 0.56F + (float) Math.PI) * limbSwingAmount / 2.0F - 0.25F;
 		this.leftLeg1.rotateAngleY = -0.25F * limbSwingAmount + 0.25F;
-        this.leftLeg1.rotateAngleZ = -0.25F * limbSwingAmount - 0.5F;
-        
-        this.bot3.rotateAngleX = MathHelper.cos(limbSwing * 0.76F) * limbSwingAmount/4.0F + 6.6F;
-        this.bot3.rotateAngleY = MathHelper.cos(limbSwing * 0.6F) * limbSwingAmount/4.0F + 12.0F;
-        this.bot3.rotateAngleZ = MathHelper.cos(limbSwing * 0.7F) * limbSwingAmount/4.0F;
-        
-        // AA
-        this.leftLeg2.rotateAngleX = MathHelper.cos(limbSwing * 0.56F + (float)Math.PI) * limbSwingAmount/2.0F - 10.0F;
+		this.leftLeg1.rotateAngleZ = -0.25F * limbSwingAmount - 0.5F;
+
+		this.bot3.rotateAngleX = MathHelper.cos(limbSwing * 0.76F) * limbSwingAmount / 4.0F + 6.6F;
+		this.bot3.rotateAngleY = MathHelper.cos(limbSwing * 0.6F) * limbSwingAmount / 4.0F + 12.0F;
+		this.bot3.rotateAngleZ = MathHelper.cos(limbSwing * 0.7F) * limbSwingAmount / 4.0F;
+
+		// AA
+		this.leftLeg2.rotateAngleX = MathHelper.cos(limbSwing * 0.56F + (float) Math.PI) * limbSwingAmount / 2.0F - 10.0F;
 		this.leftLeg2.rotateAngleY = -0.25F * limbSwingAmount - 20.0F;
-        this.leftLeg2.rotateAngleZ = -0.25F * limbSwingAmount - 9.5F; //
-        
-        this.bot4.rotateAngleX = MathHelper.cos(limbSwing * 0.76F) * limbSwingAmount/4.0F - 5.5F;
-        this.bot4.rotateAngleY = MathHelper.cos(limbSwing * 0.6F) * limbSwingAmount/4.0F;
-        this.bot4.rotateAngleZ = MathHelper.cos(limbSwing * 0.7F) * limbSwingAmount/4.0F - 6.0F;
+		this.leftLeg2.rotateAngleZ = -0.25F * limbSwingAmount - 9.5F; //
 
-//        this.body_r1.rotateAngleZ = -0.05F * limbSwingAmount + 0.05F;
-//        this.body_r2.rotateAngleZ = 0.05F * limbSwingAmount - 0.05F;
-//        this.body_r3.rotateAngleZ = -0.05F * limbSwingAmount + 0.05F;
-//        this.body_r4.rotateAngleZ = 0.05F * limbSwingAmount - 0.05F;
-//        this.body_r5.rotateAngleZ = -0.05F * limbSwingAmount + 0.05F;
-//        this.body_r6.rotateAngleZ = 0.05F * limbSwingAmount - 0.05F;
-//        this.body_r7.rotateAngleZ = -0.05F * limbSwingAmount + 0.05F;
+		this.bot4.rotateAngleX = MathHelper.cos(limbSwing * 0.76F) * limbSwingAmount / 4.0F - 5.5F;
+		this.bot4.rotateAngleY = MathHelper.cos(limbSwing * 0.6F) * limbSwingAmount / 4.0F;
+		this.bot4.rotateAngleZ = MathHelper.cos(limbSwing * 0.7F) * limbSwingAmount / 4.0F - 6.0F;
 
-        float armSwing = MathHelper.cos((ageInTicks * 0.66F) * 0.66F);
-        this.zombie5.rotateAngleY = -0.05F * armSwing;// + 0.05F;
-        this.zombie3.rotateAngleY = -0.05F * armSwing + 0.05F;
-        this.arm_r1.rotateAngleY = -0.1F * armSwing;// + 0.1F;
-        this.arm_r1.rotateAngleY = -0.1F * armSwing;// + 0.1F;
-        this.arm_r2.rotateAngleY = 0.15F * armSwing;// - 0.1F;
-        this.arm_r3.rotateAngleY = -0.1F * armSwing;// + 0.1F;
-        this.arm_r4.rotateAngleY = 0.12F * armSwing;// - 0.1F;
-        this.arm_r5.rotateAngleY = -0.1F * armSwing;// + 0.1F;
-        this.arm_r6.rotateAngleY = -0.1F * armSwing;// + 0.1F;
-        this.arm_r7.rotateAngleY = 0.08F * armSwing;// - 0.1F;
-        this.arm_r8.rotateAngleY = -0.12F * armSwing;// + 0.1F;
-        this.arm_r9.rotateAngleY = -0.1F * armSwing;// + 0.1F;
-        this.arm_r10.rotateAngleY = 0.02F * armSwing;// - 0.1F;
-        this.arm_r11.rotateAngleY = -0.16F * armSwing;// + 0.1F;
-        this.arm_r12.rotateAngleY = -0.14F * armSwing;// + 0.1F;
-        this.arm_r13.rotateAngleY = 0.1F * armSwing;// - 0.1F;
-        this.arm_r14.rotateAngleY = -0.16F * armSwing;// + 0.1F;
-        this.arm_r15.rotateAngleY = -0.1F * armSwing;// + 0.1F;
-        this.arm_r16.rotateAngleY = 0.13F * armSwing;// - 0.1F;
-        this.arm_r17.rotateAngleY = -0.1F * armSwing;// + 0.1F;
-        this.arm_r18.rotateAngleY = -0.18F * armSwing;// + 0.1F;
-        this.arm_r19.rotateAngleY = 0.14F * armSwing;// - 0.1F;
-        this.arm_r20.rotateAngleY = -0.1F * armSwing;// + 0.1F;
-        this.arm_r21.rotateAngleY = -0.05F * armSwing;// + 0.1F;
-        this.arm_r22.rotateAngleY = 0.1F * armSwing;// - 0.1F;
-        this.arm_r23.rotateAngleY = -0.1F * armSwing;// + 0.1F;
-        this.arm_r24.rotateAngleY = -0.1F * armSwing;// + 0.1F;
-        this.arm_r25.rotateAngleY = 0.11F * armSwing;// - 0.1F;
-        this.arm_r26.rotateAngleY = -0.12F * armSwing;// + 0.1F;
-        this.arm_r27.rotateAngleY = -0.1F * armSwing;// + 0.1F;
-        this.arm_r28.rotateAngleY = 0.05F * armSwing;// - 0.1F;
-        this.arm_r29.rotateAngleY = -0.3F * armSwing;// + 0.1F;
-        this.arm_r30.rotateAngleY = -0.1F * armSwing;// + 0.1F;
-        this.arm_r31.rotateAngleY = 0.03F * armSwing;// - 0.1F;
-        this.arm_r32.rotateAngleY = -0.1F * armSwing;// + 0.1F;
-        this.arm_r33.rotateAngleY = -0.1F * armSwing;// + 0.1F;
-        this.arm_r34.rotateAngleY = 0.1F * armSwing;// - 0.1F;
-        this.arm_r35.rotateAngleY = -0.1F * armSwing;// + 0.1F;
-        this.arm_r36.rotateAngleY = -0.1F * armSwing;// + 0.1F;
-        this.arm_r37.rotateAngleY = 0.09F * armSwing;// - 0.1F;
-        this.arm_r38.rotateAngleY = -0.1F * armSwing;// + 0.1F;
-        this.arm_r39.rotateAngleY = -0.1F * armSwing;// + 0.1F;
-        this.arm_r40.rotateAngleY = 0.1F * armSwing;// - 0.1F;
-        this.arm_r41.rotateAngleY = -0.08F * armSwing;// + 0.1F;
-        this.arm_r42.rotateAngleY = -0.1F * armSwing;// + 0.1F;
-        this.arm_r43.rotateAngleY = 0.05F * armSwing;// - 0.1F;
-        this.arm_r44.rotateAngleY = -0.1F * armSwing;// + 0.1F;
-        this.arm_r45.rotateAngleY = -0.12F * armSwing;// + 0.1F;
-        this.arm_r46.rotateAngleY = 0.03F * armSwing;//;// - 0.1F;
-//        this.arm_r47.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r48.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r49.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r50.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r51.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r52.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r53.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r54.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r55.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r56.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r57.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r58.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r59.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r60.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r61.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r62.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r63.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r64.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r65.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r66.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r67.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r68.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r69.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r70.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r71.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r72.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r73.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r74.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r75.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r76.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r77.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-//        this.arm_r78.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
-        
-//        this.right_leg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * limbSwingAmount;
-//        this.left_leg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * limbSwingAmount;
-//        this.right_leg.rotateAngleX = -limbSwingAmount;
-//        this.left_leg.rotateAngleX = limbSwingAmount;
+		// this.body_r1.rotateAngleZ = -0.05F * limbSwingAmount + 0.05F;
+		// this.body_r2.rotateAngleZ = 0.05F * limbSwingAmount - 0.05F;
+		// this.body_r3.rotateAngleZ = -0.05F * limbSwingAmount + 0.05F;
+		// this.body_r4.rotateAngleZ = 0.05F * limbSwingAmount - 0.05F;
+		// this.body_r5.rotateAngleZ = -0.05F * limbSwingAmount + 0.05F;
+		// this.body_r6.rotateAngleZ = 0.05F * limbSwingAmount - 0.05F;
+		// this.body_r7.rotateAngleZ = -0.05F * limbSwingAmount + 0.05F;
 
-        this.mainBody.rotateAngleX = armSwing * (8+headPitch) * 0.0005F;
-        this.mainBody.rotateAngleY = armSwing * (8+netHeadYaw) * 0.001F;
-        this.mainBody.rotateAngleZ = -armSwing * (8+headPitch) * 0.0005F;
-        
-    }
+		float armSwing = MathHelper.cos((ageInTicks * 0.66F) * 0.66F);
+		this.zombie5.rotateAngleY = -0.05F * armSwing;// + 0.05F;
+		this.zombie3.rotateAngleY = -0.05F * armSwing + 0.05F;
+		this.arm_r1.rotateAngleY = -0.1F * armSwing;// + 0.1F;
+		this.arm_r1.rotateAngleY = -0.1F * armSwing;// + 0.1F;
+		this.arm_r2.rotateAngleY = 0.15F * armSwing;// - 0.1F;
+		this.arm_r3.rotateAngleY = -0.1F * armSwing;// + 0.1F;
+		this.arm_r4.rotateAngleY = 0.12F * armSwing;// - 0.1F;
+		this.arm_r5.rotateAngleY = -0.1F * armSwing;// + 0.1F;
+		this.arm_r6.rotateAngleY = -0.1F * armSwing;// + 0.1F;
+		this.arm_r7.rotateAngleY = 0.08F * armSwing;// - 0.1F;
+		this.arm_r8.rotateAngleY = -0.12F * armSwing;// + 0.1F;
+		this.arm_r9.rotateAngleY = -0.1F * armSwing;// + 0.1F;
+		this.arm_r10.rotateAngleY = 0.02F * armSwing;// - 0.1F;
+		this.arm_r11.rotateAngleY = -0.16F * armSwing;// + 0.1F;
+		this.arm_r12.rotateAngleY = -0.14F * armSwing;// + 0.1F;
+		this.arm_r13.rotateAngleY = 0.1F * armSwing;// - 0.1F;
+		this.arm_r14.rotateAngleY = -0.16F * armSwing;// + 0.1F;
+		this.arm_r15.rotateAngleY = -0.1F * armSwing;// + 0.1F;
+		this.arm_r16.rotateAngleY = 0.13F * armSwing;// - 0.1F;
+		this.arm_r17.rotateAngleY = -0.1F * armSwing;// + 0.1F;
+		this.arm_r18.rotateAngleY = -0.18F * armSwing;// + 0.1F;
+		this.arm_r19.rotateAngleY = 0.14F * armSwing;// - 0.1F;
+		this.arm_r20.rotateAngleY = -0.1F * armSwing;// + 0.1F;
+		this.arm_r21.rotateAngleY = -0.05F * armSwing;// + 0.1F;
+		this.arm_r22.rotateAngleY = 0.1F * armSwing;// - 0.1F;
+		this.arm_r23.rotateAngleY = -0.1F * armSwing;// + 0.1F;
+		this.arm_r24.rotateAngleY = -0.1F * armSwing;// + 0.1F;
+		this.arm_r25.rotateAngleY = 0.11F * armSwing;// - 0.1F;
+		this.arm_r26.rotateAngleY = -0.12F * armSwing;// + 0.1F;
+		this.arm_r27.rotateAngleY = -0.1F * armSwing;// + 0.1F;
+		this.arm_r28.rotateAngleY = 0.05F * armSwing;// - 0.1F;
+		this.arm_r29.rotateAngleY = -0.3F * armSwing;// + 0.1F;
+		this.arm_r30.rotateAngleY = -0.1F * armSwing;// + 0.1F;
+		this.arm_r31.rotateAngleY = 0.03F * armSwing;// - 0.1F;
+		this.arm_r32.rotateAngleY = -0.1F * armSwing;// + 0.1F;
+		this.arm_r33.rotateAngleY = -0.1F * armSwing;// + 0.1F;
+		this.arm_r34.rotateAngleY = 0.1F * armSwing;// - 0.1F;
+		this.arm_r35.rotateAngleY = -0.1F * armSwing;// + 0.1F;
+		this.arm_r36.rotateAngleY = -0.1F * armSwing;// + 0.1F;
+		this.arm_r37.rotateAngleY = 0.09F * armSwing;// - 0.1F;
+		this.arm_r38.rotateAngleY = -0.1F * armSwing;// + 0.1F;
+		this.arm_r39.rotateAngleY = -0.1F * armSwing;// + 0.1F;
+		this.arm_r40.rotateAngleY = 0.1F * armSwing;// - 0.1F;
+		this.arm_r41.rotateAngleY = -0.08F * armSwing;// + 0.1F;
+		this.arm_r42.rotateAngleY = -0.1F * armSwing;// + 0.1F;
+		this.arm_r43.rotateAngleY = 0.05F * armSwing;// - 0.1F;
+		this.arm_r44.rotateAngleY = -0.1F * armSwing;// + 0.1F;
+		this.arm_r45.rotateAngleY = -0.12F * armSwing;// + 0.1F;
+		this.arm_r46.rotateAngleY = 0.03F * armSwing;// ;// - 0.1F;
+		// this.arm_r47.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r48.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r49.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r50.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r51.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r52.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r53.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r54.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r55.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r56.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r57.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r58.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r59.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r60.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r61.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r62.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r63.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r64.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r65.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r66.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r67.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r68.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r69.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r70.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r71.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r72.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r73.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r74.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r75.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r76.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r77.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+		// this.arm_r78.rotateAngleY = -0.05F * limbSwingAmount + 0.05F;
+
+		// this.right_leg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) *
+		// limbSwingAmount;
+		// this.left_leg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F +
+		// (float)Math.PI) * limbSwingAmount;
+		// this.right_leg.rotateAngleX = -limbSwingAmount;
+		// this.left_leg.rotateAngleX = limbSwingAmount;
+
+		this.mainBody.rotateAngleX = armSwing * (8 + headPitch) * 0.0005F;
+		this.mainBody.rotateAngleY = armSwing * (8 + netHeadYaw) * 0.001F;
+		this.mainBody.rotateAngleZ = -armSwing * (8 + headPitch) * 0.0005F;
+
+	}
 }

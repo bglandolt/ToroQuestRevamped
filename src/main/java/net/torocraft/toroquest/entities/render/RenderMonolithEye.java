@@ -1,6 +1,5 @@
 package net.torocraft.toroquest.entities.render;
 
-
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -10,12 +9,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.torocraft.toroquest.entities.EntityMonolithEye;
 import net.torocraft.toroquest.entities.model.ModelMonolithEye;
 
-@SideOnly(Side.CLIENT)
+@SideOnly( Side.CLIENT )
 public class RenderMonolithEye extends RenderLiving<EntityMonolithEye>
 {
 	private static final ResourceLocation guardianTextures = new ResourceLocation("toroquest:textures/entity/monolitheye.png");
 
-	public RenderMonolithEye(RenderManager renderManagerIn)
+	public RenderMonolithEye( RenderManager renderManagerIn )
 	{
 		super(renderManagerIn, new ModelMonolithEye(), 3.4F);
 	}
@@ -25,11 +24,12 @@ public class RenderMonolithEye extends RenderLiving<EntityMonolithEye>
 		return (ModelMonolithEye) super.getMainModel();
 	}
 
-	protected ResourceLocation getEntityTexture(EntityMonolithEye entity) {
+	protected ResourceLocation getEntityTexture( EntityMonolithEye entity )
+	{
 		return guardianTextures;
 	}
 
-	protected void preRenderCallback(EntityMonolithEye entitylivingbaseIn, float partialTickTime)
+	protected void preRenderCallback( EntityMonolithEye entitylivingbaseIn, float partialTickTime )
 	{
 		float size = 3.4F;
 		GlStateManager.scale(size, size, size);

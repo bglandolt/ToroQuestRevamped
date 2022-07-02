@@ -6,28 +6,27 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class Province
 {
-
 	public UUID id;
-	
+
 	public UUID getUUID()
 	{
 		return id;
 	}
-	
+
 	public String name;
 
 	public String getName()
 	{
 		return this.name;
 	}
-	
+
 	public CivilizationType civilization;
-	
+
 	public CivilizationType getCiv()
 	{
 		return this.civilization;
 	}
-	
+
 	public boolean hasLord;
 
 	public int chunkX;
@@ -42,19 +41,17 @@ public class Province
 	public int xLength;
 	public int zLength;
 	public int area;
-	
-	
-//	public EntityVillageLord getLord()
-//	{
-//		return this.lord;
-//	}
-	
-//	public void setLord(EntityVillageLord v)
-//	{
-//		this.lord = v;
-//	}
 
-	
+	// public EntityVillageLord getLord()
+	// {
+	// return this.lord;
+	// }
+
+	// public void setLord(EntityVillageLord v)
+	// {
+	// this.lord = v;
+	// }
+
 	// =-=-=-=-=-=-= Trophy =-=-=-=-=-=-=-=-=
 	public boolean zombiepigTrophy;
 	public boolean skeletonTrophy;
@@ -65,50 +62,54 @@ public class Province
 	public boolean lordTrophy;
 	public boolean beholderTrophy;
 	// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-	
+
 	public boolean hasMageTrophy()
 	{
 		return this.mageTrophy;
 	}
+
 	public boolean hasSpiderTrophy()
 	{
 		return this.spiderTrophy;
 	}
+
 	public boolean hasBanditTrophy()
 	{
 		return this.banditTrophy;
 	}
+
 	public boolean hasSkeletonTrophy()
 	{
 		return this.skeletonTrophy;
 	}
+
 	public boolean hasPigTrophy()
 	{
 		return this.zombiepigTrophy;
 	}
+
 	public boolean hasBeholderTrophy()
 	{
 		return this.beholderTrophy;
 	}
+
 	public boolean hasTitanTrophy()
 	{
 		return this.titanTrophy;
 	}
+
 	public boolean hasLordTrophy()
 	{
 		return this.lordTrophy;
 	}
 
+	// public void setPigTrophy(boolean bool)
+	// {
+	// this.zombiepigTrophy = bool;
+	// this.writeNBT();
+	// }
 
-//	public void setPigTrophy(boolean bool)
-//	{
-//		this.zombiepigTrophy = bool;
-//		this.writeNBT();
-//	}
-	
-
-
-	public void readNBT(NBTTagCompound c)
+	public void readNBT( NBTTagCompound c )
 	{
 		this.id = uuid(c.getString("id"));
 		this.chunkX = c.getInteger("chunkX");
@@ -120,8 +121,8 @@ public class Province
 		this.upperVillageBoundZ = c.getInteger("uZ");
 		this.civilization = e(c.getString("civilization"));
 		this.hasLord = c.getBoolean("hasLord");
-		
-		// =-=-=-=-=-=-= Trophy =-=-=-=-=-=-=-=-=		
+
+		// =-=-=-=-=-=-= Trophy =-=-=-=-=-=-=-=-=
 		this.zombiepigTrophy = c.getBoolean("zombiepigTrophy");
 		this.skeletonTrophy = c.getBoolean("skeletonTrophy");
 		this.banditTrophy = c.getBoolean("banditTrophy");
@@ -131,11 +132,11 @@ public class Province
 		this.lordTrophy = c.getBoolean("lordTrophy");
 		this.beholderTrophy = c.getBoolean("beholderTrophy");
 		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-		
+
 		this.computeSize();
 	}
 
-	private UUID uuid(String s)
+	private UUID uuid( String s )
 	{
 		try
 		{
@@ -147,35 +148,39 @@ public class Province
 		}
 	}
 
-	private CivilizationType e(String s) {
-		try {
+	private CivilizationType e( String s )
+	{
+		try
+		{
 			return CivilizationType.valueOf(s);
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			return null;
 		}
 	}
-	
-	public int getCenterX() // pos
+
+	public int getCenterPosX() // pos
 	{
-		return chunkX*16;
-	}
-	
-	public int getCenterZ() // pos
-	{ 
-		return chunkZ*16;
+		return chunkX * 16;
 	}
 
-	public int getChunk()
+	public int getCenterPosZ() // pos
+	{
+		return chunkZ * 16;
+	}
+
+	public int getChunkX()
 	{
 		return chunkX;
 	}
-	
+
 	public int getChunkZ()
-	{ 
+	{
 		return chunkZ;
 	}
-	
-	public void addToBoundsAndRecenter(int newChunkX, int newChunkZ)
+
+	public void addToBoundsAndRecenter( int newChunkX, int newChunkZ )
 	{
 		lowerVillageBoundX = Math.min(lowerVillageBoundX, newChunkX);
 		upperVillageBoundX = Math.max(upperVillageBoundX, newChunkX);
@@ -210,7 +215,7 @@ public class Province
 		c.setInteger("lZ", this.lowerVillageBoundZ);
 		c.setInteger("uZ", this.upperVillageBoundZ);
 		c.setBoolean("hasLord", this.hasLord);
-		
+
 		// =-=-=-=-=-=-= Trophy =-=-=-=-=-=-=-=-=
 		c.setBoolean("zombiepigTrophy", this.zombiepigTrophy);
 		c.setBoolean("skeletonTrophy", this.skeletonTrophy);
@@ -221,20 +226,20 @@ public class Province
 		c.setBoolean("lordTrophy", this.lordTrophy);
 		c.setBoolean("beholderTrophy", this.beholderTrophy);
 		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-		
-		if (this.name != null && this.name.trim().length() > 0)
+
+		if ( this.name != null && this.name.trim().length() > 0 )
 		{
 			c.setString("name", this.name);
 		}
 		return c;
 	}
-	
+
 	public void setName( String newName )
 	{
 		this.name = newName;
 	}
 
-	private String s(UUID s)
+	private String s( UUID s )
 	{
 		try
 		{
@@ -252,24 +257,27 @@ public class Province
 		StringBuilder sb = new StringBuilder();
 		sb.append(name).append(" of ").append(s(civilization).toLowerCase());
 		sb.append(" at [").append(chunkX * 16).append(",").append(chunkZ * 16).append("]");
-		if (hasLord) {
+		if ( hasLord )
+		{
 			sb.append(" has lord");
-		} else {
+		}
+		else
+		{
 			sb.append(" no lord");
 		}
 		return sb.toString();
 	}
 
-	private String s(CivilizationType civ)
+	private String s( CivilizationType civ )
 	{
-		if (civ == null)
+		if ( civ == null )
 		{
 			return "";
 		}
 		return civ.toString();
 	}
 
-	public double chunkDistanceSq(int toChunkX, int toChunkZ)
+	public double chunkDistanceSq( int toChunkX, int toChunkZ )
 	{
 		double dx = (double) chunkX - toChunkX;
 		double dz = (double) chunkZ - toChunkZ;

@@ -8,7 +8,8 @@ import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 
-public abstract class Hud {
+public abstract class Hud
+{
 
 	// static final Splitter NEWLINE_SPLITTER = Splitter.on('\n');
 
@@ -18,12 +19,14 @@ public abstract class Hud {
 	protected final int height;
 	protected final FontRenderer fontRenderer;
 
-	public Hud(Minecraft mc, int width, int height) {
+	public Hud( Minecraft mc, int width, int height )
+	{
 		this.mc = mc;
 		this.itemRender = mc.getRenderItem();
 		this.fontRenderer = mc.fontRenderer;
 
-		if (fontRenderer == null) {
+		if ( fontRenderer == null )
+		{
 			throw new NullPointerException("fontRenderer is NULL");
 		}
 
@@ -31,14 +34,14 @@ public abstract class Hud {
 		this.height = height;
 	}
 
-	public abstract void render(int screenWidth, int screenHeight);
+	public abstract void render( int screenWidth, int screenHeight );
 
 	/**
 	 * Draws a thin horizontal line between two points.
 	 */
-	protected void drawHorizontalLine(int startX, int endX, int y, int color)
+	protected void drawHorizontalLine( int startX, int endX, int y, int color )
 	{
-		if (endX < startX)
+		if ( endX < startX )
 		{
 			int i = startX;
 			startX = endX;
@@ -51,9 +54,9 @@ public abstract class Hud {
 	/**
 	 * Draw a 1 pixel wide vertical line. Args : x, y1, y2, color
 	 */
-	protected void drawVerticalLine(int x, int startY, int endY, int color)
+	protected void drawVerticalLine( int x, int startY, int endY, int color )
 	{
-		if (endY < startY)
+		if ( endY < startY )
 		{
 			int i = startY;
 			startY = endY;
@@ -65,41 +68,41 @@ public abstract class Hud {
 	/**
 	 * Draws a solid color rectangle with the specified coordinates and color.
 	 */
-	public static void drawRect(int left, int top, int right, int bottom, int color)
+	public static void drawRect( int left, int top, int right, int bottom, int color )
 	{
-		if (left < right)
+		if ( left < right )
 		{
 			int i = left;
 			left = right;
 			right = i;
 		}
 
-		if (top < bottom)
+		if ( top < bottom )
 		{
 			int j = top;
 			top = bottom;
 			bottom = j;
 		}
-		
+
 		float f3 = (float) (color >> 24 & 255) / 255.0F;
 		float f = (float) (color >> 16 & 255) / 255.0F;
 		float f1 = (float) (color >> 8 & 255) / 255.0F;
 		float f2 = (float) (color & 255) / 255.0F;
-		
+
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder vertexbuffer = tessellator.getBuffer();
 		GlStateManager.enableBlend();
 		GlStateManager.disableTexture2D();
 		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 		GlStateManager.color(f, f1, f2, f3);
-		
+
 		vertexbuffer.begin(7, DefaultVertexFormats.POSITION);
 		vertexbuffer.pos((double) left, (double) bottom, 0.0D).endVertex();
 		vertexbuffer.pos((double) right, (double) bottom, 0.0D).endVertex();
 		vertexbuffer.pos((double) right, (double) top, 0.0D).endVertex();
 		vertexbuffer.pos((double) left, (double) top, 0.0D).endVertex();
 		tessellator.draw();
-		
+
 		GlStateManager.enableTexture2D();
 		GlStateManager.disableBlend();
 	}
@@ -108,12 +111,12 @@ public abstract class Hud {
 	 * Renders the specified text to the screen, center-aligned. Args :
 	 * renderer, string, x, y, color
 	 */
-	public void drawCenteredString(String text, int x, int y, int color)
+	public void drawCenteredString( String text, int x, int y, int color )
 	{
 		fontRenderer.drawStringWithShadow(text, (float) (x - fontRenderer.getStringWidth(text) / 2), (float) y, color);
 	}
 
-	public void drawRightString(String text, int x, int y, int color)
+	public void drawRightString( String text, int x, int y, int color )
 	{
 		fontRenderer.drawStringWithShadow(text, (float) (x - fontRenderer.getStringWidth(text)), (float) y, color);
 	}
@@ -122,7 +125,8 @@ public abstract class Hud {
 	 * Renders the specified text to the screen. Args : renderer, string, x, y,
 	 * color
 	 */
-	public void drawString(String text, int x, int y, int color) {
+	public void drawString( String text, int x, int y, int color )
+	{
 
 		fontRenderer.drawStringWithShadow(text, (float) x, (float) y, color);
 

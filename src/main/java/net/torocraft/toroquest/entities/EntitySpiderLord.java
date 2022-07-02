@@ -64,173 +64,173 @@ public class EntitySpiderLord extends EntityCaveSpider implements IMob
 {
 	// ========================== DATA MANAGER ==========================
 
-    private static final DataParameter<Integer> STATE = EntityDataManager.<Integer>createKey(EntitySpiderLord.class, DataSerializers.VARINT);
+	private static final DataParameter<Integer> STATE = EntityDataManager.<Integer>createKey(EntitySpiderLord.class, DataSerializers.VARINT);
 
 	// ============================================================================================================================
-	
-    public static DataParameter<Integer> RAID_X = EntityDataManager.<Integer>createKey(EntitySpiderLord.class, DataSerializers.VARINT);
- 	public static DataParameter<Integer> RAID_Y = EntityDataManager.<Integer>createKey(EntitySpiderLord.class, DataSerializers.VARINT);
- 	public static DataParameter<Integer> RAID_Z = EntityDataManager.<Integer>createKey(EntitySpiderLord.class, DataSerializers.VARINT);
+
+	public static DataParameter<Integer> RAID_X = EntityDataManager.<Integer>createKey(EntitySpiderLord.class, DataSerializers.VARINT);
+	public static DataParameter<Integer> RAID_Y = EntityDataManager.<Integer>createKey(EntitySpiderLord.class, DataSerializers.VARINT);
+	public static DataParameter<Integer> RAID_Z = EntityDataManager.<Integer>createKey(EntitySpiderLord.class, DataSerializers.VARINT);
 
 	@Override
 	protected void entityInit()
 	{
 		super.entityInit();
-		
+
 		this.getDataManager().register(RAID_X, Integer.valueOf(0));
 		this.getDataManager().register(RAID_Y, Integer.valueOf(0));
 		this.getDataManager().register(RAID_Z, Integer.valueOf(0));
 	}
-	
-    @Override
-    public void writeEntityToNBT(NBTTagCompound compound)
-    {
-        super.writeEntityToNBT(compound);
-        
-        compound.setInteger("raidX", this.getRaidLocationX());
-        compound.setInteger("raidY", this.getRaidLocationY());
-        compound.setInteger("raidZ", this.getRaidLocationZ());
-    }
 
-    @Override
-    public void readEntityFromNBT(NBTTagCompound compound)
-    {
-        super.readEntityFromNBT(compound);
-        
-        this.setRaidLocation(compound.getInteger("raidX"), compound.getInteger("raidY"), compound.getInteger("raidZ"));
-    }
-	
-	protected void setRaidLocation(int x, int y, int z)
+	@Override
+	public void writeEntityToNBT( NBTTagCompound compound )
+	{
+		super.writeEntityToNBT(compound);
+
+		compound.setInteger("raidX", this.getRaidLocationX());
+		compound.setInteger("raidY", this.getRaidLocationY());
+		compound.setInteger("raidZ", this.getRaidLocationZ());
+	}
+
+	@Override
+	public void readEntityFromNBT( NBTTagCompound compound )
+	{
+		super.readEntityFromNBT(compound);
+
+		this.setRaidLocation(compound.getInteger("raidX"), compound.getInteger("raidY"), compound.getInteger("raidZ"));
+	}
+
+	protected void setRaidLocation( int x, int y, int z )
 	{
 		this.getDataManager().set(RAID_X, x);
 		this.getDataManager().set(RAID_Y, y);
 		this.getDataManager().set(RAID_Z, z);
 	}
-	
+
 	public Integer getRaidLocationX()
 	{
 		return this.getDataManager().get(RAID_X).intValue();
 	}
-	
+
 	public Integer getRaidLocationY()
 	{
 		return this.getDataManager().get(RAID_Y).intValue();
 	}
-	
+
 	public Integer getRaidLocationZ()
 	{
 		return this.getDataManager().get(RAID_Z).intValue();
 	}
-		
+
 	// ============================================================================================================================
- 	
+
 	public static String NAME = "spider_lord";
 	private int combatTimer = 2;
 
 	static
 	{
-		if (ToroQuestConfiguration.specificEntityNames)
+		if ( ToroQuestConfiguration.specificEntityNames )
 		{
 			NAME = ToroQuestEntities.ENTITY_PREFIX + NAME;
 		}
 	}
-	
+
 	public static void registerRenders()
 	{
-		RenderingRegistry.registerEntityRenderingHandler(EntitySpiderLord.class, new IRenderFactory<EntitySpiderLord>() {
+		RenderingRegistry.registerEntityRenderingHandler(EntitySpiderLord.class, new IRenderFactory<EntitySpiderLord>()
+		{
 			@Override
-			public RenderSpiderLord createRenderFor(RenderManager manager)
+			public RenderSpiderLord createRenderFor( RenderManager manager )
 			{
 				return new RenderSpiderLord(manager);
 			}
 		});
 	}
-	
+
 	@Override
 	public boolean getAlwaysRenderNameTag()
-    {
-        return false;
-    }
-	
+	{
+		return false;
+	}
+
 	@Override
-    protected float getWaterSlowDown()
-    {
-        return 0.9F;
-    }
-	
-    public boolean startRiding(Entity entityIn, boolean force)
-    {
-    	return false;
-    }
-    
+	protected float getWaterSlowDown()
+	{
+		return 0.9F;
+	}
+
+	public boolean startRiding( Entity entityIn, boolean force )
+	{
+		return false;
+	}
+
 	@Override
 	protected void updateLeashedState()
-    {
-	   this.clearLeashed(true, true);
-       return;
-    }
-	
+	{
+		this.clearLeashed(true, true);
+		return;
+	}
+
 	@Override
-	public boolean canBeLeashedTo(EntityPlayer player)
-    {
+	public boolean canBeLeashedTo( EntityPlayer player )
+	{
 		return false;
-    }
-	
+	}
+
 	@Override
 	public int getHorizontalFaceSpeed()
 	{
 		return 5;
 	}
-	
-	// INCREASE RENDER DISTNACE
-	@SideOnly(Side.CLIENT)
-    public AxisAlignedBB getRenderBoundingBox()
-    {
-        return this.getEntityBoundingBox().grow(64.0);
-    }
-		
-	public static void registerFixesSpider(DataFixer fixer)
-    {
-        EntityLiving.registerFixesMob(fixer, EntitySpiderLord.class);
-    }
 
-	public static void init(int entityId)
+	// INCREASE RENDER DISTNACE
+	@SideOnly( Side.CLIENT )
+	public AxisAlignedBB getRenderBoundingBox()
 	{
-		EntityRegistry.registerModEntity(new ResourceLocation(ToroQuest.MODID, NAME), EntitySpiderLord.class, NAME, entityId, ToroQuest.INSTANCE, 80, 3,
-				true, 0xffffff, 0x909090);
+		return this.getEntityBoundingBox().grow(64.0);
 	}
-	
-	public EntitySpiderLord(World world)
+
+	public static void registerFixesSpider( DataFixer fixer )
+	{
+		EntityLiving.registerFixesMob(fixer, EntitySpiderLord.class);
+	}
+
+	public static void init( int entityId )
+	{
+		EntityRegistry.registerModEntity(new ResourceLocation(ToroQuest.MODID, NAME), EntitySpiderLord.class, NAME, entityId, ToroQuest.INSTANCE, 80, 3, true, 0xffffff, 0x909090);
+	}
+
+	public EntitySpiderLord( World world )
 	{
 		super(world);
 		this.setUpEntity();
 
 		int x = this.getRaidLocationX();
 		int y = this.getRaidLocationY();
-	    int z = this.getRaidLocationZ();
-	    
-	    if ( y != 0 )
-	    {
+		int z = this.getRaidLocationZ();
+
+		if ( y != 0 )
+		{
 			this.tasks.addTask(4, new EntityAIRaid(this, x, z, 0.8D));
-	    }
+		}
 	}
-	
+
 	private void setUpEntity()
 	{
 		this.enablePersistence();
-        this.dataManager.register(STATE, Integer.valueOf(-1));
-        this.lastActiveTime = 0;
-        this.timeSinceIgnited = 0;
-        this.fuseTime = 30;
-        this.isImmuneToFire = true;
-        this.setCreeperState(-1);
+		this.dataManager.register(STATE, Integer.valueOf(-1));
+		this.lastActiveTime = 0;
+		this.timeSinceIgnited = 0;
+		this.fuseTime = 30;
+		this.isImmuneToFire = true;
+		this.setCreeperState(-1);
 		this.setSize(3.9F, 1.9F);
 		this.setRealSize(3.9F, 1.9F);
 		this.experienceValue = 400;
 		this.stepHeight = 4.05F;
 	}
-	
-	public EntitySpiderLord(World world, int x, int y, int z)
+
+	public EntitySpiderLord( World world, int x, int y, int z )
 	{
 		super(world);
 		this.setUpEntity();
@@ -244,8 +244,6 @@ public class EntitySpiderLord extends EntityCaveSpider implements IMob
 	{
 		return 1.85F;
 	}
-	
-	
 
 	protected void applyEntityAttributes()
 	{
@@ -258,22 +256,23 @@ public class EntitySpiderLord extends EntityCaveSpider implements IMob
 		this.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(10.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(100.0D);
 	}
+
 	/**
 	 * Called only once on an entity when first time spawned, via egg, mob
 	 * spawner, natural spawning etc, but not called when entity is reloaded
 	 * from nbt. Mainly used for initializing attributes and inventory
 	 */
 	@Nullable
-	public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
+	public IEntityLivingData onInitialSpawn( DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata )
 	{
-		WorldGenPlacer.clearTrees(this.world, new BlockPos((int)this.posX, (int)this.posY, (int)this.posZ), 32);
+		WorldGenPlacer.clearTrees(this.world, new BlockPos((int) this.posX, (int) this.posY, (int) this.posZ), 32);
 		livingdata = super.onInitialSpawn(difficulty, livingdata);
-		
-		if ( (int)this.posY != 0 && this.getRaidLocationY() == 0 )
+
+		if ( (int) this.posY != 0 && this.getRaidLocationY() == 0 )
 		{
-			this.setRaidLocation((int)this.posX, (int)this.posY, (int)this.posZ);
+			this.setRaidLocation((int) this.posX, (int) this.posY, (int) this.posZ);
 		}
-		
+
 		return livingdata;
 	}
 
@@ -290,138 +289,138 @@ public class EntitySpiderLord extends EntityCaveSpider implements IMob
 
 	protected void ai()
 	{
-		this.tasks.addTask(1, new EntityAISwimming(this));		
+		this.tasks.addTask(1, new EntityAISwimming(this));
 		this.tasks.addTask(2, new EntityAIThrow(this, 0.5D, false, true));
-        this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 0.8D));
-	    // this.tasks.addTask(7, new EntityAIRaid(this, 0.5D, 16, 32));
-        this.targetTasks.addTask(0, new EntityAIHurtByTarget(this, false, new Class[0]));
+		this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 0.8D));
+		// this.tasks.addTask(7, new EntityAIRaid(this, 0.5D, 16, 32));
+		this.targetTasks.addTask(0, new EntityAIHurtByTarget(this, false, new Class[0]));
 		this.targetTasks.addTask(1, new EntityAINearestAttackableTarget<EntityPlayer>(this, EntityPlayer.class, true));
 	}
 
 	public boolean isClearWebsReady = false;
-    public int bossTimer = 160;
-    
-    Integer targetLastPosX = null;
-    Integer targetLastPosZ = null;
-    
-    protected void bossAbility(EntityLivingBase leapTarget)
-    {
+	public int bossTimer = 160;
+
+	Integer targetLastPosX = null;
+	Integer targetLastPosZ = null;
+
+	protected void bossAbility( EntityLivingBase leapTarget )
+	{
 		double dist = this.getDistanceSq(leapTarget);
-		
-        if ( dist < 40 )
-        {
-        	this.getNavigator().clearPath();
-        }
-        
-    	// decrement the boss timer
-    	if ( this.bossTimer > 0 )
-    	{
-    		this.bossTimer--;
-    	}
-    	
-    	// when the boss timer equals 40, capture that entity's last position
-    	if ( this.bossTimer == 40 )
+
+		if ( dist < 40 )
+		{
+			this.getNavigator().clearPath();
+		}
+
+		// decrement the boss timer
+		if ( this.bossTimer > 0 )
+		{
+			this.bossTimer--;
+		}
+
+		// when the boss timer equals 40, capture that entity's last position
+		if ( this.bossTimer == 40 )
 		{
 			if ( dist < 516 )
 			{
-				this.targetLastPosX = (int)leapTarget.posX;
-				this.targetLastPosZ = (int)leapTarget.posZ;
+				this.targetLastPosX = (int) leapTarget.posX;
+				this.targetLastPosZ = (int) leapTarget.posZ;
 				this.playSound(SoundEvents.ENTITY_SPIDER_AMBIENT, 2.0F, 1.2F);
 				this.playSound(SoundEvents.ENTITY_CREEPER_PRIMED, 2.0F, 0.8F);
-                this.setCreeperState(1);
+				this.setCreeperState(1);
 			}
 			else
 			{
-	            this.bossTimer++;
+				this.bossTimer++;
 			}
 		}
-    	// when the boss timer is below 40 and greater than 0, stop
-    	// moving capture and look at that entity's last position
-    	if ( this.bossTimer <= 40 && this.bossTimer > 0) 
+		// when the boss timer is below 40 and greater than 0, stop
+		// moving capture and look at that entity's last position
+		if ( this.bossTimer <= 40 && this.bossTimer > 0 )
 		{
-    		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.0D);
+			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.0D);
 		}
-    	else
-    	{
-    		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.6D);
-    	}
-    	
-        // if the boss ability is ready, and boss is on the ground
-        if ( this.bossTimer < 1 ) //&& !this.isClearWebsReady )
-        {
-        	this.isClearWebsReady = true;
-    		this.bossTimer = 150 + this.getRNG().nextInt(50);
-    		this.combatTimer = 2;
-    		this.leap(leapTarget);
-        }
-        
-    }
-    
-    // LEAP
-    protected void leap(EntityLivingBase leapTarget)
-    {
-    	double d0 = 0;
-    	double d1 = 0;
+		else
+		{
+			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.6D);
+		}
 
-    	if ( this.targetLastPosX != null && this.targetLastPosZ != null )
-        {
-        	d0 = this.targetLastPosX - this.posX;
-            d1 = this.targetLastPosZ - this.posZ;
-        }
-//        else // fallback position, in case of null
-//        {
-//        	d0 = 0; //leapTarget.posX - this.posX;
-//        	d1 = 0; //leapTarget.posZ - this.posZ;
-//        }
-    	
+		// if the boss ability is ready, and boss is on the ground
+		if ( this.bossTimer < 1 ) // && !this.isClearWebsReady )
+		{
+			this.isClearWebsReady = true;
+			this.bossTimer = 150 + this.getRNG().nextInt(50);
+			this.combatTimer = 2;
+			this.leap(leapTarget);
+		}
+
+	}
+
+	// LEAP
+	protected void leap( EntityLivingBase leapTarget )
+	{
+		double d0 = 0;
+		double d1 = 0;
+
+		if ( this.targetLastPosX != null && this.targetLastPosZ != null )
+		{
+			d0 = this.targetLastPosX - this.posX;
+			d1 = this.targetLastPosZ - this.posZ;
+		}
+		// else // fallback position, in case of null
+		// {
+		// d0 = 0; //leapTarget.posX - this.posX;
+		// d1 = 0; //leapTarget.posZ - this.posZ;
+		// }
+
 		this.playSound(SoundEvents.BLOCK_CLOTH_PLACE, 3.0F, 0.3F);
 		this.playSound(SoundEvents.BLOCK_SAND_FALL, 3.0F, 0.8F);
-		
-		this.setPositionAndUpdate(this.posX, this.posY+2, this.posZ);
-		
+
+		this.setPositionAndUpdate(this.posX, this.posY + 2, this.posZ);
+
 		if ( !this.world.isRemote )
 		{
-			this.addVelocity(d0/6.0D, 2.0D, d1/6.0D);
+			this.addVelocity(d0 / 6.0D, 2.0D, d1 / 6.0D);
 		}
-    }
-    
-    private void clearWebs() // clear webs, then explode
-    {
-    	if ( !this.isClearWebsReady )
-    	{
-    		return;
-    	}
-    	
-    	this.isClearWebsReady = false;
-    	
-    	this.lastActiveTime = 0;
-        this.timeSinceIgnited = 0;
-        this.fuseTime = 30;
-        this.setCreeperState(-1);
+	}
 
-    	this.spawnExplosionParticle();
-    	this.spawnExplosionParticle();
-    	this.spawnExplosionParticle();
+	private void clearWebs() // clear webs, then explode
+	{
+		if ( !this.isClearWebsReady )
+		{
+			return;
+		}
+
+		this.isClearWebsReady = false;
+
+		this.lastActiveTime = 0;
+		this.timeSinceIgnited = 0;
+		this.fuseTime = 30;
+		this.setCreeperState(-1);
+
+		this.spawnExplosionParticle();
+		this.spawnExplosionParticle();
+		this.spawnExplosionParticle();
 		this.playSound(SoundEvents.ENTITY_GENERIC_EXPLODE, 2.0F, 0.8F);
 		this.playSound(SoundEvents.ENTITY_LIGHTNING_THUNDER, 2.0F, 0.6F);
 		this.playSound(SoundEvents.ENTITY_LIGHTNING_IMPACT, 2.0F, 0.4F);
-		
+
 		this.playStompEffect();
-		this.world.setEntityState(this, (byte)36);
+		this.world.setEntityState(this, (byte) 36);
 
 		int x = this.getPosition().getX();
 		int y = this.getPosition().getY();
 		int z = this.getPosition().getZ();
 		int range = 28;
-		for ( int xx = -range/2; xx < range/2; xx++ ) // /2 range TODO
+		for ( int xx = -range / 2; xx < range / 2; xx++ ) // /2 range TODO
 		{
-			for ( int yy = -range/4; yy < range/4; yy++ )
+			for ( int yy = -range / 4; yy < range / 4; yy++ )
 			{
-				for ( int zz = -range/2; zz < range/2; zz++ ) // /2
+				for ( int zz = -range / 2; zz < range / 2; zz++ ) // /2
 				{
-					if ( Math.pow(Math.abs(xx)+7, 2) + Math.pow(Math.abs(zz)+7, 2) <= 554 )
+					if ( Math.pow(Math.abs(xx) + 7, 2) + Math.pow(Math.abs(zz) + 7, 2) <= 554 )
 					{
-						BlockPos pos = new BlockPos(new BlockPos(x+xx,y+yy,z+zz));
+						BlockPos pos = new BlockPos(new BlockPos(x + xx, y + yy, z + zz));
 						IBlockState block = world.getBlockState(pos);
 						if ( block == Blocks.WEB.getDefaultState() )
 						{
@@ -435,140 +434,140 @@ public class EntitySpiderLord extends EntityCaveSpider implements IMob
 				}
 			}
 		}
-    	this.explode = true;
-    }
-    
-    @SideOnly(Side.CLIENT)
-    public void handleStatusUpdate(byte id)
-    {
-    	if ( id == 36 )
-    	{
-    		this.playStompEffect();
-    	}
-    	super.handleStatusUpdate(id);
-    }
-    protected boolean explode = false;
-    
-    private void explode()
-    {
-    	if ( !this.explode )
-    	{
-    		return;
-    	}
-    	this.explode = false;
-    	this.targetLastPosX = null;
-        this.targetLastPosZ = null;
-		
-    	List<EntityLivingBase> e = this.world.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(this.getPosition()).grow(22, 22, 22), new Predicate<EntityLivingBase>()
+		this.explode = true;
+	}
+
+	@SideOnly( Side.CLIENT )
+	public void handleStatusUpdate( byte id )
+	{
+		if ( id == 36 )
 		{
-			public boolean apply(@Nullable EntityLivingBase entity)
+			this.playStompEffect();
+		}
+		super.handleStatusUpdate(id);
+	}
+
+	protected boolean explode = false;
+
+	private void explode()
+	{
+		if ( !this.explode )
+		{
+			return;
+		}
+		this.explode = false;
+		this.targetLastPosX = null;
+		this.targetLastPosZ = null;
+
+		List<EntityLivingBase> e = this.world.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(this.getPosition()).grow(22, 22, 22), new Predicate<EntityLivingBase>()
+		{
+			public boolean apply( @Nullable EntityLivingBase entity )
 			{
 				return true;
 			}
 		});
 
-		for (EntityLivingBase entity : e)
+		for ( EntityLivingBase entity : e )
 		{
-			double dist = this.getDistanceSq(entity)+1;
-			
+			double dist = this.getDistanceSq(entity) + 1;
+
 			if ( entity != this && dist < 512 )
 			{
-				entity.setPositionAndUpdate(entity.posX, entity.posY+((512.0-dist)/256.0), entity.posZ);
-				entity.addVelocity((0.8/(entity.posX-this.posX)), MathHelper.clamp(37.5/(Math.sqrt(dist)),1.0,15.0), 0.8/(entity.posZ-this.posZ)); //-entity.getDistanceSq(this)/(entity.getDistanceSq(this)+1)
+				entity.setPositionAndUpdate(entity.posX, entity.posY + ((512.0 - dist) / 256.0), entity.posZ);
+				entity.addVelocity((0.8 / (entity.posX - this.posX)), MathHelper.clamp(37.5 / (Math.sqrt(dist)), 1.0, 15.0), 0.8 / (entity.posZ - this.posZ)); // -entity.getDistanceSq(this)/(entity.getDistanceSq(this)+1)
 				entity.velocityChanged = true;
-            	entity.attackEntityFrom(new DamageSource("explosion"), (float)((22.0-(Math.sqrt(dist)))*ToroQuestConfiguration.bossAttackDamageMultiplier) );
-            	entity.setLastAttackedEntity(this);
+				entity.attackEntityFrom(new DamageSource("explosion"), (float) ((22.0 - (Math.sqrt(dist))) * ToroQuestConfiguration.bossAttackDamageMultiplier));
+				entity.setLastAttackedEntity(this);
 				entity.setRevengeTarget(this);
 			}
 		}
-    }
-    
-    protected void playStompEffect()
-    {
-        EnumParticleTypes enumparticletypes = EnumParticleTypes.CLOUD;
-        
-        for (int i = 0; i <= 16; i++)
-        {
-            double x = MathHelper.sqrt(i/16.0D) * 1.0D;
-            double y = MathHelper.sqrt((16.0D-i)/16.0D) * 1.0D;
-            this.world.spawnParticle(enumparticletypes, this.posX + this.width/2.0F, this.posY + 0.2F, this.posZ + this.width/2.0F, x, 0, y);
-            this.world.spawnParticle(enumparticletypes, this.posX + this.width/2.0F, this.posY + 0.2F, this.posZ + this.width/2.0F, -x, 0, y);
-            this.world.spawnParticle(enumparticletypes, this.posX + this.width/2.0F, this.posY + 0.2F, this.posZ + this.width/2.0F, x, 0, -y);
-            this.world.spawnParticle(enumparticletypes, this.posX + this.width/2.0F, this.posY + 0.2F, this.posZ + this.width/2.0F, -x, 0, -y);
-        }
-    }
-    
-    @Override
-    public boolean canBePushed()
-    {
-        return false;
-    }
-    
-    @Override
-    public boolean attackEntityAsMob(Entity entityIn)
-    {
-        return false;
-    }
-    
-    public void onUpdate()
-    {
-        if (this.isEntityAlive())
-        {
-            this.lastActiveTime = this.timeSinceIgnited;
+	}
 
-            if (this.bossTimer <= 40)
-            {
-                this.setCreeperState(1);
-            }
+	protected void playStompEffect()
+	{
+		EnumParticleTypes enumparticletypes = EnumParticleTypes.CLOUD;
 
-            int i = this.getCreeperState();
+		for ( int i = 0; i <= 16; i++ )
+		{
+			double x = MathHelper.sqrt(i / 16.0D) * 1.0D;
+			double y = MathHelper.sqrt((16.0D - i) / 16.0D) * 1.0D;
+			this.world.spawnParticle(enumparticletypes, this.posX + this.width / 2.0F, this.posY + 0.2F, this.posZ + this.width / 2.0F, x, 0, y);
+			this.world.spawnParticle(enumparticletypes, this.posX + this.width / 2.0F, this.posY + 0.2F, this.posZ + this.width / 2.0F, -x, 0, y);
+			this.world.spawnParticle(enumparticletypes, this.posX + this.width / 2.0F, this.posY + 0.2F, this.posZ + this.width / 2.0F, x, 0, -y);
+			this.world.spawnParticle(enumparticletypes, this.posX + this.width / 2.0F, this.posY + 0.2F, this.posZ + this.width / 2.0F, -x, 0, -y);
+		}
+	}
 
-            if (i > 0 && this.timeSinceIgnited == 0)
-            {
-                this.playSound(SoundEvents.ENTITY_CREEPER_PRIMED, 2.0F, 0.7F);
-            }
+	@Override
+	public boolean canBePushed()
+	{
+		return false;
+	}
 
-            this.timeSinceIgnited += i;
+	@Override
+	public boolean attackEntityAsMob( Entity entityIn )
+	{
+		return false;
+	}
 
-            if (this.timeSinceIgnited < 0)
-            {
-                this.timeSinceIgnited = 0;
-            }
+	public void onUpdate()
+	{
+		if ( this.isEntityAlive() )
+		{
+			this.lastActiveTime = this.timeSinceIgnited;
 
-            if (this.timeSinceIgnited >= this.fuseTime)
-            {
-                this.timeSinceIgnited = this.fuseTime;
-                //this.explode();
-            }
-        }
+			if ( this.bossTimer <= 40 )
+			{
+				this.setCreeperState(1);
+			}
 
-        super.onUpdate();
-    }
+			int i = this.getCreeperState();
 
-    
+			if ( i > 0 && this.timeSinceIgnited == 0 )
+			{
+				this.playSound(SoundEvents.ENTITY_CREEPER_PRIMED, 2.0F, 0.7F);
+			}
+
+			this.timeSinceIgnited += i;
+
+			if ( this.timeSinceIgnited < 0 )
+			{
+				this.timeSinceIgnited = 0;
+			}
+
+			if ( this.timeSinceIgnited >= this.fuseTime )
+			{
+				this.timeSinceIgnited = this.fuseTime;
+				// this.explode();
+			}
+		}
+
+		super.onUpdate();
+	}
+
 	public void onLivingUpdate() // LIVING UPDATE ***
 	{
 		super.onLivingUpdate();
-		
+
 		if ( this.world.isRemote )
 		{
 			return;
 		}
-		        
-    	// if the boss has landed, create isClearWebsReady
-    	if ( this.onGround && this.isClearWebsReady ) // in the air
-        {
-    		if ( this.combatTimer < 1 )
-    		{
-    			this.clearWebs();
-    			this.combatTimer = 2;
-    		}
-    		else
-    		{
-    			this.combatTimer--;
-    		}
-        }
-    	else if ( this.explode )
+
+		// if the boss has landed, create isClearWebsReady
+		if ( this.onGround && this.isClearWebsReady ) // in the air
+		{
+			if ( this.combatTimer < 1 )
+			{
+				this.clearWebs();
+				this.combatTimer = 2;
+			}
+			else
+			{
+				this.combatTimer--;
+			}
+		}
+		else if ( this.explode )
 		{
 			if ( this.combatTimer < 1 )
 			{
@@ -580,88 +579,88 @@ public class EntitySpiderLord extends EntityCaveSpider implements IMob
 				this.combatTimer--;
 			}
 		}
-		
+
 		if ( this.getAttackTarget() != null )
-    	{
-	    	bossAbility(this.getAttackTarget());
-	    	AIHelper.faceEntitySmart(this, this.getAttackTarget());
+		{
+			bossAbility(this.getAttackTarget());
+			AIHelper.faceEntitySmart(this, this.getAttackTarget());
 		}
 		else
 		{
-		    this.bossTimer = 100;
-    		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.6D);
+			this.bossTimer = 100;
+			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.6D);
 		}
 
-		if ( this.ticksExisted % 25 == 0)
+		if ( this.ticksExisted % 25 == 0 )
 		{
 			this.heal(ToroQuestConfiguration.bossHealthMultiplier);
-	        this.bossInfo.setPercent(this.getHealth()/this.getMaxHealth());
+			this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
 		}
 	}
-	
+
 	@Override
-	public boolean attackEntityFrom(DamageSource source, float amount)
+	public boolean attackEntityFrom( DamageSource source, float amount )
 	{
-		if (this.world.isRemote)
+		if ( this.world.isRemote )
 		{
 			return false;
 		}
-		
-        this.bossInfo.setPercent(this.getHealth()/this.getMaxHealth());
-		
+
+		this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
+
 		if ( source == null || this.isEntityInvulnerable(source) || source == DamageSource.FALL || source.getTrueSource() == null || !(this.isEntityAlive()) )
 		{
 			return false;
 		}
-		
+
 		if ( source.getTrueSource() instanceof EntityLivingBase )
 		{
 			double dist = source.getTrueSource().getDistanceSq(this.getPosition());
-			
+
 			if ( dist > 256 )
 			{
-				amount = (float)(amount*(256.0f/dist));
+				amount = (float) (amount * (256.0f / dist));
 			}
-			
+
 			if ( !(source.getTrueSource() instanceof EntityPlayer) )
 			{
-				amount = amount/16.0f;
+				amount = amount / 16.0f;
 			}
 		}
-		
+
 		return super.attackEntityFrom(source, amount);
 	}
-	
+
 	@Override
-	public void onDeath(DamageSource cause)
+	public void onDeath( DamageSource cause )
 	{
 		super.onDeath(cause);
-		
+
 		if ( !this.world.isRemote )
 		{
 			this.dropLoot();
-			
+
 			int x = this.getRaidLocationX();
 			int y = this.getRaidLocationY();
 			int z = this.getRaidLocationZ();
-			
+
 			if ( y == 0 )
 			{
 				x = this.getPosition().getX();
 				y = this.getPosition().getY();
 				z = this.getPosition().getZ();
 			}
-			
+
 			int range = 64;
-			
+
 			for ( int xx = -range; xx < range; xx++ )
 			{
 				for ( int yy = -32; yy < 32; yy++ )
 				{
 					for ( int zz = -range; zz < range; zz++ )
 					{
-						BlockPos pos = new BlockPos(x+xx,y+yy,z+zz);
-						IBlockState block = world.getBlockState(pos);							
+						BlockPos pos = new BlockPos(x + xx, y + yy, z + zz);
+						IBlockState block = world.getBlockState(pos);
 						if ( block == Blocks.WEB.getDefaultState() )
 						{
 							world.setBlockToAir(pos);
@@ -669,25 +668,25 @@ public class EntitySpiderLord extends EntityCaveSpider implements IMob
 					}
 				}
 			}
-			this.createWebPatch(world, new BlockPos(x,y,z));
+			this.createWebPatch(world, new BlockPos(x, y, z));
 		}
 	}
-	
-	protected void createWebPatch(World world, BlockPos start)
+
+	protected void createWebPatch( World world, BlockPos start )
 	{
 		int radius = 17;
 		int x = start.getX();
 		int z = start.getZ();
-		for ( int xx = -radius/2; xx < radius/2; xx++ )
+		for ( int xx = -radius / 2; xx < radius / 2; xx++ )
 		{
-			for ( int zz = -radius/2; zz < radius/2; zz++ )
+			for ( int zz = -radius / 2; zz < radius / 2; zz++ )
 			{
-				int distFromCenter = (int)(Math.pow(Math.abs(xx)+4, 2) + Math.pow(Math.abs(zz)+4, 2));
+				int distFromCenter = (int) (Math.pow(Math.abs(xx) + 4, 2) + Math.pow(Math.abs(zz) + 4, 2));
 				if ( world.rand.nextInt(distFromCenter) < 64 )
 				{
 					if ( distFromCenter <= 181 )
 					{
-						BlockPos pos = new BlockPos(x+xx,0,z+zz);
+						BlockPos pos = new BlockPos(x + xx, 0, z + zz);
 						pos = this.getSurfacePosition(world, pos);
 						if ( pos == null )
 						{
@@ -700,11 +699,11 @@ public class EntitySpiderLord extends EntityCaveSpider implements IMob
 			}
 		}
 	}
-	
-	private BlockPos getSurfacePosition(World world, BlockPos start)
+
+	private BlockPos getSurfacePosition( World world, BlockPos start )
 	{
 		IBlockState blockState;
-		BlockPos search = new BlockPos(start.getX(), world.getActualHeight()/2, start.getZ());
+		BlockPos search = new BlockPos(start.getX(), world.getActualHeight() / 2, start.getZ());
 		while (search.getY() > 0)
 		{
 			search = search.down();
@@ -713,23 +712,23 @@ public class EntitySpiderLord extends EntityCaveSpider implements IMob
 			{
 				break;
 			}
-			if ((blockState).isOpaqueCube())
+			if ( (blockState).isOpaqueCube() )
 			{
 				break;
 			}
 		}
 		return search;
 	}
-	
+
 	private void dropLoot()
 	{
 		dropTrophy();
-		dropLootItem(Items.STRING, rand.nextInt(50)+50);
+		dropLootItem(Items.STRING, rand.nextInt(50) + 50);
 		dropLootItem(Items.GUNPOWDER, rand.nextInt(50) + 50);
-		dropLootItem(new ItemStack(Blocks.WEB, rand.nextInt(15)+15)); 
+		dropLootItem(new ItemStack(Blocks.WEB, rand.nextInt(15) + 15));
 		dropLootItem(Items.SPIDER_EYE, 8);
 	}
-	
+
 	private void dropTrophy()
 	{
 		ItemStack stack = new ItemStack(Item.getByNameOrId("toroquest:trophy_spider"));
@@ -742,14 +741,14 @@ public class EntitySpiderLord extends EntityCaveSpider implements IMob
 		dropItem.setGlowing(true);
 	}
 
-	private void dropLootItem(Item item, int amount)
+	private void dropLootItem( Item item, int amount )
 	{
-		if (amount == 0)
+		if ( amount == 0 )
 		{
 			return;
 		}
 
-		for (int i = 0; i < amount; i++)
+		for ( int i = 0; i < amount; i++ )
 		{
 			ItemStack stack = new ItemStack(item);
 			EntityItem dropItem = new EntityItem(world, posX, posY, posZ, stack.copy());
@@ -761,7 +760,7 @@ public class EntitySpiderLord extends EntityCaveSpider implements IMob
 		}
 	}
 
-	private void dropLootItem(ItemStack item)
+	private void dropLootItem( ItemStack item )
 	{
 		EntityItem dropItem = new EntityItem(world, posX, posY, posZ, item.copy());
 		dropItem.setNoPickupDelay();
@@ -770,146 +769,148 @@ public class EntitySpiderLord extends EntityCaveSpider implements IMob
 		dropItem.motionX = rand.nextDouble() - 0.5d;
 		world.spawnEntity(dropItem);
 	}
-	
-    protected SoundEvent getAmbientSound()
-    {
-        this.playSound(SoundEvents.ENTITY_SPIDER_AMBIENT, this.getSoundVolume() * 3.0F, ((this.rand.nextInt(10)/10) + 0.6F));
-        return null;
-    }
 
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
-    {
-    	this.playSound(SoundEvents.ENTITY_SPIDER_HURT, this.getSoundVolume() * 3.0F, ((this.rand.nextInt(10)/10) + 0.6F));
-        return null;
-    }
+	protected SoundEvent getAmbientSound()
+	{
+		this.playSound(SoundEvents.ENTITY_SPIDER_AMBIENT, this.getSoundVolume() * 3.0F, ((this.rand.nextInt(10) / 10) + 0.6F));
+		return null;
+	}
 
-    protected SoundEvent getDeathSound()
-    {
-    	this.playSound(SoundEvents.ENTITY_SPIDER_DEATH, this.getSoundVolume() * 3.5F, ((this.rand.nextInt(10)/10) + 0.6F));
-        return null;
-    }
-    
-    protected SoundEvent getStepSound()
-    {
-        this.playSound(SoundEvents.ENTITY_SPIDER_STEP, this.getSoundVolume() * 3.0F, 0.5F);
-        return null;
-    }
-    
-    private final BossInfoServer bossInfo = (BossInfoServer)(new BossInfoServer(this.getDisplayName(), BossInfo.Color.PURPLE, BossInfo.Overlay.PROGRESS)).setDarkenSky(true);
+	protected SoundEvent getHurtSound( DamageSource damageSourceIn )
+	{
+		this.playSound(SoundEvents.ENTITY_SPIDER_HURT, this.getSoundVolume() * 3.0F, ((this.rand.nextInt(10) / 10) + 0.6F));
+		return null;
+	}
+
+	protected SoundEvent getDeathSound()
+	{
+		this.playSound(SoundEvents.ENTITY_SPIDER_DEATH, this.getSoundVolume() * 3.5F, ((this.rand.nextInt(10) / 10) + 0.6F));
+		return null;
+	}
+
+	protected SoundEvent getStepSound()
+	{
+		this.playSound(SoundEvents.ENTITY_SPIDER_STEP, this.getSoundVolume() * 3.0F, 0.5F);
+		return null;
+	}
+
+	private final BossInfoServer bossInfo = (BossInfoServer) (new BossInfoServer(this.getDisplayName(), BossInfo.Color.PURPLE, BossInfo.Overlay.PROGRESS)).setDarkenSky(true);
 
 	/**
-     * Add the given player to the list of players tracking this entity. For instance, a player may track a boss in
-     * order to view its associated boss bar.
-     */
-    public void addTrackingPlayer(EntityPlayerMP player)
-    {
-        super.addTrackingPlayer(player);
-        this.bossInfo.addPlayer(player);
-    }
+	 * Add the given player to the list of players tracking this entity. For
+	 * instance, a player may track a boss in
+	 * order to view its associated boss bar.
+	 */
+	public void addTrackingPlayer( EntityPlayerMP player )
+	{
+		super.addTrackingPlayer(player);
+		this.bossInfo.addPlayer(player);
+	}
 
-    /**
-     * Removes the given player from the list of players tracking this entity. See {@link Entity#addTrackingPlayer} for
-     * more information on tracking.
-     */
-    public void removeTrackingPlayer(EntityPlayerMP player)
-    {
-        super.removeTrackingPlayer(player);
-        this.bossInfo.removePlayer(player);
-    }
+	/**
+	 * Removes the given player from the list of players tracking this entity. See
+	 * {@link Entity#addTrackingPlayer} for
+	 * more information on tracking.
+	 */
+	public void removeTrackingPlayer( EntityPlayerMP player )
+	{
+		super.removeTrackingPlayer(player);
+		this.bossInfo.removePlayer(player);
+	}
 
-    
-//    private void triggerBossAbilitySpiders()
-//	{
-//		int spiders = world.getEntitiesWithinAABB(EntitySpider.class, new AxisAlignedBB(this.getPosition()).grow(64, 32, 64)).size();
-//
-//		if (spiders > 9)
-//		{
-//			return;
-//		}
-//		spawnSpiders();
-//	}
-//
-//	private void spawnSpiders()
-//	{
-//		this.playSound(SoundEvents.ENTITY_SLIME_SQUISH, 2.0F, 1.2F);
-//		int amount = 1 + rand.nextInt(3);
-//		
-//		for (int i = 0; i < amount; i++)
-//		{
-//			spawnSpider();
-//		}
-//	}
-//
-//	protected void spawnSpider()
-//	{
-//		EntitySpider mob = new EntitySpider(world);
-//		BlockPos pos = this.getPosition();
-//		mob.setPosition(pos.getX(),pos.getY(),pos.getZ());
-//		mob.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.4D);
-//    	world.spawnEntity(mob);
-//    	mob.spawnRunningParticles();
-//		mob.setAttackTarget(this.getAttackTarget());
-//		mob.removePotionEffect(MobEffects.INVISIBILITY);
-//		mob.removePotionEffect(MobEffects.SPEED);
-//		mob.removePotionEffect(MobEffects.STRENGTH);
-//		mob.removePotionEffect(MobEffects.REGENERATION);
-//	}
-	
-	 /**
-     * Returns the current state of creeper, -1 is idle, 1 is 'in fuse'
-     */
-    public int getCreeperState()
-    {
-        return this.dataManager.get(STATE).intValue();
-    }
+	// private void triggerBossAbilitySpiders()
+	// {
+	// int spiders = world.getEntitiesWithinAABB(EntitySpider.class, new
+	// AxisAlignedBB(this.getPosition()).grow(64, 32, 64)).size();
+	//
+	// if (spiders > 9)
+	// {
+	// return;
+	// }
+	// spawnSpiders();
+	// }
+	//
+	// private void spawnSpiders()
+	// {
+	// this.playSound(SoundEvents.ENTITY_SLIME_SQUISH, 2.0F, 1.2F);
+	// int amount = 1 + rand.nextInt(3);
+	//
+	// for (int i = 0; i < amount; i++)
+	// {
+	// spawnSpider();
+	// }
+	// }
+	//
+	// protected void spawnSpider()
+	// {
+	// EntitySpider mob = new EntitySpider(world);
+	// BlockPos pos = this.getPosition();
+	// mob.setPosition(pos.getX(),pos.getY(),pos.getZ());
+	// mob.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.4D);
+	// world.spawnEntity(mob);
+	// mob.spawnRunningParticles();
+	// mob.setAttackTarget(this.getAttackTarget());
+	// mob.removePotionEffect(MobEffects.INVISIBILITY);
+	// mob.removePotionEffect(MobEffects.SPEED);
+	// mob.removePotionEffect(MobEffects.STRENGTH);
+	// mob.removePotionEffect(MobEffects.REGENERATION);
+	// }
 
-    /**
-     * Sets the state of creeper, -1 to idle and 1 to be 'in fuse'
-     */
-    public void setCreeperState(int state)
-    {
-        this.dataManager.set(STATE, Integer.valueOf(state));
-    }
-    
-    private int lastActiveTime = 0;
-    private int timeSinceIgnited = 0;
-    private int fuseTime = 30;
-    
-    @SideOnly(Side.CLIENT)
-    public float getCreeperFlashIntensity(float p_70831_1_)
-    {
-        return ((float)this.lastActiveTime + (float)(this.timeSinceIgnited - this.lastActiveTime) * p_70831_1_) / (float)(this.fuseTime - 2);
-    }
-	
-	//@Override
-    public static class GroupData implements IEntityLivingData
-    {
-    	
-    }
-    
-    protected void setRealSize(float width, float height)
-    {
-        if (width != this.width || height != this.height)
-        {
-            float f = this.width;
-            this.width = width;
-            this.height = height;
+	/**
+	 * Returns the current state of creeper, -1 is idle, 1 is 'in fuse'
+	 */
+	public int getCreeperState()
+	{
+		return this.dataManager.get(STATE).intValue();
+	}
 
-            if (this.width < f)
-            {
-                double d0 = (double)width / 2.0D;
-                this.setEntityBoundingBox(new AxisAlignedBB(this.posX - d0, this.posY, this.posZ - d0, this.posX + d0, this.posY + (double)this.height, this.posZ + d0));
-                return;
-            }
+	/**
+	 * Sets the state of creeper, -1 to idle and 1 to be 'in fuse'
+	 */
+	public void setCreeperState( int state )
+	{
+		this.dataManager.set(STATE, Integer.valueOf(state));
+	}
 
-            AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
-            this.setEntityBoundingBox(new AxisAlignedBB(axisalignedbb.minX, axisalignedbb.minY, axisalignedbb.minZ, axisalignedbb.minX + (double)this.width, axisalignedbb.minY + (double)this.height, axisalignedbb.minZ + (double)this.width));
+	private int lastActiveTime = 0;
+	private int timeSinceIgnited = 0;
+	private int fuseTime = 30;
 
-            if (this.width > f && !this.firstUpdate && !this.world.isRemote)
-            {
-                this.move(MoverType.SELF, (double)(f - this.width), 0.0D, (double)(f - this.width));
-            }
-        }
-    }
-	
+	@SideOnly( Side.CLIENT )
+	public float getCreeperFlashIntensity( float p_70831_1_ )
+	{
+		return ((float) this.lastActiveTime + (float) (this.timeSinceIgnited - this.lastActiveTime) * p_70831_1_) / (float) (this.fuseTime - 2);
+	}
+
+	// @Override
+	public static class GroupData implements IEntityLivingData
+	{
+
+	}
+
+	protected void setRealSize( float width, float height )
+	{
+		if ( width != this.width || height != this.height )
+		{
+			float f = this.width;
+			this.width = width;
+			this.height = height;
+
+			if ( this.width < f )
+			{
+				double d0 = (double) width / 2.0D;
+				this.setEntityBoundingBox(new AxisAlignedBB(this.posX - d0, this.posY, this.posZ - d0, this.posX + d0, this.posY + (double) this.height, this.posZ + d0));
+				return;
+			}
+
+			AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
+			this.setEntityBoundingBox(new AxisAlignedBB(axisalignedbb.minX, axisalignedbb.minY, axisalignedbb.minZ, axisalignedbb.minX + (double) this.width, axisalignedbb.minY + (double) this.height, axisalignedbb.minZ + (double) this.width));
+
+			if ( this.width > f && !this.firstUpdate && !this.world.isRemote )
+			{
+				this.move(MoverType.SELF, (double) (f - this.width), 0.0D, (double) (f - this.width));
+			}
+		}
+	}
+
 }

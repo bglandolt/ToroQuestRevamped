@@ -34,49 +34,51 @@ public class BlockToroSpawner extends BlockContainer
 
 	public static final String NAME = "toroSpawnerBlock";
 	public static BlockToroSpawner INSTANCE;
-	//public static Item ITEM_INSTANCE;
+	// public static Item ITEM_INSTANCE;
 	private static ResourceLocation REGISTRY_NAME = new ResourceLocation(ToroQuest.MODID, NAME);
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings( "deprecation" )
 	@SubscribeEvent
-	public static void initBlock(final RegistryEvent.Register<Block> event)
+	public static void initBlock( final RegistryEvent.Register<Block> event )
 	{
 		GameRegistry.registerTileEntity(TileEntityToroSpawner.class, ToroQuest.MODID + ":" + NAME);
 		INSTANCE = (BlockToroSpawner) new BlockToroSpawner().setUnlocalizedName(NAME);
 		INSTANCE.setRegistryName(REGISTRY_NAME);
 		event.getRegistry().register(INSTANCE);
-		//ITEM_INSTANCE = Item.REGISTRY.getObject(new ResourceLocation(ToroQuest.MODID, NAME));
+		// ITEM_INSTANCE = Item.REGISTRY.getObject(new ResourceLocation(ToroQuest.MODID,
+		// NAME));
 	}
 
 	public static void registerRenders()
 	{
-		//ModelResourceLocation model = new ModelResourceLocation(ToroQuest.MODID + ":" + NAME, "inventory");
-		//Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(ITEM_INSTANCE, 0, model);
+		// ModelResourceLocation model = new ModelResourceLocation(ToroQuest.MODID + ":"
+		// + NAME, "inventory");
+		// Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(ITEM_INSTANCE,
+		// 0, model);
 	}
 
 	public BlockToroSpawner()
 	{
 		super(Material.AIR);
-		setCreativeTab(CreativeTabs.MISC);
 	}
 
-	public EnumBlockRenderType getRenderType(IBlockState state)
+	public EnumBlockRenderType getRenderType( IBlockState state )
 	{
 		return EnumBlockRenderType.INVISIBLE;
 	}
 
 	@Nullable
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
+	public AxisAlignedBB getCollisionBoundingBox( IBlockState blockState, World worldIn, BlockPos pos )
 	{
 		return NULL_AABB;
 	}
 
-	public boolean isOpaqueCube(IBlockState state)
+	public boolean isOpaqueCube( IBlockState state )
 	{
 		return false;
 	}
 
-	public boolean canCollideCheck(IBlockState state, boolean hitIfLiquid)
+	public boolean canCollideCheck( IBlockState state, boolean hitIfLiquid )
 	{
 		return false;
 	}
@@ -85,21 +87,21 @@ public class BlockToroSpawner extends BlockContainer
 	 * Spawns this Block's drops into the World as EntityItems.
 	 */
 	@Override
-	public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
+	public void dropBlockAsItemWithChance( World worldIn, BlockPos pos, IBlockState state, float chance, int fortune )
 	{
-		
+
 	}
 
 	/**
 	 * Returns a new instance of a block's tile entity class. Called on placing
 	 * the block.
 	 */
-	public TileEntity createNewTileEntity(World worldIn, int meta)
+	public TileEntity createNewTileEntity( World worldIn, int meta )
 	{
 		return new TileEntityToroSpawner();
 	}
 
-	public boolean isFullCube(IBlockState state)
+	public boolean isFullCube( IBlockState state )
 	{
 		return false;
 	}
@@ -108,7 +110,7 @@ public class BlockToroSpawner extends BlockContainer
 	 * Get the Item that this Block should drop when harvested.
 	 */
 	@Nullable
-	public Item getItemDropped(IBlockState state, Random rand, int fortune)
+	public Item getItemDropped( IBlockState state, Random rand, int fortune )
 	{
 		return null;
 	}
@@ -116,50 +118,50 @@ public class BlockToroSpawner extends BlockContainer
 	/**
 	 * Returns the quantity of items to drop on block destruction.
 	 */
-	public int quantityDropped(Random random)
+	public int quantityDropped( Random random )
 	{
 		return 0;
 	}
 
 	@Override
-	public int getExpDrop(IBlockState state, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune)
+	public int getExpDrop( IBlockState state, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune )
 	{
 		return 0;
 	}
 
 	@Nullable
-	public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
+	public ItemStack getItem( World worldIn, BlockPos pos, IBlockState state )
 	{
 		return null;
 	}
-	
-	@Override
-    public boolean isCollidable()
-    {
-        return false;
-    }
 
-	@SideOnly(Side.CLIENT)
+	@Override
+	public boolean isCollidable()
+	{
+		return false;
+	}
+
+	@SideOnly( Side.CLIENT )
 	public BlockRenderLayer getBlockLayer()
 	{
 		return BlockRenderLayer.CUTOUT;
 	}
-	
+
 	@Override
-    public boolean isSideSolid(IBlockState base_state, IBlockAccess world, BlockPos pos, EnumFacing side)
-    {
-    	return false;
-    }
-	
+	public boolean isSideSolid( IBlockState base_state, IBlockAccess world, BlockPos pos, EnumFacing side )
+	{
+		return false;
+	}
+
 	@Override
-    public int tickRate(World worldIn)
-    {
-        return 30;
-    }
-	
+	public int tickRate( World worldIn )
+	{
+		return 30;
+	}
+
 	@Override
-	public boolean isAir(IBlockState state, IBlockAccess world, BlockPos pos)
-    {
-        return true;
-    }
+	public boolean isAir( IBlockState state, IBlockAccess world, BlockPos pos )
+	{
+		return true;
+	}
 }

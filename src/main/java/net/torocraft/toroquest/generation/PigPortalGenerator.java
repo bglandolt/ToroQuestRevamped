@@ -32,35 +32,34 @@ import net.torocraft.toroquest.entities.EntityPigLord;
 public class PigPortalGenerator extends WorldGenerator
 {
 
-
 	@Override
-	public boolean generate(World world, Random rand, BlockPos pos)
+	public boolean generate( World world, Random rand, BlockPos pos )
 	{
 		if ( pos == null )
 		{
 			return false;
 		}
-		
-		pos = getSurface( world, pos );
-		
+
+		pos = getSurface(world, pos);
+
 		this.createPatches(world, rand, pos);
-		this.addPigs( world, pos, getPigs() );
+		this.addPigs(world, pos, getPigs());
 		this.generatePortal(world, pos);
 		this.spawnPigLord(world, pos);
-		//this.addToroSpawner( world, pos, getDefaultEnemies() );
+		// this.addToroSpawner( world, pos, getDefaultEnemies() );
 		return true;
 	}
-	
-	private void spawnPigLord(World world, BlockPos pos)
+
+	private void spawnPigLord( World world, BlockPos pos )
 	{
-		addToroBossSpawner( world, pos, getDefaultEnemies() );
+		addToroBossSpawner(world, pos, getDefaultEnemies());
 	}
-	
-	private void addToroBossSpawner( World world, BlockPos blockpos, List<String> entities)
+
+	private void addToroBossSpawner( World world, BlockPos blockpos, List<String> entities )
 	{
 		world.setBlockState(blockpos, BlockToroSpawner.INSTANCE.getDefaultState());
 		TileEntity tileentity = world.getTileEntity(blockpos);
-		if (tileentity instanceof TileEntityToroSpawner)
+		if ( tileentity instanceof TileEntityToroSpawner )
 		{
 			TileEntityToroSpawner spawner = (TileEntityToroSpawner) tileentity;
 			spawner.setTriggerDistance(80);
@@ -84,20 +83,20 @@ public class PigPortalGenerator extends WorldGenerator
 		entity.add("toroquest:toroquest_pig_lord");
 		return entity;
 	}
-	
+
 	protected void createPortalPatch( World world, BlockPos start, boolean netherrack, int r )
 	{
-		int radius = world.rand.nextInt(r)+r;
+		int radius = world.rand.nextInt(r) + r;
 		int x = start.getX();
 		int z = start.getZ();
 		for ( int xx = -radius; xx < radius; xx++ )
 		{
 			for ( int zz = -radius; zz < radius; zz++ )
 			{
-				int distFromCenter = (int)(MathHelper.sqrt((xx*xx+zz*zz)));
+				int distFromCenter = (int) (MathHelper.sqrt((xx * xx + zz * zz)));
 				if ( radius >= distFromCenter )
 				{
-					BlockPos pos = getCorruptionSurface( world, x+xx, z+zz );
+					BlockPos pos = getCorruptionSurface(world, x + xx, z + zz);
 					if ( pos != null )
 					{
 						if ( netherrack )
@@ -105,19 +104,19 @@ public class PigPortalGenerator extends WorldGenerator
 							if ( world.rand.nextInt(3) == 0 )
 							{
 								world.setBlockState(pos, Blocks.MAGMA.getDefaultState());
-//								if ( world.rand.nextInt(9) == 0 )
-//								{
-//									world.setBlockState(pos.up(), Blocks.FIRE.getDefaultState());
-//								}
+								// if ( world.rand.nextInt(9) == 0 )
+								// {
+								// world.setBlockState(pos.up(), Blocks.FIRE.getDefaultState());
+								// }
 							}
 							else
 							{
-								world.setBlockState( pos, Blocks.NETHERRACK.getDefaultState() );
+								world.setBlockState(pos, Blocks.NETHERRACK.getDefaultState());
 							}
 						}
 						else
 						{
-							world.setBlockState( pos, Blocks.SOUL_SAND.getDefaultState() );
+							world.setBlockState(pos, Blocks.SOUL_SAND.getDefaultState());
 							if ( world.rand.nextInt(9) == 0 )
 							{
 								world.setBlockState(pos.up(), Blocks.NETHER_WART.getDefaultState());
@@ -128,38 +127,36 @@ public class PigPortalGenerator extends WorldGenerator
 			}
 		}
 	}
-	
-	protected void createPatches(World world, Random rand, BlockPos origin)
+
+	protected void createPatches( World world, Random rand, BlockPos origin )
 	{
 		double x = origin.getX();
-    	double z = origin.getZ();    	
-    	for ( int patch = 0; patch < 8; patch++ )
+		double z = origin.getZ();
+		for ( int patch = 0; patch < 8; patch++ )
 		{
-			int xx = (rand.nextInt(32))*(rand.nextInt(2)*2-1);
-			int zz = (rand.nextInt(32))*(rand.nextInt(2)*2-1);
-			BlockPos pos = new BlockPos(new BlockPos(x+xx,0,z+zz));
-			this.createPortalPatch( world, pos, false, 6 );
-			xx = (rand.nextInt(28))*(rand.nextInt(2)*2-1);
-			zz = (rand.nextInt(28))*(rand.nextInt(2)*2-1);
-			pos = new BlockPos(new BlockPos(x+xx,0,z+zz));
-			this.createPortalPatch(world, pos, true, 4 );
+			int xx = (rand.nextInt(32)) * (rand.nextInt(2) * 2 - 1);
+			int zz = (rand.nextInt(32)) * (rand.nextInt(2) * 2 - 1);
+			BlockPos pos = new BlockPos(new BlockPos(x + xx, 0, z + zz));
+			this.createPortalPatch(world, pos, false, 6);
+			xx = (rand.nextInt(28)) * (rand.nextInt(2) * 2 - 1);
+			zz = (rand.nextInt(28)) * (rand.nextInt(2) * 2 - 1);
+			pos = new BlockPos(new BlockPos(x + xx, 0, z + zz));
+			this.createPortalPatch(world, pos, true, 4);
 		}
-		this.createPortalPatch(world, origin, true, 8 );
+		this.createPortalPatch(world, origin, true, 8);
 	}
-	
-	
-	
+
 	private BlockPos getCorruptionSurface( World world, int x, int z )
 	{
 		Block block;
-		BlockPos search = new BlockPos(x, world.getActualHeight()/2, z);
-		while ( search.getY() > 4 )
+		BlockPos search = new BlockPos(x, world.getActualHeight() / 2, z);
+		while (search.getY() > 4)
 		{
 			search = search.down();
 			block = world.getBlockState(search).getBlock();
 			if ( block instanceof BlockLiquid )
 			{
-				world.setBlockState( search, Blocks.LAVA.getDefaultState(), 0 );
+				world.setBlockState(search, Blocks.LAVA.getDefaultState(), 0);
 			}
 			else if ( block instanceof BlockGrass || block instanceof BlockDirt || block instanceof BlockStone || block instanceof BlockSand )
 			{
@@ -168,12 +165,12 @@ public class PigPortalGenerator extends WorldGenerator
 		}
 		return search;
 	}
-	
-	private BlockPos getSurface(World world, BlockPos start)
+
+	private BlockPos getSurface( World world, BlockPos start )
 	{
 		IBlockState blockState;
 		BlockPos search = new BlockPos(start.getX(), world.getActualHeight(), start.getZ());
-		while ( search.getY() > 40 )
+		while (search.getY() > 40)
 		{
 			search = search.down();
 			blockState = world.getBlockState(search);
@@ -181,24 +178,24 @@ public class PigPortalGenerator extends WorldGenerator
 			{
 				break;
 			}
-			if ( (blockState).isOpaqueCube() && !( blockState.getBlock() instanceof BlockLog ) )
+			if ( (blockState).isOpaqueCube() && !(blockState.getBlock() instanceof BlockLog) )
 			{
 				break;
 			}
 		}
 		return search;
 	}
-	
+
 	private boolean isLiquid( IBlockState blockState )
 	{
 		return blockState.getBlock() instanceof BlockLiquid;
 	}
-	
-	private void addToroSpawner( World world, BlockPos blockpos, List<String> entities)
+
+	private void addToroSpawner( World world, BlockPos blockpos, List<String> entities )
 	{
 		world.setBlockState(blockpos, BlockToroSpawner.INSTANCE.getDefaultState());
 		TileEntity tileentity = world.getTileEntity(blockpos);
-		if (tileentity instanceof TileEntityToroSpawner)
+		if ( tileentity instanceof TileEntityToroSpawner )
 		{
 			TileEntityToroSpawner spawner = (TileEntityToroSpawner) tileentity;
 			spawner.setTriggerDistance(80);
@@ -212,12 +209,12 @@ public class PigPortalGenerator extends WorldGenerator
 			System.out.println("tile entity is missing");
 		}
 	}
-	
-	private void addPigs( World world, BlockPos blockpos, List<String> entities)
+
+	private void addPigs( World world, BlockPos blockpos, List<String> entities )
 	{
 		world.setBlockState(blockpos, BlockToroSpawner.INSTANCE.getDefaultState());
 		TileEntity tileentity = world.getTileEntity(blockpos);
-		if (tileentity instanceof TileEntityToroSpawner)
+		if ( tileentity instanceof TileEntityToroSpawner )
 		{
 			TileEntityToroSpawner spawner = (TileEntityToroSpawner) tileentity;
 			spawner.setTriggerDistance(80);
@@ -229,7 +226,7 @@ public class PigPortalGenerator extends WorldGenerator
 			System.out.println("tile entity is missing");
 		}
 	}
-	
+
 	private List<String> getPigs()
 	{
 		List<String> entity = new ArrayList<String>();
@@ -239,26 +236,26 @@ public class PigPortalGenerator extends WorldGenerator
 		}
 		return entity;
 	}
-	
+
 	public void generatePortal( World world, BlockPos origin )
 	{
 		BufferedReader reader;
-		int x = origin.getX()-16;
-		int y = origin.getY()-12;
-		int z = origin.getZ()+8;
+		int x = origin.getX() - 16;
+		int y = origin.getY() - 12;
+		int z = origin.getZ() + 8;
 		try
 		{
 			reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("assets/" + ToroQuest.MODID + "/structures/portal.txt"), "UTF-8"));
 			String line = null;
 			int yy = 0;
 			int zz = 0;
-			
-			while ( (line = reader.readLine()) != null )
+
+			while ((line = reader.readLine()) != null)
 			{
 				zz++;
 				String[] s = line.split("");
 				int sLength = s.length;
-				for ( int xx = 0; sLength > xx; xx++  )
+				for ( int xx = 0; sLength > xx; xx++ )
 				{
 					if ( xx == 0 && s[0].equals("#") )
 					{
@@ -266,33 +263,33 @@ public class PigPortalGenerator extends WorldGenerator
 						zz = 0;
 						break;
 					}
-					
-					IBlockState block = getBlock( s[xx] );
+
+					IBlockState block = getBlock(s[xx]);
 					if ( block != null )
 					{
-						world.setBlockState( new BlockPos(xx+x,yy+y,zz+z), block, 0 );
+						world.setBlockState(new BlockPos(xx + x, yy + y, zz + z), block, 0);
 					}
 				}
 			}
 		}
-		catch ( Exception e )
+		catch (Exception e)
 		{
-			System.out.println( "ERROR:" + e );
+			System.out.println("ERROR:" + e);
 		}
 	}
-	
+
 	private IBlockState getBlock( String block )
 	{
-		switch ( block )
+		switch( block )
 		{
-			case "O":
-			{
-				return Blocks.OBSIDIAN.getDefaultState();
-			}
-			case "X":
-			{
-				return Blocks.PORTAL.getDefaultState().withProperty(BlockPortal.AXIS, EnumFacing.Axis.X);
-			}
+		case "O":
+		{
+			return Blocks.OBSIDIAN.getDefaultState();
+		}
+		case "X":
+		{
+			return Blocks.PORTAL.getDefaultState().withProperty(BlockPortal.AXIS, EnumFacing.Axis.X);
+		}
 		}
 		return null;
 		// return Blocks.AIR.getDefaultState();

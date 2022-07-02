@@ -1,4 +1,5 @@
-// POSSIBLE QUESTS TO GIVE ===================================================================================================================
+// POSSIBLE QUESTS TO GIVE
+// ===================================================================================================================
 package net.torocraft.toroquest.civilization.player;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.concurrent.Callable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-//import net.minecraft.stats.Achievement;
+// import net.minecraft.stats.Achievement;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -23,6 +24,7 @@ import net.torocraft.toroquest.civilization.CivilizationUtil;
 import net.torocraft.toroquest.civilization.CivilizationsWorldSaveData;
 import net.torocraft.toroquest.civilization.Province;
 import net.torocraft.toroquest.civilization.ReputationLevel;
+import net.torocraft.toroquest.civilization.quests.QuestBase;
 import net.torocraft.toroquest.civilization.quests.QuestBreed;
 import net.torocraft.toroquest.civilization.quests.QuestBuild;
 import net.torocraft.toroquest.civilization.quests.QuestCaptureEntity;
@@ -54,82 +56,82 @@ import net.torocraft.toroquest.network.message.MessageSetPlayerReputation;
 
 public class PlayerCivilizationCapabilityImpl extends PlayerCivilization implements PlayerCivilizationCapability
 {
+	@CapabilityInject( PlayerCivilizationCapability.class )
+	public static Capability<PlayerCivilizationCapability> INSTANCE = null;
 
+	public static void register()
+	{
 
-		// ============================================== POSSIBLE QUESTS TO GIVE ===============================================================
+		CapabilityManager.INSTANCE.register(PlayerCivilizationCapability.class, new PlayerCivilizationStorage(), new Callable<PlayerCivilizationCapability>()
+		{
+			@Override
+			public PlayerCivilizationCapability call() throws Exception
+			{
+				return null;
+			}
+		});
+	}
+
+	// ============================================== POSSIBLE QUESTS TO GIVE
+	// ===============================================================
 	Random rand = new Random();
 
-	private QuestData generateNextQuestFor(Province province)
+	private QuestData generateNextQuestFor( Province province )
 	{
 		QuestData q;
 		int rep = getReputation(province.civilization);
 		List<Quest> possibleQuests = new ArrayList<Quest>();
 		{
-			// TESTER CODE
-//			for ( int i = 0; i < 8; i++ )
-//			{
-//				possibleQuests.add(QuestKillBossBanditLord.INSTANCE);
-//				possibleQuests.add(QuestKillBossBastion.INSTANCE);
-//				possibleQuests.add(QuestKillBossGraveTitan.INSTANCE);
-//			}
+			/* QUESTS */
+
+			possibleQuests.add(QuestTradeWithVillagers.INSTANCE);
+			possibleQuests.add(QuestKillMobs.INSTANCE);
+			possibleQuests.add(QuestMine.INSTANCE);
+
+			if ( rep >= 50 )
+			{
+				possibleQuests.add(QuestFarm.INSTANCE);
+			}
 
 			if ( rep >= 100 )
 			{
-				if ( rep < 300 )
-				{
-					if ( rand.nextBoolean() )
-					{
-											possibleQuests.add(QuestFarm.INSTANCE);
-					}
-				}
+				possibleQuests.add(QuestRecruit.INSTANCE);
 			}
-			else				
+
+			if ( rep >= 250 )
 			{
-											possibleQuests.add(QuestFarm.INSTANCE);
-			}
-			
-			if ( rep >= 10 )
-			{
-											possibleQuests.add(QuestMine.INSTANCE);
-				if ( rep < 250 )
+
+				if ( QuestBase.chooseRandomProvince(province, player.world, true) != null )
 				{
-					if ( rand.nextBoolean() )
-					{
-											possibleQuests.add(QuestRecruit.INSTANCE);
-					}
+					possibleQuests.add(QuestCourier.INSTANCE);
 				}
-				else
-				{
-											possibleQuests.add(QuestRecruit.INSTANCE);
-				}
-			}
-			if ( rep >= 50 )			   	possibleQuests.add(QuestKillMobs.INSTANCE);
-			if ( rep >= 100 )				possibleQuests.add(QuestBreed.INSTANCE);
-			if ( rep >= 150 )			   {if(!ToroQuestConfiguration.useDefaultVillagers)possibleQuests.add(QuestTradeWithVillagers.INSTANCE);possibleQuests.add(QuestKillMobs.INSTANCE);}
-			if ( rep >= 200 ) 				possibleQuests.add(QuestCaptureFugitives.INSTANCE);
-			if ( rep >= 250)
-			{
-											possibleQuests.add(QuestBuild.INSTANCE);
-											possibleQuests.add(QuestKillMobs.INSTANCE);
+				
+				possibleQuests.add(QuestBreed.INSTANCE);
+				possibleQuests.add(QuestCaptureFugitives.INSTANCE);
+				possibleQuests.add(QuestBuild.INSTANCE);
+				possibleQuests.add(QuestKillMobs.INSTANCE);
+
 				if ( rep <= 500 )
 				{
-											possibleQuests.add(QuestBuild.INSTANCE);
+					possibleQuests.add(QuestBuild.INSTANCE);
 				}
+
 				if ( rand.nextBoolean() )
 				{
-											possibleQuests.add(QuestCaptureEntity.INSTANCE);
+					possibleQuests.add(QuestCaptureEntity.INSTANCE);
 				}
 				else
 				{
-											possibleQuests.add(QuestGather.INSTANCE);
+					possibleQuests.add(QuestGather.INSTANCE);
 				}
 			}
-			if ( rep >= 300 ) 				possibleQuests.add(QuestEnemyEncampment.INSTANCE);
-			if ( rep >= 400 )
+			
+			if ( rep >= 500 )
 			{
-				if ( rand.nextBoolean() )   possibleQuests.add(QuestCourier.INSTANCE);
+				possibleQuests.add(QuestEnemyEncampment.INSTANCE);
+				possibleQuests.add(QuestEnemySpiderPit.INSTANCE);
 			}
-			if ( rep >= 500 )				possibleQuests.add(QuestEnemySpiderPit.INSTANCE);
+			
 			// LEGENDARY QUESTS //
 			if ( rep >= 1000 && rand.nextBoolean() )
 			{
@@ -177,90 +179,124 @@ public class PlayerCivilizationCapabilityImpl extends PlayerCivilization impleme
 						possibleQuests.add(QuestKillBossMonolithEye.INSTANCE);
 						flag = true;
 					}
-					
+
 					if ( !flag )
 					{
-						if ( rep > 2500 ) rep = 2500;
-						switch ( rand.nextInt( 1 + (rep-1000)/200 ) )
+						if ( rep > 2500 )
+							rep = 2500;
+						switch( rand.nextInt(1 + (rep - 1000) / 200) )
 						{
-							case 0:{if(ToroQuestConfiguration.titanBoss)possibleQuests.add(QuestKillBossGraveTitan.INSTANCE);break;}
-							case 1:{if(ToroQuestConfiguration.banditBoss)possibleQuests.add(QuestKillBossBanditLord.INSTANCE);break;}
-							case 2:{if(ToroQuestConfiguration.pigBoss)possibleQuests.add(QuestKillBossZombiePig.INSTANCE);break;}
-							case 3:{if(ToroQuestConfiguration.golemBoss)possibleQuests.add(QuestEnemyGolem.INSTANCE);break;}
-							case 4:{if(ToroQuestConfiguration.skeletonBoss)possibleQuests.add(QuestKillBossBastion.INSTANCE);break;}
-							case 5:{if(ToroQuestConfiguration.mageBoss)possibleQuests.add(QuestKillBossArchmage.INSTANCE);break;}
-							case 6:{if(ToroQuestConfiguration.spiderBoss)possibleQuests.add(QuestKillBossSpiderLord.INSTANCE);break;}
-							case 7:{if(ToroQuestConfiguration.enderBoss)possibleQuests.add(QuestKillBossMonolithEye.INSTANCE);break;}
+						case 0:
+						{
+							if ( ToroQuestConfiguration.titanBoss )
+								possibleQuests.add(QuestKillBossGraveTitan.INSTANCE);
+							break;
+						}
+						case 1:
+						{
+							if ( ToroQuestConfiguration.banditBoss )
+								possibleQuests.add(QuestKillBossBanditLord.INSTANCE);
+							break;
+						}
+						case 2:
+						{
+							if ( ToroQuestConfiguration.pigBoss )
+								possibleQuests.add(QuestKillBossZombiePig.INSTANCE);
+							break;
+						}
+						case 3:
+						{
+							if ( ToroQuestConfiguration.golemBoss )
+								possibleQuests.add(QuestEnemyGolem.INSTANCE);
+							break;
+						}
+						case 4:
+						{
+							if ( ToroQuestConfiguration.skeletonBoss )
+								possibleQuests.add(QuestKillBossBastion.INSTANCE);
+							break;
+						}
+						case 5:
+						{
+							if ( ToroQuestConfiguration.mageBoss )
+								possibleQuests.add(QuestKillBossArchmage.INSTANCE);
+							break;
+						}
+						case 6:
+						{
+							if ( ToroQuestConfiguration.spiderBoss )
+								possibleQuests.add(QuestKillBossSpiderLord.INSTANCE);
+							break;
+						}
+						case 7:
+						{
+							if ( ToroQuestConfiguration.enderBoss )
+								possibleQuests.add(QuestKillBossMonolithEye.INSTANCE);
+							break;
+						}
 						}
 					}
 				}
 			}
 		}
-		
+
 		q = possibleQuests.get(rand.nextInt(possibleQuests.size())).generateQuestFor(player, province);
 
-		if (q == null)
+		if ( q == null )
 		{
 			List<Quest> fallbackQuests = new ArrayList<Quest>();
-			fallbackQuests.add(QuestFarm.INSTANCE);
+			possibleQuests.add(QuestTradeWithVillagers.INSTANCE);
 			q = fallbackQuests.get(rand.nextInt(fallbackQuests.size())).generateQuestFor(player, province);
 		}
 		nextQuests.add(q);
 		return q;
 	}
-	
-	@CapabilityInject(PlayerCivilizationCapability.class)
-	public static Capability<PlayerCivilizationCapability> INSTANCE = null;
-//  TODO
-//		public static Achievement FRIEND_ACHIEVEMNT = new Achievement("civilization_friend", "civilization_friend", 0, 0, Items.DIAMOND_SWORD, null).registerStat();
-//		public static Achievement ALLY_ACHIEVEMNT = new Achievement("civilization_ally", "civilization_ally", 0, 0, Items.DIAMOND_SWORD, null).registerStat();
-//		public static Achievement HERO_ACHIEVEMNT = new Achievement("civilization_hero", "civilization_hero", 0, 0, Items.DIAMOND_SWORD, null).registerStat();
-//		public static Achievement FIRST_QUEST_ACHIEVEMNT = new Achievement("first_quest", "first_quest", 0, 0, Items.DIAMOND_SWORD, null).registerStat();
 
 	private final EntityPlayer player;
 
-	public PlayerCivilizationCapabilityImpl(EntityPlayer player) {
+	public PlayerCivilizationCapabilityImpl( EntityPlayer player )
+	{
 		this.player = player;
 	}
-	
 
 	@Override
-	public void setReputation(CivilizationType civ, int amount)
+	public void setReputation( CivilizationType civ, int amount )
 	{
-		if (civ == null)
+		if ( civ == null )
 		{
 			return;
 		}
 		reputations.put(civ, amount);
-		
-		if (!player.getEntityWorld().isRemote)
+
+		if ( !player.getEntityWorld().isRemote )
 		{
 			ToroQuestPacketHandler.INSTANCE.sendTo(new MessageSetPlayerReputation(civ, amount), (EntityPlayerMP) player);
 			MinecraftForge.EVENT_BUS.post(new CivilizationEvent.ReputationChange(player, civ, amount));
 
 			// ReputationLevel level = ReputationLevel.fromReputation(amount);
 
-
-			/* TODO
-			if (ReputationLevel.FRIEND.equals(level)) {
-				player.addStat(FRIEND_ACHIEVEMNT);
-			} else if (ReputationLevel.ALLY.equals(level)) {
-				player.addStat(ALLY_ACHIEVEMNT);
-			} else if (ReputationLevel.HERO.equals(level)) {
-				player.addStat(HERO_ACHIEVEMNT);
-			}*/
+			/*
+			 * TODO
+			 * if (ReputationLevel.FRIEND.equals(level)) {
+			 * player.addStat(FRIEND_ACHIEVEMNT);
+			 * } else if (ReputationLevel.ALLY.equals(level)) {
+			 * player.addStat(ALLY_ACHIEVEMNT);
+			 * } else if (ReputationLevel.HERO.equals(level)) {
+			 * player.addStat(HERO_ACHIEVEMNT);
+			 * }
+			 */
 
 		}
 	}
 
 	@Override
-	public void adjustReputation(CivilizationType civ, int amount)
+	public void adjustReputation( CivilizationType civ, int amount )
 	{
-		if (civ == null)
+		if ( civ == null )
 		{
 			return;
 		}
-		if (reputations.get(civ) == null)
+		if ( reputations.get(civ) == null )
 		{
 			reputations.put(civ, 0);
 		}
@@ -270,10 +306,10 @@ public class PlayerCivilizationCapabilityImpl extends PlayerCivilization impleme
 	@Override
 	public void syncClient()
 	{
-		if (!player.getEntityWorld().isRemote)
+		if ( !player.getEntityWorld().isRemote )
 		{
 			ToroQuestPacketHandler.INSTANCE.sendTo(new MessagePlayerCivilizationSetInCiv(inCiv), (EntityPlayerMP) player);
-			for (Entry<CivilizationType, Integer> entry : reputations.entrySet())
+			for ( Entry<CivilizationType, Integer> entry : reputations.entrySet() )
 			{
 				ToroQuestPacketHandler.INSTANCE.sendTo(new MessageSetPlayerReputation(entry.getKey(), entry.getValue()), (EntityPlayerMP) player);
 			}
@@ -281,63 +317,76 @@ public class PlayerCivilizationCapabilityImpl extends PlayerCivilization impleme
 	}
 
 	@Override
-	public ReputationLevel getReputationLevel(CivilizationType civ) {
+	public ReputationLevel getReputationLevel( CivilizationType civ )
+	{
 		return ReputationLevel.fromReputation(getReputation(civ));
 	}
 
 	@Override
-	public int getReputation(CivilizationType civ) {
+	public int getReputation( CivilizationType civ )
+	{
 		return i(reputations.get(civ));
 	}
 
 	@Override
-	public void updatePlayerLocation(int chunkX, int chunkZ) {
+	public void updatePlayerLocation( int chunkX, int chunkZ )
+	{
 		Province prev = inCiv;
 		Province curr = CivilizationUtil.getProvinceAt(player.world, chunkX, chunkZ);
 
-		if (equals(prev, curr)) {
+		if ( equals(prev, curr) )
+		{
 			return;
 		}
 
 		setInCivilization(curr);
 
-		if (!player.getEntityWorld().isRemote) {
+		if ( !player.getEntityWorld().isRemote )
+		{
 			ToroQuestPacketHandler.INSTANCE.sendTo(new MessagePlayerCivilizationSetInCiv(inCiv), (EntityPlayerMP) player);
 		}
 
-		if (prev != null) {
+		if ( prev != null )
+		{
 			MinecraftForge.EVENT_BUS.post(new CivilizationEvent.Leave(player, prev));
 		}
 
-		if (curr != null) {
+		if ( curr != null )
+		{
 			PlayerCivilizationCapabilityImpl.get(player).setInCivilization(curr);
 			MinecraftForge.EVENT_BUS.post(new CivilizationEvent.Enter(player, curr));
 		}
 	}
 
 	@Override
-	public void setInCivilization(Province civ) {
+	public void setInCivilization( Province civ )
+	{
 		inCiv = civ;
 	}
 
-	private static boolean equals(Province a, Province b) {
+	private static boolean equals( Province a, Province b )
+	{
 
 		CivilizationType civA = getCivilization(a);
 		CivilizationType civB = getCivilization(b);
 
-		if (civA == null && civB == null) {
+		if ( civA == null && civB == null )
+		{
 			return true;
 		}
 
-		if (civA == null || civB == null) {
+		if ( civA == null || civB == null )
+		{
 			return false;
 		}
 
 		return civA.equals(civB);
 	}
 
-	private static CivilizationType getCivilization(Province a) {
-		if (a == null) {
+	private static CivilizationType getCivilization( Province a )
+	{
+		if ( a == null )
+		{
 			return null;
 		}
 		return a.civilization;
@@ -350,29 +399,23 @@ public class PlayerCivilizationCapabilityImpl extends PlayerCivilization impleme
 	}
 
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		return "Player Civilization Info: " + player.getName() + ": IN_CIV[" + inCiv + "]";
 	}
 
-	public static void register() {
-		CapabilityManager.INSTANCE.register(PlayerCivilizationCapability.class, new PlayerCivilizationStorage(), new Callable<PlayerCivilizationCapability>() {
-			@Override
-			public PlayerCivilizationCapability call() throws Exception {
-				return null;
-			}
-		});
-	}
-
-	private int i(Integer integer) {
-		if (integer == null) {
+	private int i( Integer integer )
+	{
+		if ( integer == null )
+		{
 			return 0;
 		}
 		return integer;
 	}
 
-	public static PlayerCivilizationCapability get(EntityPlayer player)
+	public static PlayerCivilizationCapability get( EntityPlayer player )
 	{
-		if (player == null)
+		if ( player == null )
 		{
 			return null;
 			// throw new NullPointerException("NULL player");
@@ -386,16 +429,18 @@ public class PlayerCivilizationCapabilityImpl extends PlayerCivilization impleme
 		return quests;
 	}
 
-	private boolean removeQuest(QuestData quest)
+	private boolean removeQuest( QuestData quest )
 	{
 		return quests.remove(quest);
 	}
 
 	@Override
-	public QuestData getCurrentQuestFor(Province province)
+	public QuestData getCurrentQuestFor( Province province )
 	{
-		for (QuestData q : getCurrentQuests()) {
-			if (q.getProvinceId().equals(province.id)) {
+		for ( QuestData q : getCurrentQuests() )
+		{
+			if ( q.getProvinceId().equals(province.id) )
+			{
 				return q;
 			}
 		}
@@ -403,11 +448,11 @@ public class PlayerCivilizationCapabilityImpl extends PlayerCivilization impleme
 	}
 
 	@Override
-	public QuestData getNextQuestFor(Province province)
+	public QuestData getNextQuestFor( Province province )
 	{
-		for (QuestData q : nextQuests)
+		for ( QuestData q : nextQuests )
 		{
-			if (q.getProvinceId().equals(province.id))
+			if ( q.getProvinceId().equals(province.id) )
 			{
 				return q;
 			}
@@ -415,13 +460,11 @@ public class PlayerCivilizationCapabilityImpl extends PlayerCivilization impleme
 		return generateNextQuestFor(province);
 	}
 
-	
-
 	@Override
-	public List<ItemStack> acceptQuest(List<ItemStack> in)
+	public List<ItemStack> acceptQuest( List<ItemStack> in )
 	{
 		Province province = getInCivilization();
-		
+
 		if ( province == null )
 		{
 			return null;
@@ -441,39 +484,39 @@ public class PlayerCivilizationCapabilityImpl extends PlayerCivilization impleme
 
 	// decline quest
 	@Override
-	public List<ItemStack> rejectQuest(List<ItemStack> in)
+	public List<ItemStack> rejectQuest( List<ItemStack> in )
 	{
 		Province province = this.getInCivilization();
-		
-		if (province == null)
+
+		if ( province == null )
 		{
 			return null;
 		}
-		
+
 		QuestData data = getCurrentQuestFor(province);
-		
-		if (data == null)
+
+		if ( data == null )
 		{
 			return null;
 		}
 
 		List<ItemStack> out = new QuestDelegator(data).reject(in);
 
-		if (out == null)
+		if ( out == null )
 		{
 			return null;
 		}
-		
+
 		int rep = getReputation(province.civilization);
-		
+
 		if ( removeQuest(data) )
 		{
 			int loss = ToroQuestConfiguration.abandonQuestRepLoss;
-			if (rep >= loss)
+			if ( rep >= loss )
 			{
 				adjustReputation(province.civilization, -loss);
 			}
-			else if (rep > 0 && rep < loss)
+			else if ( rep > 0 && rep < loss )
 			{
 				adjustReputation(province.civilization, -rep);
 			}
@@ -484,25 +527,26 @@ public class PlayerCivilizationCapabilityImpl extends PlayerCivilization impleme
 	}
 
 	@Override
-	public List<ItemStack> completeQuest(List<ItemStack> in)
+	public List<ItemStack> completeQuest( List<ItemStack> in )
 	{
 		Province province = getInCivilization();
-		if (province == null)
+		if ( province == null )
 		{
 			return null;
 		}
-		
+
 		QuestData data = getCurrentQuestFor(province);
-		if (data == null) {
+		if ( data == null )
+		{
 			return null;
 		}
 
 		List<ItemStack> reward = new QuestDelegator(data).complete(in);
-		
+
 		/*
 		 * quest not completed check
 		 */
-		if (reward == null)
+		if ( reward == null )
 		{
 			return null;
 		}
@@ -510,21 +554,21 @@ public class PlayerCivilizationCapabilityImpl extends PlayerCivilization impleme
 		/*
 		 * quest was not in quest list check
 		 */
-		if (!removeQuest(data))
+		if ( !removeQuest(data) )
 		{
 			return null;
 		}
 
 		completedQuests++;
 
-		if (completedQuestsByProvince.get(province.id) == null)
+		if ( completedQuestsByProvince.get(province.id) == null )
 		{
 			completedQuestsByProvince.put(province.id, 0);
 		}
 		completedQuestsByProvince.put(province.id, completedQuestsByProvince.get(province.id) + 1);
 
-		//TODO
-		//player.addStat(FIRST_QUEST_ACHIEVEMNT);
+		// TODO
+		// player.addStat(FIRST_QUEST_ACHIEVEMNT);
 
 		return reward;
 	}

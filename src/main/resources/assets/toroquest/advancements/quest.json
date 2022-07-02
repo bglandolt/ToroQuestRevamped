@@ -1,0 +1,35 @@
+{
+	"display": {
+		"title": [{
+			"text": "Quest Complete",
+			"color": "white",
+			"bold": true
+		}],
+		"description": [{
+				"text": "Quest\n",
+				"color": "gray"
+			},
+			{
+				"text": "You have completed a quest; speak to the village lord to turn in your quest for reputation and rewards",
+				"color": "white"
+			}
+		],
+		"icon": {
+			"item": "toroquest:trophy"
+		},
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": false,
+		"hidden": true
+	},
+	"criteria": {
+		"quest": {
+			"trigger": "toroquest:quest"
+		}
+	},
+	"requirements": [
+		[
+			"quest"
+		]
+	]
+}

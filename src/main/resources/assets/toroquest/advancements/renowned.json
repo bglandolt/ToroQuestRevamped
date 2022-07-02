@@ -1,0 +1,36 @@
+{
+	"display": {
+		"title": [{
+			"text": "Renowned",
+			"color": "green",
+			"bold": false
+		}],
+		"description": [{
+				"text": "Reputation Level III\n",
+				"color": "gray"
+			},
+			{
+				"text": "You are Renowned; you have gained permissions to take from chests, fire spread, and destroy building blocks!",
+				"color": "white"
+			}
+		],
+		"icon": {
+			"item": "toroquest:royal_helmet"
+		},
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"criteria": {
+		"renowned": {
+			"trigger": "toroquest:renowned"
+		}
+	},
+	"requirements": [
+		[
+			"renowned"
+		]
+	],
+	"parent": "toroquest:honored"
+}

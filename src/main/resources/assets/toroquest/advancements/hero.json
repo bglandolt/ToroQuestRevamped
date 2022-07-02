@@ -1,0 +1,36 @@
+{
+	"display": {
+		"title": [{
+			"text": "Hero",
+			"color": "aqua",
+			"bold": false
+		}],
+		"description": [{
+				"text": "Reputation Level VI\n",
+				"color": "gray"
+			},
+			{
+				"text": "You are now a Hero; quests grant experience in addition to their rewards!",
+				"color": "white"
+			}
+		],
+		"icon": {
+			"item": "toroquest:royal_helmet"
+		},
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"criteria": {
+		"hero": {
+			"trigger": "toroquest:hero"
+		}
+	},
+	"requirements": [
+		[
+			"hero"
+		]
+	],
+	"parent": "toroquest:champion"
+}

@@ -1,0 +1,36 @@
+{
+	"display": {
+		"title": [{
+			"text": "Kingslayer",
+			"color": "red",
+			"bold": false
+		}],
+		"description": [{
+				"text": "Kill a Village Lord\n",
+				"color": "gray"
+			},
+			{
+				"text": "",
+				"color": "white"
+			}
+		],
+		"icon": {
+			"item": "toroquest:bandit_helmet"
+		},
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"criteria": {
+		"kingslayer": {
+			"trigger": "toroquest:kingslayer"
+		}
+	},
+	"requirements": [
+		[
+			"kingslayer"
+		]
+	],
+	"parent": "toroquest:base"
+}

@@ -9,21 +9,26 @@ import net.torocraft.toroquest.civilization.Province;
 
 public interface IVillageLordInventory extends IInventory
 {
-	
+
 	List<ItemStack> getGivenItems();
-	void setGivenItems(List<ItemStack> items);
+
+	void setGivenItems( List<ItemStack> items );
 
 	List<ItemStack> getReturnItems();
-	void setReturnItems(List<ItemStack> items);
-	
-	void setReturnItems(ItemStack items);
+
+	void setReturnItems( List<ItemStack> items );
+
+	void setReturnItems( ItemStack items );
 
 	ItemStack getDonationItem();
-	void setDonationItem(ItemStack item);
-	
-	boolean hasTrophy(String trophyName);
+
+	void setDonationItem( ItemStack item );
+
+	boolean hasTrophy( String trophyName );
+
 	List<ItemStack> getTrophies();
-	boolean addTrophy(Item item);
+
+	boolean addTrophy( Item item );
 
 	Province getProvince();
 

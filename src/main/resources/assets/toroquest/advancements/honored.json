@@ -1,0 +1,36 @@
+{
+	"display": {
+		"title": [{
+			"text": "Honored",
+			"color": "green",
+			"bold": false
+		}],
+		"description": [{
+				"text": "Reputation Level II\n",
+				"color": "gray"
+			},
+			{
+				"text": "You are now Honored; you have gained permission to butcher livestock!",
+				"color": "white"
+			}
+		],
+		"icon": {
+			"item": "toroquest:royal_helmet"
+		},
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"criteria": {
+		"honored": {
+			"trigger": "toroquest:honored"
+		}
+	},
+	"requirements": [
+		[
+			"honored"
+		]
+	],
+	"parent": "toroquest:friendly"
+}

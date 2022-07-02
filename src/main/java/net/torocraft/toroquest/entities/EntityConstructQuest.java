@@ -25,46 +25,45 @@ import net.torocraft.toroquest.entities.render.RenderConstructQuest;
 
 public class EntityConstructQuest extends EntityConstruct implements IMob
 {
-	public EntityConstructQuest(World worldIn)
+	public EntityConstructQuest( World worldIn )
 	{
 		super(worldIn);
 		this.enablePersistence();
-        this.setSize(1.35F, 2.9F);
-        this.experienceValue = 300;
+		this.setSize(1.35F, 2.9F);
+		this.experienceValue = 300;
 	}
-	
+
 	protected void applyEntityAttributes()
-    {
-        super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(150.0D*ToroQuestConfiguration.bossHealthMultiplier);
-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.3D);
-        this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(2.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(30.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10.0D);
+	{
+		super.applyEntityAttributes();
+		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(150.0D * ToroQuestConfiguration.bossHealthMultiplier);
+		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.3D);
+		this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(2.0D);
+		this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(30.0D);
+		this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(10.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(30.0D*ToroQuestConfiguration.bossAttackDamageMultiplier);
-    }
-	
+		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(30.0D * ToroQuestConfiguration.bossAttackDamageMultiplier);
+	}
+
 	@Override
 	protected boolean canDespawn()
 	{
 		return false;
 	}
-	
+
 	public static String NAME = "construct_quest";
-	
+
 	static
 	{
-		if (ToroQuestConfiguration.specificEntityNames)
+		if ( ToroQuestConfiguration.specificEntityNames )
 		{
 			NAME = ToroQuestEntities.ENTITY_PREFIX + NAME;
 		}
 	}
-	
-	public static void init(int entityId)
+
+	public static void init( int entityId )
 	{
-		EntityRegistry.registerModEntity(new ResourceLocation(ToroQuest.MODID, NAME), EntityConstructQuest.class, NAME, entityId, ToroQuest.INSTANCE, 80, 1,
-				true, 0x995533, 0x99aa33);
+		EntityRegistry.registerModEntity(new ResourceLocation(ToroQuest.MODID, NAME), EntityConstructQuest.class, NAME, entityId, ToroQuest.INSTANCE, 80, 1, true, 0x995533, 0x99aa33);
 	}
 
 	public static void registerRenders()
@@ -72,57 +71,59 @@ public class EntityConstructQuest extends EntityConstruct implements IMob
 		RenderingRegistry.registerEntityRenderingHandler(EntityConstructQuest.class, new IRenderFactory<EntityConstructQuest>()
 		{
 			@Override
-			public RenderConstructQuest createRenderFor(RenderManager manager)
+			public RenderConstructQuest createRenderFor( RenderManager manager )
 			{
 				return new RenderConstructQuest(manager);
 			}
 		});
 	}
-	
+
 	// INCREASE RENDER DISTNACE
-	@SideOnly(Side.CLIENT)
-    public AxisAlignedBB getRenderBoundingBox()
-    {
-        return this.getEntityBoundingBox().grow(64.0);
-    }
-	
-	@Override
-	public boolean attackEntityFrom(DamageSource source, float amount)
+	@SideOnly( Side.CLIENT )
+	public AxisAlignedBB getRenderBoundingBox()
 	{
-		if (this.world.isRemote)
+		return this.getEntityBoundingBox().grow(64.0);
+	}
+
+	@Override
+	public boolean attackEntityFrom( DamageSource source, float amount )
+	{
+		if ( this.world.isRemote )
 		{
 			return false;
 		}
-	    this.bossInfo.setPercent(this.getHealth()/this.getMaxHealth());
-	    return super.attackEntityFrom(source, amount);
+		this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
+		return super.attackEntityFrom(source, amount);
 	}
 
-    private final BossInfoServer bossInfo = (BossInfoServer)(new BossInfoServer(this.getDisplayName(), BossInfo.Color.PURPLE, BossInfo.Overlay.PROGRESS)).setDarkenSky(true);
+	private final BossInfoServer bossInfo = (BossInfoServer) (new BossInfoServer(this.getDisplayName(), BossInfo.Color.PURPLE, BossInfo.Overlay.PROGRESS)).setDarkenSky(true);
 
 	/**
-     * Add the given player to the list of players tracking this entity. For instance, a player may track a boss in
-     * order to view its associated boss bar.
-     */
-    public void addTrackingPlayer(EntityPlayerMP player)
-    {
-        super.addTrackingPlayer(player);
-        this.bossInfo.addPlayer(player);
-    }
-
-    /**
-     * Removes the given player from the list of players tracking this entity. See {@link Entity#addTrackingPlayer} for
-     * more information on tracking.
-     */
-    public void removeTrackingPlayer(EntityPlayerMP player)
-    {
-        super.removeTrackingPlayer(player);
-        this.bossInfo.removePlayer(player);
-    }
-	
-	@Override
-	public void onDeath(DamageSource cause)
+	 * Add the given player to the list of players tracking this entity. For
+	 * instance, a player may track a boss in
+	 * order to view its associated boss bar.
+	 */
+	public void addTrackingPlayer( EntityPlayerMP player )
 	{
-		if (!this.world.isRemote)
+		super.addTrackingPlayer(player);
+		this.bossInfo.addPlayer(player);
+	}
+
+	/**
+	 * Removes the given player from the list of players tracking this entity. See
+	 * {@link Entity#addTrackingPlayer} for
+	 * more information on tracking.
+	 */
+	public void removeTrackingPlayer( EntityPlayerMP player )
+	{
+		super.removeTrackingPlayer(player);
+		this.bossInfo.removePlayer(player);
+	}
+
+	@Override
+	public void onDeath( DamageSource cause )
+	{
+		if ( !this.world.isRemote )
 		{
 			ItemStack stack = new ItemStack(Item.getByNameOrId("toroquest:dwarven_artifact"), 1);
 			EntityItem dropItem = new EntityItem(world, posX, posY, posZ, stack.copy());
@@ -131,5 +132,5 @@ public class EntityConstructQuest extends EntityConstruct implements IMob
 		}
 		super.onDeath(cause);
 	}
-	
+
 }

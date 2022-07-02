@@ -29,7 +29,7 @@ public class ItemTrophyMage extends ItemTrophy
 	private static ResourceLocation REGISTRY_NAME = new ResourceLocation(ToroQuest.MODID, NAME);
 
 	@SubscribeEvent
-	public static void init(final RegistryEvent.Register<Item> event)
+	public static void init( final RegistryEvent.Register<Item> event )
 	{
 		INSTANCE = new ItemTrophyMage();
 		INSTANCE.setRegistryName(REGISTRY_NAME);
@@ -50,52 +50,59 @@ public class ItemTrophyMage extends ItemTrophy
 		this.maxStackSize = 1;
 		this.setCreativeTab(CreativeTabs.MATERIALS);
 	}
-	
+
 	@Override
-    @SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
-    {
+	@SideOnly( Side.CLIENT )
+	public void addInformation( ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn )
+	{
 		tooltip.add("Give this trophy to a Village Lord: The ghost of the slain archmage is forever doomed to cast Haste on you while in that province.\n\n§oHe kinda deserved to die though, right? He must have tossed you off that tower at least a dozen times...");
-    }
-	
-//	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
-//    {
-//    	
-//		
-//		
-//    	Random rand = new Random();
-//        playerIn.setActiveHand(handIn);
-//        
-//        {
-//	        Vec3d vec = playerIn.getLookVec();
-//			
-//			if ( vec != null )
-//			{
-//				BlockPos pos = new BlockPos(vec.x, vec.y, vec.z);
-//				Block block = worldIn.getBlockState(pos).getBlock();
-//				if ( block != null )
-//				{
-//					worldIn.addWeatherEffect(new EntityLightningBolt(worldIn, vec.x, vec.y, vec.z, false));
-//				}
-//			}
-//        }
-//		
-//        double x = playerIn.posX;
-//    	double y = playerIn.posY;
-//    	double z = playerIn.posZ;
-//        //if ( !playerIn.world.isRemote )
-//        //{
-//        	
-//
-//        	playerIn.world.playSound((EntityPlayer)null, x, y, z, SoundEvents.EVOCATION_ILLAGER_CAST_SPELL, SoundCategory.PLAYERS, 1.0F, 1.0F);			
-//        	playerIn.world.playSound((EntityPlayer)null, x, y, z, SoundEvents.BLOCK_PORTAL_AMBIENT, SoundCategory.PLAYERS, 1.0F, 1.5F);	
-//        //}
-//        for (int i = 0; i < 16; i++)
-//    	{
-//    		playerIn.world.spawnParticle(EnumParticleTypes.PORTAL, x+rand.nextDouble()*2-1, y+rand.nextDouble()+1, z+rand.nextDouble()*2-1, rand.nextDouble()-0.5, +rand.nextDouble()-0.5, +rand.nextDouble()-0.5, 0);
-//    	}
-//
-//        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
-//    }
+	}
+
+	// public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer
+	// playerIn, EnumHand handIn)
+	// {
+	//
+	//
+	//
+	// Random rand = new Random();
+	// playerIn.setActiveHand(handIn);
+	//
+	// {
+	// Vec3d vec = playerIn.getLookVec();
+	//
+	// if ( vec != null )
+	// {
+	// BlockPos pos = new BlockPos(vec.x, vec.y, vec.z);
+	// Block block = worldIn.getBlockState(pos).getBlock();
+	// if ( block != null )
+	// {
+	// worldIn.addWeatherEffect(new EntityLightningBolt(worldIn, vec.x, vec.y,
+	// vec.z, false));
+	// }
+	// }
+	// }
+	//
+	// double x = playerIn.posX;
+	// double y = playerIn.posY;
+	// double z = playerIn.posZ;
+	// //if ( !playerIn.world.isRemote )
+	// //{
+	//
+	//
+	// playerIn.world.playSound((EntityPlayer)null, x, y, z,
+	// SoundEvents.EVOCATION_ILLAGER_CAST_SPELL, SoundCategory.PLAYERS, 1.0F, 1.0F);
+	// playerIn.world.playSound((EntityPlayer)null, x, y, z,
+	// SoundEvents.BLOCK_PORTAL_AMBIENT, SoundCategory.PLAYERS, 1.0F, 1.5F);
+	// //}
+	// for (int i = 0; i < 16; i++)
+	// {
+	// playerIn.world.spawnParticle(EnumParticleTypes.PORTAL,
+	// x+rand.nextDouble()*2-1, y+rand.nextDouble()+1, z+rand.nextDouble()*2-1,
+	// rand.nextDouble()-0.5, +rand.nextDouble()-0.5, +rand.nextDouble()-0.5, 0);
+	// }
+	//
+	// return new ActionResult<ItemStack>(EnumActionResult.SUCCESS,
+	// playerIn.getHeldItem(handIn));
+	// }
 
 }

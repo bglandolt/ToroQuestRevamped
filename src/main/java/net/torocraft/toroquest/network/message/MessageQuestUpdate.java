@@ -15,6 +15,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -22,7 +23,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.items.ItemHandlerHelper;
-import net.torocraft.toroquest.civilization.CivilizationHandlers;
+import net.torocraft.toroquest.EventHandlers;
 import net.torocraft.toroquest.civilization.CivilizationUtil;
 import net.torocraft.toroquest.civilization.Province;
 import net.torocraft.toroquest.civilization.player.PlayerCivilizationCapabilityImpl;
@@ -31,13 +32,15 @@ import net.torocraft.toroquest.config.ToroQuestConfiguration;
 import net.torocraft.toroquest.config.ToroQuestConfiguration.Donate;
 import net.torocraft.toroquest.entities.EntityVillageLord;
 import net.torocraft.toroquest.inventory.IVillageLordInventory;
-//import net.torocraft.toroquest.item.ItemFireSword;
-//import net.torocraft.toroquest.item.ItemObsidianSword;
+import net.torocraft.toroquest.item.ItemLordNote;
+import net.torocraft.toroquest.item.ItemLordReply;
 import net.torocraft.toroquest.network.ToroQuestPacketHandler;
 
-public class MessageQuestUpdate implements IMessage {
+public class MessageQuestUpdate implements IMessage
+{
 
-	public static enum Action {
+	public static enum Action
+	{
 		ACCEPT, REJECT, COMPLETE, DONATE
 	}
 
@@ -45,13 +48,15 @@ public class MessageQuestUpdate implements IMessage {
 	public int lordEntityId;
 
 	@Override
-	public void fromBytes(ByteBuf buf) {
+	public void fromBytes( ByteBuf buf )
+	{
 		action = Action.values()[buf.readInt()];
 		lordEntityId = buf.readInt();
 	}
 
 	@Override
-	public void toBytes(ByteBuf buf) {
+	public void toBytes( ByteBuf buf )
+	{
 		buf.writeInt(action.ordinal());
 		buf.writeInt(lordEntityId);
 	}
@@ -62,37 +67,38 @@ public class MessageQuestUpdate implements IMessage {
 
 		private final Action action;
 
-		public Worker(Action action)
+		public Worker( Action action )
 		{
 			this.action = action;
 		}
 
-		void work(MessageQuestUpdate message, EntityPlayer player)
+		void work( MessageQuestUpdate message, EntityPlayer player )
 		{
 			if ( player == null )
 			{
 				return;
 			}
-			
-//			Province province = CivilizationUtil.getProvinceAt(player.getEntityWorld(), player.chunkCoordX, player.chunkCoordZ);
-//
-//			if ( province == null )
-//			{
-//				player.closeScreen();
-//				return;
-//			}
-			
+
+			// Province province = CivilizationUtil.getProvinceAt(player.getEntityWorld(),
+			// player.chunkCoordX, player.chunkCoordZ);
+			//
+			// if ( province == null )
+			// {
+			// player.closeScreen();
+			// return;
+			// }
+
 			EntityVillageLord lord = (EntityVillageLord) player.world.getEntityByID(message.lordEntityId);
-			
+
 			Province lordProvince = lord.getHomeProvince();
 			Province standingProvince = lord.getStandingInProvince();
-			
+
 			if ( lord == null || lord.ticksExisted <= 100 || lord.getCivilization() == null || lordProvince == null || standingProvince == null || lordProvince != standingProvince )
 			{
 				player.closeScreen();
 				return;
 			}
-			
+
 			IVillageLordInventory inventory = lord.getInventory(player.getUniqueID());
 
 			if ( inventory == null )
@@ -100,212 +106,246 @@ public class MessageQuestUpdate implements IMessage {
 				player.closeScreen();
 				return;
 			}
-			
-            //if ( !player.world.isRemote ) 
-            player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.UI_BUTTON_CLICK, SoundCategory.PLAYERS, 1.0F, 1.0F);
 
-			switch (action) // TODO
+			// if ( !player.world.isRemote )
+			player.world.playSound((EntityPlayer) null, player.posX, player.posY, player.posZ, SoundEvents.UI_BUTTON_CLICK, SoundCategory.PLAYERS, 1.0F, 1.0F);
+
+			switch( action ) // TODO
 			{
-				case ACCEPT:
+			case ACCEPT:
+			{
+				player.world.playSound((EntityPlayer) null, player.posX, player.posY, player.posZ, SoundEvents.BLOCK_NOTE_CHIME, SoundCategory.AMBIENT, 1.0F, 1.0F);
+				processAccept(player, lordProvince, inventory);
+				break;
+			}
+			case COMPLETE:
+			{
+				processComplete(player, lordProvince, inventory, lord);
+				// if ( !player.world.isRemote )
+				break;
+			}
+			case REJECT:
+			{
+				// this.spawnParticles(player, EnumParticleTypes.VILLAGER_ANGRY);
+				processReject(player, lordProvince, inventory);
+				if ( !player.world.isRemote )
 				{
-					player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.BLOCK_NOTE_CHIME, SoundCategory.AMBIENT, 1.0F, 1.0F);					
-					processAccept(player, lordProvince, inventory);
-					break;
+					lord.playTameEffect((byte) 7);
+					lord.world.setEntityState(lord, (byte) 7);
 				}
-				case COMPLETE:
+				player.world.playSound((EntityPlayer) null, player.posX, player.posY, player.posZ, SoundEvents.BLOCK_NOTE_BASS, SoundCategory.AMBIENT, 3.0F, 0.6F);
+				break;
+			}
+			case DONATE:
+			{
+				// this.spawnParticles(player, EnumParticleTypes.VILLAGER_HAPPY);
+				processDonate(player, lordProvince, inventory);
+				if ( !player.world.isRemote )
 				{
-					processComplete(player, lordProvince, inventory, lord);
-		            //if ( !player.world.isRemote )
-					break;
+					lord.playTameEffect((byte) 8);
+					lord.world.setEntityState(lord, (byte) 8);
 				}
-				case REJECT:
-				{
-		            // this.spawnParticles(player, EnumParticleTypes.VILLAGER_ANGRY);
-					processReject(player, lordProvince, inventory);
-					if ( !player.world.isRemote )
-					{
-						lord.playTameEffect((byte)7);
-	                    lord.world.setEntityState(lord, (byte)7);
-					}
-		            player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.BLOCK_NOTE_BASS, SoundCategory.AMBIENT, 3.0F, 0.6F);
-					break;
-				}
-				case DONATE:
-				{
-		            //this.spawnParticles(player, EnumParticleTypes.VILLAGER_HAPPY);
-					processDonate(player, lordProvince, inventory);
-					if ( !player.world.isRemote )
-					{
-						lord.playTameEffect((byte)8);
-	                    lord.world.setEntityState(lord, (byte)8);
-					}
-		            player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.BLOCK_NOTE_CHIME, SoundCategory.AMBIENT, 1.0F, 1.0F);
-					break;
-				}
-				default:
-				{
-					throw new IllegalArgumentException("invalid quest action [" + action + "]");
-				}
+				player.world.playSound((EntityPlayer) null, player.posX, player.posY, player.posZ, SoundEvents.BLOCK_NOTE_CHIME, SoundCategory.AMBIENT, 1.0F, 1.0F);
+				break;
+			}
+			default:
+			{
+				throw new IllegalArgumentException("invalid quest action [" + action + "]");
+			}
 			}
 		}
 
-	    // @SideOnly(Side.CLIENT)
-//	    private void spawnParticles(EntityPlayer player, EnumParticleTypes particleType)
-//	    {
-//	    	Random rand = new Random();
-//	    	double x = player.posX;
-//	    	double y = player.posY;
-//	    	double z = player.posZ;
-//	    	for (int i = 0; i < 16; i++)
-//	    	{
-//	    		player.world.spawnParticle(particleType, x+rand.nextDouble()*2-1, y+rand.nextDouble()+1, z+rand.nextDouble()*2-1, rand.nextDouble()-0.5, +rand.nextDouble()-0.5, +rand.nextDouble()-0.5, 0);
-//	    	}
-//	    }
+		// @SideOnly(Side.CLIENT)
+		// private void spawnParticles(EntityPlayer player, EnumParticleTypes
+		// particleType)
+		// {
+		// Random rand = new Random();
+		// double x = player.posX;
+		// double y = player.posY;
+		// double z = player.posZ;
+		// for (int i = 0; i < 16; i++)
+		// {
+		// player.world.spawnParticle(particleType, x+rand.nextDouble()*2-1,
+		// y+rand.nextDouble()+1, z+rand.nextDouble()*2-1, rand.nextDouble()-0.5,
+		// +rand.nextDouble()-0.5, +rand.nextDouble()-0.5, 0);
+		// }
+		// }
 
-		private void processDonate(EntityPlayer player, Province province, IVillageLordInventory inventory)
+		private void processDonate( EntityPlayer player, Province province, IVillageLordInventory inventory )
 		{
 			ItemStack donation = inventory.getDonationItem();
 
-			if (MessageSetItemReputationAmount.isNoteForLord(province, donation))
+			if ( MessageSetItemReputationAmount.isNoteForLord(province, donation) )
 			{
 				writeReplyNote(inventory, donation, player);
 				return;
 			}
 
-			if (MessageSetItemReputationAmount.isStolenItemForProvince(province, donation))
+			if ( MessageSetItemReputationAmount.isStolenItemForProvince(province, donation) )
 			{
 				handleReturnStolenItem(player, province, inventory, donation);
 				return;
 			}
-			
-			if (MessageSetItemReputationAmount.isTrophy(province, donation))
+
+			if ( MessageSetItemReputationAmount.isTrophy(province, donation) )
 			{
 				handleDonateTrophy(player, province, inventory, donation);
 				return;
 			}
 
 			DonationReward reward = getRepForDonation(donation);
-			
-			if (reward != null)
+
+			if ( reward != null )
 			{
-				CivilizationHandlers.adjustPlayerRep(player, province.civilization, reward.rep);
+				EventHandlers.adjustPlayerRep(player, province.civilization, reward.rep);
 				if ( reward.rep > 0 )
 				{
 					player.playSound(SoundEvents.BLOCK_NOTE_CHIME, 1.0F, 1.0F);
 				}
 				inventory.setDonationItem(ItemStack.EMPTY);
-				try{player.addItemStackToInventory(inventory.getReturnItems().get(0));} catch ( Exception e ) {}
+				try
+				{
+					player.addItemStackToInventory(inventory.getReturnItems().get(0));
+				}
+				catch (Exception e)
+				{
+				}
 				inventory.setReturnItems(new ItemStack(reward.item));
 			}
 		}
 
-//		private <T> List<T> l(T... items)
-//		{
-//			List<T> l = new ArrayList<T>();
-//			for (T item : items)
-//			{
-//				l.add(item);
-//			}
-//			return l;
-//		}
-		
-		private void handleDonateTrophy(EntityPlayer player, Province province, IVillageLordInventory inventory, ItemStack stack)
+		// private <T> List<T> l(T... items)
+		// {
+		// List<T> l = new ArrayList<T>();
+		// for (T item : items)
+		// {
+		// l.add(item);
+		// }
+		// return l;
+		// }
+
+		private void handleDonateTrophy( EntityPlayer player, Province province, IVillageLordInventory inventory, ItemStack stack )
 		{
 			if ( inventory.addTrophy(stack.getItem()) )
 			{
 				inventory.setDonationItem(ItemStack.EMPTY);
-				CivilizationHandlers.adjustPlayerRep(player, province.civilization, ToroQuestConfiguration.donateTrophyRepGain);
+				EventHandlers.adjustPlayerRep(player, province.civilization, ToroQuestConfiguration.donateTrophyRepGain);
 			}
 			return;
 		}
-		
-		private void handleReturnStolenItem(EntityPlayer player, Province province, IVillageLordInventory inventory, ItemStack stack)
+
+		private void handleReturnStolenItem( EntityPlayer player, Province province, IVillageLordInventory inventory, ItemStack stack )
 		{
 			inventory.setDonationItem(ItemStack.EMPTY);
-			int num = 25; // player.world.rand.nextInt(8) + 16;
+			int num = ToroQuestConfiguration.donateArtifactRepGain / 2;
 			ItemStack emeralds = new ItemStack(Items.EMERALD, num);
 			List<ItemStack> list = new ArrayList<ItemStack>(1);
 			list.add(emeralds);
-			try{player.addItemStackToInventory(inventory.getReturnItems().get(0));} catch ( Exception e ) {}
+			try
+			{
+				player.addItemStackToInventory(inventory.getReturnItems().get(0));
+			}
+			catch (Exception e)
+			{
+			}
 			inventory.setReturnItems(list);
-			CivilizationHandlers.adjustPlayerRep( player, province.civilization, ToroQuestConfiguration.donateArtifactRepGain );
+			EventHandlers.adjustPlayerRep(player, province.civilization, ToroQuestConfiguration.donateArtifactRepGain);
 		}
 
-		private void writeReplyNote(IVillageLordInventory inventory, ItemStack donation, EntityPlayer player)
+		private void writeReplyNote( IVillageLordInventory inventory, ItemStack note, EntityPlayer player )
 		{
-			String sToProvinceId = donation.getTagCompound().getString("toProvince");
-			String sQuestId = donation.getTagCompound().getString("questId");
+			inventory.setDonationItem(ItemStack.EMPTY);
 
-			if (isEmpty(sToProvinceId) || isEmpty(sQuestId))
+			String fromProvinceID = note.getTagCompound().getString("fromProvinceID");
+			String questId = note.getTagCompound().getString("questId");
+
+			if ( MessageSetItemReputationAmount.isEmpty(fromProvinceID) || MessageSetItemReputationAmount.isEmpty(questId) )
 			{
 				return;
 			}
 
-			inventory.setDonationItem(ItemStack.EMPTY);
-			donation.setStackDisplayName("Reply Note");
-			donation.getTagCompound().setBoolean("reply", true);
+			ItemStack itemStack = new ItemStack(Item.getByNameOrId("toroquest:lord_reply"));
+
+			itemStack.setTagInfo("fromProvinceID", new NBTTagString(fromProvinceID));
+			itemStack.setTagInfo("questId", new NBTTagString(questId));
+
+			Province province = CivilizationUtil.getProvinceFromUUID(player.world, CivilizationUtil.enumUUID(fromProvinceID));
+			itemStack.setStackDisplayName(province != null ? "Reply Note, From Lord of " + province.getName() : "Reply Note");
 
 			List<ItemStack> list = new ArrayList<ItemStack>(1);
-			list.add(donation);
-			try{player.addItemStackToInventory(inventory.getReturnItems().get(0));} catch ( Exception e ) {}
+
+			list.add(itemStack);
+
+			try
+			{
+				player.addItemStackToInventory(inventory.getReturnItems().get(0));
+			}
+			catch (Exception e)
+			{
+
+			}
+
 			inventory.setReturnItems(list);
 		}
 
-		protected void processAccept(EntityPlayer player, Province province, IVillageLordInventory inventory) {
+		protected void processAccept( EntityPlayer player, Province province, IVillageLordInventory inventory )
+		{
 
 			if ( player.world.isRemote )
 			{
 				return;
 			}
-			
+
 			List<ItemStack> inputItems = inventory.getGivenItems(); // left items
-			List<ItemStack> outputItems = PlayerCivilizationCapabilityImpl.get(player).acceptQuest(inputItems); // after items left
+			List<ItemStack> outputItems = PlayerCivilizationCapabilityImpl.get(player).acceptQuest(inputItems); // after
+																												 // items
+																												 // left
 			List<ItemStack> returnItems = inventory.getReturnItems(); // right item
 
 			for ( ItemStack item : returnItems )
 			{
 				ItemHandlerHelper.giveItemToPlayer(player, item);
 			}
-			
-			if ( outputItems == null && inputItems != null)
+
+			if ( outputItems == null && inputItems != null )
 			{
 				for ( ItemStack item : inputItems )
 				{
 					ItemHandlerHelper.giveItemToPlayer(player, item);
 				}
-				//return; =-=-= ???
+				// return; =-=-= ???
 			}
-			
+
 			if ( outputItems != null )
 			{
 				// this works v
-//				int outputItemsSize = 0;
-//				
-//				for ( ItemStack item : outputItems )
-//				{
-//					if ( !(item.getItem().equals(Items.AIR)) )
-//					{
-//						outputItemsSize++;
-//					}
-//				}
-//				if ( outputItemsSize > 1 || returnItems != null )
-//				{
-//					for ( ItemStack item : outputItems )
-//					{
-//						ItemHandlerHelper.giveItemToPlayer(player, item);
-//					}
-//				}
-//				else
-//				{
-//					inventory.setReturnItems(outputItems);
-//				}
-				
+				// int outputItemsSize = 0;
+				//
+				// for ( ItemStack item : outputItems )
+				// {
+				// if ( !(item.getItem().equals(Items.AIR)) )
+				// {
+				// outputItemsSize++;
+				// }
+				// }
+				// if ( outputItemsSize > 1 || returnItems != null )
+				// {
+				// for ( ItemStack item : outputItems )
+				// {
+				// ItemHandlerHelper.giveItemToPlayer(player, item);
+				// }
+				// }
+				// else
+				// {
+				// inventory.setReturnItems(outputItems);
+				// }
+
 				int outputItemsSize = outputItems.size();
 				int i = 0;
-				
+
 				for ( ItemStack item : outputItems )
 				{
-					if ( i == outputItemsSize-1 )
+					if ( i == outputItemsSize - 1 )
 					{
 						List<ItemStack> stack = new ArrayList<ItemStack>();
 						stack.add(outputItems.get(i));
@@ -318,30 +358,31 @@ public class MessageQuestUpdate implements IMessage {
 					i++;
 				}
 			}
-			
-				//return;
-			
-			//inventory.setReturnItems(outputItems);
-			
-			
-			
-//			for ( ItemStack item : inputItems )
-//			{
-//				ItemHandlerHelper.giveItemToPlayer(player, item);
-//			}
-					
+
+			// return;
+
+			// inventory.setReturnItems(outputItems);
+
+			// for ( ItemStack item : inputItems )
+			// {
+			// ItemHandlerHelper.giveItemToPlayer(player, item);
+			// }
+
 			QuestData currentQuest = PlayerCivilizationCapabilityImpl.get(player).getCurrentQuestFor(province);
 			ToroQuestPacketHandler.INSTANCE.sendTo(new MessageSetQuestInfo(province, currentQuest, null), (EntityPlayerMP) player);
 		}
 
-		protected void processReject(EntityPlayer player, Province province, IVillageLordInventory inventory)
-		{	
+		protected void processReject( EntityPlayer player, Province province, IVillageLordInventory inventory )
+		{
 			List<ItemStack> inputItems = inventory.getGivenItems(); // left items
-			List<ItemStack> outputItems = PlayerCivilizationCapabilityImpl.get(player).rejectQuest(inputItems); // after items left
+			List<ItemStack> outputItems = PlayerCivilizationCapabilityImpl.get(player).rejectQuest(inputItems); // after
+																												 // items
+																												 // left
 			List<ItemStack> returnItems = inventory.getReturnItems(); // right item
 
-			// List<ItemStack> other = PlayerCivilizationCapabilityImpl.get(player).rejectQuest(returnItems); // after item right
-
+			// List<ItemStack> other =
+			// PlayerCivilizationCapabilityImpl.get(player).rejectQuest(returnItems); //
+			// after item right
 
 			if ( outputItems != null )
 			{
@@ -357,72 +398,76 @@ public class MessageQuestUpdate implements IMessage {
 					ItemHandlerHelper.giveItemToPlayer(player, item);
 				}
 				inventory.setGivenItems(returnItems);
-				return;  
+				return;
 			}
-			
-//			else
-//			{
-//				for ( ItemStack item : outputItems )
-//				{
-//					ItemHandlerHelper.giveItemToPlayer(player, item);
-//				}
-//			}
-			
-//			boolean found = false;
-//			int i = 0;
-//			if ( returnItems != null )
-//			{		
-//				for ( ItemStack item : returnItems )
-//				{
-//					if ( !found && other != null && other.get(i).getCount() == 0 )
-//					{
-//						item.setCount(item.getCount() - 1);
-//						found = true;
-//					}
-//					else
-//					{
-//						ItemHandlerHelper.giveItemToPlayer(player, item);
-//					}
-//					i++;
-//				}
-//			}
-//			i = 0;
-//			
-//			if ( inputItems != null )
-//			{
-//				for ( ItemStack item : inputItems )
-//				{
-//					if ( !found && outputItems != null && outputItems.get(i).getCount() == 0 ) //&& outputItems.get(j).getCount() == 1 )
-//					{
-//						item.setCount(item.getCount() - 1);
-//						found = true;
-//					}
-//					else
-//					{
-//						ItemHandlerHelper.giveItemToPlayer(player, item);
-//					}
-//					i++;
-//				}
-//			}
-			
+
+			// else
+			// {
+			// for ( ItemStack item : outputItems )
+			// {
+			// ItemHandlerHelper.giveItemToPlayer(player, item);
+			// }
+			// }
+
+			// boolean found = false;
+			// int i = 0;
+			// if ( returnItems != null )
+			// {
+			// for ( ItemStack item : returnItems )
+			// {
+			// if ( !found && other != null && other.get(i).getCount() == 0 )
+			// {
+			// item.setCount(item.getCount() - 1);
+			// found = true;
+			// }
+			// else
+			// {
+			// ItemHandlerHelper.giveItemToPlayer(player, item);
+			// }
+			// i++;
+			// }
+			// }
+			// i = 0;
+			//
+			// if ( inputItems != null )
+			// {
+			// for ( ItemStack item : inputItems )
+			// {
+			// if ( !found && outputItems != null && outputItems.get(i).getCount() == 0 )
+			// //&& outputItems.get(j).getCount() == 1 )
+			// {
+			// item.setCount(item.getCount() - 1);
+			// found = true;
+			// }
+			// else
+			// {
+			// ItemHandlerHelper.giveItemToPlayer(player, item);
+			// }
+			// i++;
+			// }
+			// }
+
 			QuestData nextQuest = PlayerCivilizationCapabilityImpl.get(player).getNextQuestFor(province);
 			ToroQuestPacketHandler.INSTANCE.sendTo(new MessageSetQuestInfo(province, null, nextQuest), (EntityPlayerMP) player);
-		
+
 		}
 
-		protected void processComplete(EntityPlayer player, Province province, IVillageLordInventory inventory, EntityVillageLord lord) {
+		protected void processComplete( EntityPlayer player, Province province, IVillageLordInventory inventory, EntityVillageLord lord )
+		{
 
-//			if ( player.world.isRemote )
-//			{
-//				return;
-//			}
-			
+			// if ( player.world.isRemote )
+			// {
+			// return;
+			// }
+
 			List<ItemStack> inputItems = inventory.getGivenItems(); // left items
-			List<ItemStack> outputItems = PlayerCivilizationCapabilityImpl.get(player).completeQuest(inputItems); // after items
-			//List<ItemStack> returnItems = inventory.getReturnItems(); // right items
-			
+			List<ItemStack> outputItems = PlayerCivilizationCapabilityImpl.get(player).completeQuest(inputItems); // after
+																													 // items
+			// List<ItemStack> returnItems = inventory.getReturnItems(); // right items
 
-			//List<ItemStack> other = PlayerCivilizationCapabilityImpl.get(player).rejectQuest(returnItems); // after items right
+			// List<ItemStack> other =
+			// PlayerCivilizationCapabilityImpl.get(player).rejectQuest(returnItems); //
+			// after items right
 
 			if ( outputItems == null )
 			{
@@ -430,13 +475,13 @@ public class MessageQuestUpdate implements IMessage {
 				{
 					ItemHandlerHelper.giveItemToPlayer(player, itemstack);
 				}
-				//inventory.setGivenItems(inputItems);
-	        	player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.BLOCK_NOTE_BASS, SoundCategory.AMBIENT, 3.0F, 0.6F);
+				// inventory.setGivenItems(inputItems);
+				player.world.playSound((EntityPlayer) null, player.posX, player.posY, player.posZ, SoundEvents.BLOCK_NOTE_BASS, SoundCategory.AMBIENT, 3.0F, 0.6F);
 				return;
 			}
 
-			//if (outputItems != null)
-			
+			// if (outputItems != null)
+
 			boolean flag = false;
 			for ( ItemStack itemstack : outputItems )
 			{
@@ -450,65 +495,61 @@ public class MessageQuestUpdate implements IMessage {
 					ItemHandlerHelper.giveItemToPlayer(player, itemstack);
 				}
 			}
-			
-			//inventory.setReturnItems(outputItems);
-//								for ( ItemStack item : outputItems )
-//								{
-//									ItemHandlerHelper.giveItemToPlayer(player, item);
-//								}
-			
-//			for ( ItemStack item : returnItems )
-//			{
-//				ItemHandlerHelper.giveItemToPlayer(player, item);
-//			}
-			
-			//if (outputItems == null) return;
-        	player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.BLOCK_NOTE_CHIME, SoundCategory.AMBIENT, 1.0F, 1.0F);
-        	player.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.AMBIENT, 1.0F, 1.0F);
+
+			// inventory.setReturnItems(outputItems);
+			// for ( ItemStack item : outputItems )
+			// {
+			// ItemHandlerHelper.giveItemToPlayer(player, item);
+			// }
+
+			// for ( ItemStack item : returnItems )
+			// {
+			// ItemHandlerHelper.giveItemToPlayer(player, item);
+			// }
+
+			// if (outputItems == null) return;
+			player.world.playSound((EntityPlayer) null, player.posX, player.posY, player.posZ, SoundEvents.BLOCK_NOTE_CHIME, SoundCategory.AMBIENT, 1.0F, 1.0F);
+			player.world.playSound((EntityPlayer) null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.AMBIENT, 1.0F, 1.0F);
 			if ( !player.world.isRemote )
 			{
-				lord.playTameEffect((byte)8);
-                lord.world.setEntityState(lord, (byte)8);
+				lord.playTameEffect((byte) 8);
+				lord.world.setEntityState(lord, (byte) 8);
 			}
 			QuestData nextQuest = PlayerCivilizationCapabilityImpl.get(player).getNextQuestFor(province);
 			ToroQuestPacketHandler.INSTANCE.sendTo(new MessageSetQuestInfo(province, null, nextQuest), (EntityPlayerMP) player);
 		}
 	}
 
-	public static class Handler implements IMessageHandler<MessageQuestUpdate, IMessage> {
+	public static class Handler implements IMessageHandler<MessageQuestUpdate, IMessage>
+	{
 
 		@Override
-		public IMessage onMessage(final MessageQuestUpdate message, MessageContext ctx) {
-			if (ctx.side != Side.SERVER) {
+		public IMessage onMessage( final MessageQuestUpdate message, MessageContext ctx )
+		{
+			if ( ctx.side != Side.SERVER )
+			{
 				return null;
 			}
 			final EntityPlayerMP player = ctx.getServerHandler().player;
 
-			if (player == null) {
+			if ( player == null )
+			{
 				return null;
 			}
 
 			final WorldServer worldServer = player.getServerWorld();
 
-			worldServer.addScheduledTask(new Runnable() {
+			worldServer.addScheduledTask(new Runnable()
+			{
 				@Override
-				public void run() {
+				public void run()
+				{
 					new Worker(message.action).work(message, player);
 				}
 			});
 
 			return null;
 		}
-	}
-
-	private static boolean isSet(String s)
-	{
-		return s != null && s.trim().length() > 0;
-	}
-
-	private static boolean isEmpty(String s)
-	{
-		return !isSet(s);
 	}
 
 	public static class DonationReward
@@ -518,7 +559,7 @@ public class MessageQuestUpdate implements IMessage {
 
 		}
 
-		public DonationReward(int rep, Item item)
+		public DonationReward( int rep, Item item )
 		{
 			this.rep = rep;
 			this.item = item;
@@ -528,20 +569,20 @@ public class MessageQuestUpdate implements IMessage {
 		public int rep;
 	}
 
-	public static DonationReward getRepForDonation(ItemStack item)
+	public static DonationReward getRepForDonation( ItemStack item )
 	{
 
 		if ( item.isEmpty() )
 		{
 			return null;
 		}
-		
+
 		if ( item.getItem() == Items.EMERALD )
 		{
 			return new DonationReward(ToroQuestConfiguration.donateEmeraldRepGain * item.getCount(), null);
 		}
-		
-		if ( item.getItem() == Item.getByNameOrId( "toroquest:bandit_helmet" ) )
+
+		if ( item.getItem() == Item.getByNameOrId("toroquest:bandit_helmet") )
 		{
 			return new DonationReward(ToroQuestConfiguration.donateBanditMaskRepGain * item.getCount(), null);
 		}
@@ -549,147 +590,151 @@ public class MessageQuestUpdate implements IMessage {
 		if ( item.getItem() instanceof ItemBlock )
 		{
 			Block block = ((ItemBlock) item.getItem()).getBlock();
-			if (Blocks.EMERALD_BLOCK == block)
+			if ( Blocks.EMERALD_BLOCK == block )
 			{
 				return new DonationReward(ToroQuestConfiguration.donateEmeraldRepGain * 9 * item.getCount(), null);
 			}
 		}
-		
+
 		for ( Donate d : ToroQuestConfiguration.donate )
 		{
 			if ( item.getItem() == d.item )
 			{
-				return new DonationReward(d.rep*item.getCount(), null);
+				return new DonationReward(d.rep * item.getCount(), null);
 			}
 		}
-		
+
 		return null;
-		
+
 		/*
-		if (item.getItem() instanceof ItemTool)
-		{
-			String material = ((ItemTool) item.getItem()).getToolMaterialName();
-			switch (material) {
-			case "DIAMOND":
-				return new DonationReward(4, null);
-			case "GOLD":
-				return new DonationReward(2, null);
-			case "IRON":
-				return new DonationReward(1, null);
-			default:
-				return null;
-			}
-		}
-
-		if (item.getItem() instanceof ItemSword)
-		{
-			String material = ((ItemSword) item.getItem()).getToolMaterialName();
-			
-			if ("DIAMOND".equals(material))
-			{
-				return new DonationReward(4, null);
-			}
-			else if ("GOLD".equals(material))
-			{
-				return new DonationReward(2, null);
-			}
-			else if ("IRON".equals(material))
-			{
-				return new DonationReward(1, null);
-			}
-			else
-			{
-				return null;
-			}
-		}
-
-		if (item.getItem() == Items.DIAMOND)
-		{
-			return new DonationReward(4 * item.getCount(), null);
-		}
-		else if (item.getItem() == Items.EMERALD)
-		{
-			return new DonationReward(2 * item.getCount(), null);
-		}
-		else if (item.getItem() == Items.GOLD_INGOT)
-		{
-			return new DonationReward(2 * item.getCount(), null);
-		}
-		else if (item.getItem() == Items.IRON_INGOT)
-		{
-			return new DonationReward(1 * item.getCount(), null);
-		}
-
-		if (item.getItem() instanceof ItemBlock)
-		{
-			Block block = ((ItemBlock) item.getItem()).getBlock();
-			if (Blocks.DIAMOND_BLOCK == block)
-			{
-				return new DonationReward(36 * item.getCount(), null);
-			}
-
-			else if (Blocks.EMERALD_BLOCK == block)
-			{
-				return new DonationReward(18 * item.getCount(), null);
-			}
-			
-			else if (Blocks.GOLD_BLOCK == block)
-			{
-				return new DonationReward(18 * item.getCount(), null);
-			}
-			
-			else if (Blocks.IRON_BLOCK == block)
-			{
-				return new DonationReward(9 * item.getCount(), null);
-			}
-			
-			else if (Blocks.MELON_BLOCK == block)
-			{
-				return new DonationReward(1 * MathHelper.floor(item.getCount() / 4), null);
-			}
-			
-			else if (Blocks.PUMPKIN == block)
-			{
-				return new DonationReward(1 * MathHelper.floor(item.getCount() / 4), null);
-			}
-		}
-
-		DonationReward reward = new DonationReward();
-
-		if (is(item, Items.APPLE, Items.POTATO))
-		{
-			reward.rep = 1 * MathHelper.floor(item.getCount() / 4);
-		}
-		else if (is(item, Items.CARROT, Items.BEETROOT, Items.MELON))
-		{
-			reward.rep = 1 * MathHelper.floor(item.getCount() / 16);
-		}
-		else if (is(item, Items.WHEAT))
-		{
-			reward.rep = 1 * MathHelper.floor(item.getCount() / 8);
-		}
-		else if (is(item, Items.BREAD,  Items.BAKED_POTATO, Items.CHICKEN, Items.COOKED_CHICKEN, Items.PORKCHOP, Items.COOKED_PORKCHOP, Items.MUTTON, Items.COOKED_MUTTON, Items.RABBIT, Items.COOKED_RABBIT, Items.FISH, Items.COOKED_FISH, Items.BEEF, Items.COOKED_BEEF, Items.PUMPKIN_PIE))
-		{
-			reward.rep = 3 * MathHelper.floor(item.getCount() / 8);
-		}
-		else if (is(item, Items.MILK_BUCKET))
-		{
-			reward.rep = 6 * item.getCount();
-		}
-		else if ( item.getItem() == (new ItemStack(Blocks.MELON_BLOCK, 1 )).getItem() || item.getItem() == (new ItemStack(Blocks.PUMPKIN, 1 )).getItem() )
-		{
-			reward.rep = 3 * MathHelper.floor(item.getCount() / 8);
-		}
-		else if ( item.getItem() instanceof ItemFood )
-		{
-			reward.rep = 1 * MathHelper.floor(item.getCount() / 4);
-		}
-		
-		if (reward.rep == 0)
-		{
-			return null;
-		}
-		return reward;
-	*/
+		 * if (item.getItem() instanceof ItemTool)
+		 * {
+		 * String material = ((ItemTool) item.getItem()).getToolMaterialName();
+		 * switch (material) {
+		 * case "DIAMOND":
+		 * return new DonationReward(4, null);
+		 * case "GOLD":
+		 * return new DonationReward(2, null);
+		 * case "IRON":
+		 * return new DonationReward(1, null);
+		 * default:
+		 * return null;
+		 * }
+		 * }
+		 * 
+		 * if (item.getItem() instanceof ItemSword)
+		 * {
+		 * String material = ((ItemSword) item.getItem()).getToolMaterialName();
+		 * 
+		 * if ("DIAMOND".equals(material))
+		 * {
+		 * return new DonationReward(4, null);
+		 * }
+		 * else if ("GOLD".equals(material))
+		 * {
+		 * return new DonationReward(2, null);
+		 * }
+		 * else if ("IRON".equals(material))
+		 * {
+		 * return new DonationReward(1, null);
+		 * }
+		 * else
+		 * {
+		 * return null;
+		 * }
+		 * }
+		 * 
+		 * if (item.getItem() == Items.DIAMOND)
+		 * {
+		 * return new DonationReward(4 * item.getCount(), null);
+		 * }
+		 * else if (item.getItem() == Items.EMERALD)
+		 * {
+		 * return new DonationReward(2 * item.getCount(), null);
+		 * }
+		 * else if (item.getItem() == Items.GOLD_INGOT)
+		 * {
+		 * return new DonationReward(2 * item.getCount(), null);
+		 * }
+		 * else if (item.getItem() == Items.IRON_INGOT)
+		 * {
+		 * return new DonationReward(1 * item.getCount(), null);
+		 * }
+		 * 
+		 * if (item.getItem() instanceof ItemBlock)
+		 * {
+		 * Block block = ((ItemBlock) item.getItem()).getBlock();
+		 * if (Blocks.DIAMOND_BLOCK == block)
+		 * {
+		 * return new DonationReward(36 * item.getCount(), null);
+		 * }
+		 * 
+		 * else if (Blocks.EMERALD_BLOCK == block)
+		 * {
+		 * return new DonationReward(18 * item.getCount(), null);
+		 * }
+		 * 
+		 * else if (Blocks.GOLD_BLOCK == block)
+		 * {
+		 * return new DonationReward(18 * item.getCount(), null);
+		 * }
+		 * 
+		 * else if (Blocks.IRON_BLOCK == block)
+		 * {
+		 * return new DonationReward(9 * item.getCount(), null);
+		 * }
+		 * 
+		 * else if (Blocks.MELON_BLOCK == block)
+		 * {
+		 * return new DonationReward(1 * MathHelper.floor(item.getCount() / 4), null);
+		 * }
+		 * 
+		 * else if (Blocks.PUMPKIN == block)
+		 * {
+		 * return new DonationReward(1 * MathHelper.floor(item.getCount() / 4), null);
+		 * }
+		 * }
+		 * 
+		 * DonationReward reward = new DonationReward();
+		 * 
+		 * if (is(item, Items.APPLE, Items.POTATO))
+		 * {
+		 * reward.rep = 1 * MathHelper.floor(item.getCount() / 4);
+		 * }
+		 * else if (is(item, Items.CARROT, Items.BEETROOT, Items.MELON))
+		 * {
+		 * reward.rep = 1 * MathHelper.floor(item.getCount() / 16);
+		 * }
+		 * else if (is(item, Items.WHEAT))
+		 * {
+		 * reward.rep = 1 * MathHelper.floor(item.getCount() / 8);
+		 * }
+		 * else if (is(item, Items.BREAD, Items.BAKED_POTATO, Items.CHICKEN,
+		 * Items.COOKED_CHICKEN, Items.PORKCHOP, Items.COOKED_PORKCHOP, Items.MUTTON,
+		 * Items.COOKED_MUTTON, Items.RABBIT, Items.COOKED_RABBIT, Items.FISH,
+		 * Items.COOKED_FISH, Items.BEEF, Items.COOKED_BEEF, Items.PUMPKIN_PIE))
+		 * {
+		 * reward.rep = 3 * MathHelper.floor(item.getCount() / 8);
+		 * }
+		 * else if (is(item, Items.MILK_BUCKET))
+		 * {
+		 * reward.rep = 6 * item.getCount();
+		 * }
+		 * else if ( item.getItem() == (new ItemStack(Blocks.MELON_BLOCK, 1 )).getItem()
+		 * || item.getItem() == (new ItemStack(Blocks.PUMPKIN, 1 )).getItem() )
+		 * {
+		 * reward.rep = 3 * MathHelper.floor(item.getCount() / 8);
+		 * }
+		 * else if ( item.getItem() instanceof ItemFood )
+		 * {
+		 * reward.rep = 1 * MathHelper.floor(item.getCount() / 4);
+		 * }
+		 * 
+		 * if (reward.rep == 0)
+		 * {
+		 * return null;
+		 * }
+		 * return reward;
+		 */
 	}
 }

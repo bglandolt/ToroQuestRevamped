@@ -21,16 +21,18 @@ import net.torocraft.toroquest.entities.EntityVillageLord;
 public class VillageLordInventory extends InventoryBasic implements IVillageLordInventory
 {
 	// *** VillageLordContainer ***
-	
+
 	private final EntityVillageLord lord;
 
-	public VillageLordInventory(EntityVillageLord lord, String inventoryTitle, int slotCount) {
+	public VillageLordInventory( EntityVillageLord lord, String inventoryTitle, int slotCount )
+	{
 		super(inventoryTitle, false, slotCount);
 		this.lord = lord;
 	}
 
-	@SideOnly(Side.CLIENT)
-	public VillageLordInventory(EntityVillageLord lord, ITextComponent inventoryTitle, int slotCount) {
+	@SideOnly( Side.CLIENT )
+	public VillageLordInventory( EntityVillageLord lord, ITextComponent inventoryTitle, int slotCount )
+	{
 		super(inventoryTitle, slotCount);
 		this.lord = lord;
 	}
@@ -40,7 +42,7 @@ public class VillageLordInventory extends InventoryBasic implements IVillageLord
 	public List<ItemStack> getGivenItems()
 	{
 		List<ItemStack> items = new ArrayList<ItemStack>();
-		for (int i = 0; i < 4; i++)
+		for ( int i = 0; i < 4; i++ )
 		{
 			items.add(removeStackFromSlot(i));
 		}
@@ -48,14 +50,14 @@ public class VillageLordInventory extends InventoryBasic implements IVillageLord
 	}
 
 	@Override
-	public void setGivenItems(List<ItemStack> items)
+	public void setGivenItems( List<ItemStack> items )
 	{
 		dropItems(getGivenItems());
 		items = QuestBase.removeEmptyItemStacks(items);
 		items = dropOverItems(items, 4);
-		for (int i = 0; i < 4; i++)
+		for ( int i = 0; i < 4; i++ )
 		{
-			if (i >= items.size())
+			if ( i >= items.size() )
 			{
 				setInventorySlotContents(i, ItemStack.EMPTY);
 			}
@@ -74,20 +76,20 @@ public class VillageLordInventory extends InventoryBasic implements IVillageLord
 		items.add(removeStackFromSlot(5));
 		return items;
 	}
-	
-//	@Override
-//	public List<ItemStack> getReturnItems()
-//	{
-//		List<ItemStack> items = new ArrayList<ItemStack>();
-//		for (int i = 0; i < 4; i++)
-//		{
-//			items.add(removeStackFromSlot(i + 5));
-//		}
-//		return items;
-//	}
+
+	// @Override
+	// public List<ItemStack> getReturnItems()
+	// {
+	// List<ItemStack> items = new ArrayList<ItemStack>();
+	// for (int i = 0; i < 4; i++)
+	// {
+	// items.add(removeStackFromSlot(i + 5));
+	// }
+	// return items;
+	// }
 
 	@Override
-	public void setReturnItems(List<ItemStack> items)
+	public void setReturnItems( List<ItemStack> items )
 	{
 		dropItems(getReturnItems());
 		items = QuestBase.removeEmptyItemStacks(items);
@@ -101,31 +103,31 @@ public class VillageLordInventory extends InventoryBasic implements IVillageLord
 			setInventorySlotContents(5, items.get(0));
 		}
 	}
-	
+
 	@Override
-	public void setReturnItems(ItemStack items)
+	public void setReturnItems( ItemStack items )
 	{
 		setInventorySlotContents(5, items);
 	}
-	
-//	@Override
-//	public void setReturnItems(List<ItemStack> items)
-//	{
-//		dropItems(getReturnItems());
-//		items = QuestBase.removeEmptyItemStacks(items);
-//		items = dropOverItems(items, 4);
-//		for (int i = 0; i < 4; i++)
-//		{
-//			if (i >= items.size())
-//			{
-//				setInventorySlotContents(i + 5, ItemStack.EMPTY);
-//			}
-//			else
-//			{
-//				setInventorySlotContents(i + 5, items.get(i));
-//			}
-//		}
-//	}
+
+	// @Override
+	// public void setReturnItems(List<ItemStack> items)
+	// {
+	// dropItems(getReturnItems());
+	// items = QuestBase.removeEmptyItemStacks(items);
+	// items = dropOverItems(items, 4);
+	// for (int i = 0; i < 4; i++)
+	// {
+	// if (i >= items.size())
+	// {
+	// setInventorySlotContents(i + 5, ItemStack.EMPTY);
+	// }
+	// else
+	// {
+	// setInventorySlotContents(i + 5, items.get(i));
+	// }
+	// }
+	// }
 
 	@Override
 	public ItemStack getDonationItem()
@@ -134,27 +136,25 @@ public class VillageLordInventory extends InventoryBasic implements IVillageLord
 	}
 
 	@Override
-	public void setDonationItem(ItemStack item)
+	public void setDonationItem( ItemStack item )
 	{
 		setInventorySlotContents(4, item);
 	}
-	
-	
 
-	private List<ItemStack> dropOverItems(List<ItemStack> items, int maxIndex)
+	private List<ItemStack> dropOverItems( List<ItemStack> items, int maxIndex )
 	{
-		if (items.size() <= maxIndex)
+		if ( items.size() <= maxIndex )
 		{
 			return items;
 		}
 
 		List<ItemStack> over = new ArrayList<ItemStack>();
-		for (int i = maxIndex; i < items.size(); i++)
+		for ( int i = maxIndex; i < items.size(); i++ )
 		{
 			over.add(items.get(i));
 		}
 
-		for (ItemStack item : over)
+		for ( ItemStack item : over )
 		{
 			items.remove(item);
 		}
@@ -164,9 +164,9 @@ public class VillageLordInventory extends InventoryBasic implements IVillageLord
 		return items;
 	}
 
-	private void dropItems(List<ItemStack> items)
+	private void dropItems( List<ItemStack> items )
 	{
-		for (ItemStack stack : items)
+		for ( ItemStack stack : items )
 		{
 			EntityItem dropItem = new EntityItem(lord.world, lord.posX, lord.posY, lord.posZ, stack);
 			dropItem.setNoPickupDelay();
@@ -177,9 +177,11 @@ public class VillageLordInventory extends InventoryBasic implements IVillageLord
 	public NBTTagList saveAllItems()
 	{
 		NBTTagList list = new NBTTagList();
-		for (int i = 0; i < getSizeInventory(); ++i) {
+		for ( int i = 0; i < getSizeInventory(); ++i )
+		{
 			ItemStack itemstack = (ItemStack) getStackInSlot(i);
-			if (!itemstack.isEmpty()) {
+			if ( !itemstack.isEmpty() )
+			{
 				NBTTagCompound nbttagcompound = new NBTTagCompound();
 				nbttagcompound.setByte("Slot", (byte) i);
 				itemstack.writeToNBT(nbttagcompound);
@@ -189,13 +191,13 @@ public class VillageLordInventory extends InventoryBasic implements IVillageLord
 		return list;
 	}
 
-	public void loadAllItems(NBTTagList list)
+	public void loadAllItems( NBTTagList list )
 	{
-		for (int i = 0; i < list.tagCount(); ++i)
+		for ( int i = 0; i < list.tagCount(); ++i )
 		{
 			NBTTagCompound nbttagcompound = list.getCompoundTagAt(i);
 			int slot = nbttagcompound.getByte("Slot") & 255;
-			if (slot >= 0 && slot < getSizeInventory())
+			if ( slot >= 0 && slot < getSizeInventory() )
 			{
 				setInventorySlotContents(slot, new ItemStack(nbttagcompound));
 			}
@@ -213,16 +215,16 @@ public class VillageLordInventory extends InventoryBasic implements IVillageLord
 	{
 		return lord.getEntityId();
 	}
-	
+
 	@Override
-	public boolean hasTrophy(String trophyName)
+	public boolean hasTrophy( String trophyName )
 	{
 		List<ItemStack> trophies = getTrophies();
 		for ( ItemStack trophy : trophies )
 		{
 			// System.out.println(trophy.getUnlocalizedName());
 			// System.out.println(trophyName);
-			if (trophy.getUnlocalizedName().equals((trophyName)))
+			if ( trophy.getUnlocalizedName().equals((trophyName)) )
 			{
 				return true;
 			}
@@ -231,14 +233,14 @@ public class VillageLordInventory extends InventoryBasic implements IVillageLord
 	}
 
 	@Override
-	public boolean addTrophy(Item item)
+	public boolean addTrophy( Item item )
 	{
 		List<ItemStack> trophies = getTrophies();
-		//int trophyInventorySize = 5;
-		
+		// int trophyInventorySize = 5;
+
 		int slot = 0;
 		int openSlot = -1;
-		
+
 		for ( ItemStack itemstack : trophies )
 		{
 			if ( itemstack == ItemStack.EMPTY )
@@ -251,40 +253,40 @@ public class VillageLordInventory extends InventoryBasic implements IVillageLord
 			}
 			slot++;
 		}
-		
+
 		if ( openSlot < 0 )
 		{
 			return false;
 		}
-		
-		setInventorySlotContents( openSlot + 6, new ItemStack(item,1));
+
+		setInventorySlotContents(openSlot + 6, new ItemStack(item, 1));
 		return true;
 
 		// 11000
-//		for (int i = 5; i > 5; i--) // TROPHY AMOUNT
-//		{
-//			if (i > trophies.size())
-//			{
-//				setInventorySlotContents(i + 6, ItemStack.EMPTY);
-//			}
-//			elseCOCO
-//			{
-//				setInventorySlotContents(i + 6, trophies.get(i));
-//			}
-//		}
-//		
-//		return false;
+		// for (int i = 5; i > 5; i--) // TROPHY AMOUNT
+		// {
+		// if (i > trophies.size())
+		// {
+		// setInventorySlotContents(i + 6, ItemStack.EMPTY);
+		// }
+		// elseCOCO
+		// {
+		// setInventorySlotContents(i + 6, trophies.get(i));
+		// }
+		// }
+		//
+		// return false;
 	}
 
 	@Override
 	public List<ItemStack> getTrophies()
 	{
 		List<ItemStack> items = new ArrayList<ItemStack>();
-		for (int i = 0; i < 8; i++)
+		for ( int i = 0; i < 8; i++ )
 		{
 			items.add(getStackInSlot(i + 6));
 		}
 		return items;
 	}
-	
+
 }

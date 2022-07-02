@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Predicate;
 
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,7 +24,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.server.command.TextComponentHelper;
-import net.torocraft.toroquest.civilization.CivilizationHandlers;
+import net.torocraft.toroquest.EventHandlers;
 import net.torocraft.toroquest.civilization.Province;
 import net.torocraft.toroquest.civilization.player.PlayerCivilizationCapabilityImpl;
 import net.torocraft.toroquest.civilization.quests.util.ItemMapCentered;
@@ -40,13 +39,12 @@ public class QuestKillBossGraveTitan extends QuestBase implements Quest
 	// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	public static int ID;
 	public static QuestKillBossGraveTitan INSTANCE;
-	
+
 	protected final String entityName = "toroquesttoroquest_:grave_titan";
 	protected final String tag = "grave_titan";
 	protected final int emeraldAmount = 3;
-	
 
-	public static void init(int id)
+	public static void init( int id )
 	{
 		INSTANCE = new QuestKillBossGraveTitan();
 		Quests.registerQuest(id, INSTANCE);
@@ -55,7 +53,7 @@ public class QuestKillBossGraveTitan extends QuestBase implements Quest
 	}
 
 	@Override
-	public List<ItemStack> complete(QuestData data, List<ItemStack> in)
+	public List<ItemStack> complete( QuestData data, List<ItemStack> in )
 	{
 		Province province = loadProvince(data.getPlayer().world, data.getPlayer().getPosition());
 
@@ -63,88 +61,103 @@ public class QuestKillBossGraveTitan extends QuestBase implements Quest
 		{
 			return null;
 		}
-		
+
 		if ( !data.getCompleted() )
 		{
 			if ( data.getChatStack().equals("") )
 			{
-				data.setChatStack( "grave_titan.incomplete", data.getPlayer(), null );
+				data.setChatStack("grave_titan.incomplete", data.getPlayer(), null);
 				this.setData(data);
 			}
 			// data.getPlayer().closeScreen();
 			return null;
 		}
-		CivilizationHandlers.adjustPlayerRep(data.getPlayer(), data.getCiv(), getRewardRep(data));
-		
-		if ( PlayerCivilizationCapabilityImpl.get(data.getPlayer()).getReputation(data.getCiv()) >= 3000 )
-		{
-			if (!data.getPlayer().world.isRemote)
-	        {
-	            int i = getRewardRep(data)*2;
+		EventHandlers.adjustPlayerRep(data.getPlayer(), data.getCiv(), getRewardRep(data));
 
-	            while (i > 0)
-	            {
-	                int j = EntityXPOrb.getXPSplit(i);
-	                i -= j;
-	                data.getPlayer().world.spawnEntity(new EntityXPOrb(data.getPlayer().world, data.getPlayer().posX+((rand.nextInt(2)*2-1)*2), data.getPlayer().posY, data.getPlayer().posZ+((rand.nextInt(2)*2-1)*2), j));
-	            }
-	        }
+		if ( PlayerCivilizationCapabilityImpl.get(data.getPlayer()).getReputation(data.getCiv()) >= 2000 )
+		{
+			if ( !data.getPlayer().world.isRemote )
+			{
+				int i = getRewardRep(data) * 2;
+
+				while (i > 0)
+				{
+					int j = EntityXPOrb.getXPSplit(i);
+					i -= j;
+					data.getPlayer().world.spawnEntity(new EntityXPOrb(data.getPlayer().world, data.getPlayer().posX + ((rand.nextInt(2) * 2 - 1) * 2), data.getPlayer().posY, data.getPlayer().posZ + ((rand.nextInt(2) * 2 - 1) * 2), j));
+				}
+			}
 		}
-		data.setChatStack( "grave_titan.complete", data.getPlayer(), null );
+		data.setChatStack("grave_titan.complete", data.getPlayer(), null);
 		in.addAll(getRewardItems(data));
 		this.setData(data);
 		return in;
 	}
 
 	@Override
-	public List<ItemStack> reject(QuestData data, List<ItemStack> in)
+	public List<ItemStack> reject( QuestData data, List<ItemStack> in )
 	{
 		if ( data.getCompleted() )
 		{
 			return null;
 		}
-		
-		data.setChatStack( "grave_titan.reject", data.getPlayer(), null );
-		data.getPlayer().closeScreen();this.setData(data);
+
+		data.setChatStack("grave_titan.reject", data.getPlayer(), null);
+		data.getPlayer().closeScreen();
+		this.setData(data);
 		return in;
 	}
 
 	@Override
-	public List<ItemStack> accept(QuestData data, List<ItemStack> in)
+	public List<ItemStack> accept( QuestData data, List<ItemStack> in )
 	{
 		try
 		{
-			BlockPos pos = searchForSuitableLocation(data, 900, 30);
+			BlockPos pos = searchForSuitableLocation(data, 800, 20);
+			int tries = 6;
+
+			while (tries > 0 && pos == null)
+			{
+				tries--;
+				pos = this.searchForSuitableLocation(data, 900 - tries * 20, 20);
+			}
+
 			if ( pos == null )
 			{
-				reject(data,in);
+				this.setData(data);
+				reject(data, in);
 				return in;
 			}
+
 			this.setSpawnPosition(data, pos);
 			// =-=-=-=-=-=-=-=-=-=-=-=-=-=-= World Generation =-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 			WorldGenPlacer.genGraveyardTitan(data.getPlayer().world, pos.getX(), pos.getZ());
 			// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=
-			ItemStack itemstack = ItemMapCentered.setupNewMap(data.getPlayer().world, (double)pos.getX(), (double)pos.getZ(), (byte)4, true, true);
+			ItemStack itemstack = ItemMapCentered.setupNewMap(data.getPlayer().world, (double) pos.getX(), (double) pos.getZ(), (byte) 4, true, true);
 			ItemMapCentered.renderBiomePreviewMap(data.getPlayer().world, itemstack);
 			MapData.addTargetDecoration(itemstack, pos, "+", MapDecoration.Type.TARGET_POINT);
-			//itemstack.setTranslatableName("§lMap to " + TextComponentHelper.createComponentTranslation(data.getPlayer(), "quests.grave_titan.map", new Object[0]).getFormattedText() + "§r");
+			// itemstack.setTranslatableName("§lMap to " +
+			// TextComponentHelper.createComponentTranslation(data.getPlayer(),
+			// "quests.grave_titan.map", new Object[0]).getFormattedText() + "§r");
 			itemstack.setStackDisplayName(TextComponentHelper.createComponentTranslation(data.getPlayer(), "quests.grave_titan.map", new Object[0]).getFormattedText() + "§r");
 			in.add(itemstack);
-			data.setChatStack( "grave_titan.accept", data.getPlayer(), null );
+			data.setChatStack("grave_titan.accept", data.getPlayer(), null);
 			this.setData(data);
 		}
 		catch (Exception e)
 		{
-			reject(data,in);
+			this.setData(data);
+			reject(data, in);
+			return in;
 		}
 		return in;
 	}
 	// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 	@Override
-	public String getTitle(QuestData data)
+	public String getTitle( QuestData data )
 	{
-		if (data == null)
+		if ( data == null )
 		{
 			return "";
 		}
@@ -152,29 +165,29 @@ public class QuestKillBossGraveTitan extends QuestBase implements Quest
 	}
 
 	@Override
-	public String getDescription(QuestData data)
+	public String getDescription( QuestData data )
 	{
-		if (data == null)
+		if ( data == null )
 		{
 			return "";
 		}
 		StringBuilder s = new StringBuilder();
 		s.append("quests." + tag + ".description");
-		if (getSpawnPosition(data) != null)
+		if ( getSpawnPosition(data) != null )
 		{
-			s.append("|").append( " at §lLocation:§r [" + getDirections(getProvincePosition(getQuestProvince(data)), getSpawnPosition(data)) + "]\n\n" );
+			s.append("|").append(" at §lLocation:§r [" + getDirections(getProvincePosition(getQuestProvince(data)), getSpawnPosition(data)) + "]\n\n");
 		}
 		else
 		{
 			s.append("|").append("\n\n");
 		}
-		s.append("|").append(listItemsBlocks(getRewardItems(data))  + "\n" );
+		s.append("|").append(listItemsBlocks(getRewardItems(data)) + "\n");
 		s.append("|").append(getRewardRep(data));
 		return s.toString();
 	}
 
 	@Override
-	public QuestData generateQuestFor(EntityPlayer player, Province province)
+	public QuestData generateQuestFor( EntityPlayer player, Province province )
 	{
 		QuestData data = new QuestData();
 		data.setCiv(province.civilization);
@@ -183,9 +196,9 @@ public class QuestKillBossGraveTitan extends QuestBase implements Quest
 		data.setQuestId(UUID.randomUUID());
 		data.setQuestType(ID);
 		data.setCompleted(false);
-		setRewardRep(data, emeraldAmount*18);
+		setRewardRep(data, emeraldAmount * 18);
 		int em = emeraldAmount;
-		if ( PlayerCivilizationCapabilityImpl.get(player).getReputation(province.civilization) >= 2000 )
+		if ( PlayerCivilizationCapabilityImpl.get(player).getReputation(province.civilization) >= 3000 )
 		{
 			em *= 2;
 		}
@@ -196,21 +209,19 @@ public class QuestKillBossGraveTitan extends QuestBase implements Quest
 		return data;
 	}
 
-
-
 	@SubscribeEvent
-	public void checkkills(LivingDeathEvent event)
+	public void checkkills( LivingDeathEvent event )
 	{
 
 		Entity victim = event.getEntity();
-		
-		if (!(victim instanceof EntityGraveTitan) )
+
+		if ( !(victim instanceof EntityGraveTitan) )
 		{
 			return;
 		}
 
 		DamageSource source = event.getSource();
-		
+
 		if ( source == null || source.getTrueSource() == null )
 		{
 			return;
@@ -218,32 +229,32 @@ public class QuestKillBossGraveTitan extends QuestBase implements Quest
 
 		List<EntityPlayer> playerList = victim.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(victim.getPosition()).grow(512, 128, 512), new Predicate<EntityPlayer>()
 		{
-			public boolean apply(@Nullable EntityPlayer entity)
+			public boolean apply( @Nullable EntityPlayer entity )
 			{
 				return true;
 			}
 		});
-		
+
 		if ( playerList.size() < 1 )
 		{
-			if (source.getTrueSource() instanceof EntityPlayer)
+			if ( source.getTrueSource() instanceof EntityPlayer )
 			{
 				playerList.add((EntityPlayer) source.getTrueSource());
 			}
 		}
-		
-		//CivilizationType civ = null;
+
+		// CivilizationType civ = null;
 		for ( EntityPlayer player : playerList )
 		{
 			Set<QuestData> quests = PlayerCivilizationCapabilityImpl.get(player).getCurrentQuests();
-			for (QuestData data : quests)
+			for ( QuestData data : quests )
 			{
-				if (ID == data.getQuestType())
+				if ( ID == data.getQuestType() )
 				{
 					data.setCompleted(true);
 					chatCompletedQuest(data);
-					//civ = data.getCiv();
-					//this.setData(data);
+					// civ = data.getCiv();
+					// this.setData(data);
 				}
 			}
 			player.sendMessage(new TextComponentString(TextComponentHelper.createComponentTranslation(player, "quests.grave_titan.slain", new Object[0]).getFormattedText()));

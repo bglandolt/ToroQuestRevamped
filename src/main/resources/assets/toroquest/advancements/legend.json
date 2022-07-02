@@ -1,0 +1,36 @@
+{
+	"display": {
+		"title": [{
+			"text": "Legend",
+			"color": "gold",
+			"bold": false
+		}],
+		"description": [{
+				"text": "Reputation Level VII\n",
+				"color": "gray"
+			},
+			{
+				"text": "You are now a Legend; you have achieved the highest reputation rank. Quests rewards are doubled!",
+				"color": "white"
+			}
+		],
+		"icon": {
+			"item": "toroquest:royal_helmet"
+		},
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"criteria": {
+		"legend": {
+			"trigger": "toroquest:legend"
+		}
+	},
+	"requirements": [
+		[
+			"legend"
+		]
+	],
+	"parent": "toroquest:hero"
+}

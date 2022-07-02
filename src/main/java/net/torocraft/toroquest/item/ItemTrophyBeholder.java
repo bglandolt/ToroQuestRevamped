@@ -29,14 +29,15 @@ public class ItemTrophyBeholder extends ItemTrophy
 	private static ResourceLocation REGISTRY_NAME = new ResourceLocation(ToroQuest.MODID, NAME);
 
 	@SubscribeEvent
-	public static void init(final RegistryEvent.Register<Item> event)
+	public static void init( final RegistryEvent.Register<Item> event )
 	{
 		INSTANCE = new ItemTrophyBeholder();
 		INSTANCE.setRegistryName(REGISTRY_NAME);
 		event.getRegistry().register(INSTANCE);
 	}
 
-	public static void registerRenders() {
+	public static void registerRenders()
+	{
 		ModelResourceLocation model = new ModelResourceLocation(ToroQuest.MODID + ":" + NAME, "inventory");
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(INSTANCE, 0, model);
 		RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
@@ -49,12 +50,12 @@ public class ItemTrophyBeholder extends ItemTrophy
 		this.maxStackSize = 1;
 		this.setCreativeTab(CreativeTabs.MATERIALS);
 	}
-	
+
 	@Override
-    @SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
-    {
+	@SideOnly( Side.CLIENT )
+	public void addInformation( ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn )
+	{
 		tooltip.add("Give this trophy to a Village Lord: Harness the limitless power of the Obsidian Beholder, trophy effects are twice as potent while in that provice.\n\n§oWhen you stare deep into the eye you can see a dark reflection of yourself staring back. You know what they say... beauty is in the eye of the beholder.");
-    }
+	}
 
 }

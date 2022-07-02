@@ -30,31 +30,33 @@ public class ItemTrophySkeleton extends ItemTrophy
 	private static ResourceLocation REGISTRY_NAME = new ResourceLocation(ToroQuest.MODID, NAME);
 
 	@SubscribeEvent
-	public static void init(final RegistryEvent.Register<Item> event)
+	public static void init( final RegistryEvent.Register<Item> event )
 	{
 		INSTANCE = new ItemTrophySkeleton();
 		INSTANCE.setRegistryName(REGISTRY_NAME);
 		event.getRegistry().register(INSTANCE);
 	}
 
-	public static void registerRenders() {
+	public static void registerRenders()
+	{
 		ModelResourceLocation model = new ModelResourceLocation(ToroQuest.MODID + ":" + NAME, "inventory");
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(INSTANCE, 0, model);
 		RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
 		renderItem.getItemModelMesher().register(INSTANCE, 0, new ModelResourceLocation(ToroQuest.MODID + ":" + NAME, "inventory"));
 	}
 
-	public ItemTrophySkeleton() {
+	public ItemTrophySkeleton()
+	{
 		setUnlocalizedName(NAME);
 		this.maxStackSize = 1;
 		this.setCreativeTab(CreativeTabs.MATERIALS);
 	}
-	
+
 	@Override
-    @SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
-    {
+	@SideOnly( Side.CLIENT )
+	public void addInformation( ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn )
+	{
 		tooltip.add("Give this trophy to a Village Lord: Embrace the vampiric abilites of the Vampire Lord, allowing you slowly regenrate health while in that province.\n\n§oAnd you thought bats couldn't get anymore annoying, ha!");
-    }
+	}
 
 }

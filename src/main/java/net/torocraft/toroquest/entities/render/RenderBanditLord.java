@@ -14,14 +14,15 @@ import net.torocraft.toroquest.entities.EntityBanditLord;
 import net.torocraft.toroquest.entities.EntitySentry;
 import net.torocraft.toroquest.entities.model.Model64Layer;
 
-@SideOnly(Side.CLIENT)
+@SideOnly( Side.CLIENT )
 public class RenderBanditLord extends RenderBiped<EntityBanditLord>
 {
-	// private static ResourceLocation TEXTURES = new ResourceLocation(ToroQuest.MODID + ":textures/entity/bandit/bandit.png");
+	// private static ResourceLocation TEXTURES = new
+	// ResourceLocation(ToroQuest.MODID + ":textures/entity/bandit/bandit.png");
 
 	private final Model64Layer defaultModel = (Model64Layer) mainModel;
 
-	public RenderBanditLord(RenderManager renderManagerIn)
+	public RenderBanditLord( RenderManager renderManagerIn )
 	{
 		super(renderManagerIn, new Model64Layer(), 0.5F);
 
@@ -40,82 +41,82 @@ public class RenderBanditLord extends RenderBiped<EntityBanditLord>
 	 * Renders the desired {@code T} type Entity.
 	 */
 	@Override
-	public void doRender(EntityBanditLord entity, double x, double y, double z, float entityYaw, float partialTicks)
+	public void doRender( EntityBanditLord entity, double x, double y, double z, float entityYaw, float partialTicks )
 	{
 		this.setModelVisibilities(entity);
 		super.doRender(entity, x, y, z, entityYaw, partialTicks);
 	}
 
-	private void setModelVisibilities(EntitySentry entity)
+	private void setModelVisibilities( EntitySentry entity )
 	{
 		ItemStack itemstack = entity.getHeldItemMainhand();
 		ItemStack itemstack1 = entity.getHeldItemOffhand();
-		
+
 		defaultModel.setVisible(true);
 
 		Model64Layer.ArmPose modelbiped$armpose = Model64Layer.ArmPose.EMPTY;
 		Model64Layer.ArmPose modelbiped$armpose1 = Model64Layer.ArmPose.EMPTY;
 
-		if (itemstack != null)
+		if ( itemstack != null )
 		{
 			modelbiped$armpose = Model64Layer.ArmPose.ITEM;
 
-			if (entity.getItemInUseCount() > 0)
+			if ( entity.getItemInUseCount() > 0 )
 			{
 				EnumAction enumaction = itemstack.getItemUseAction();
 
-				if (enumaction == EnumAction.BLOCK)
+				if ( enumaction == EnumAction.BLOCK )
 				{
 					modelbiped$armpose = Model64Layer.ArmPose.BLOCK;
 				}
-				else if (enumaction == EnumAction.BOW)
+				else if ( enumaction == EnumAction.BOW )
 				{
 					modelbiped$armpose = Model64Layer.ArmPose.BOW_AND_ARROW;
 				}
 			}
 		}
 
-		if (itemstack1 != null)
+		if ( itemstack1 != null )
 		{
 			modelbiped$armpose1 = Model64Layer.ArmPose.ITEM;
 
-			if (entity.getItemInUseCount() > 0)
+			if ( entity.getItemInUseCount() > 0 )
 			{
 				EnumAction enumaction1 = itemstack1.getItemUseAction();
 
-				if (enumaction1 == EnumAction.BLOCK)
+				if ( enumaction1 == EnumAction.BLOCK )
 				{
 					modelbiped$armpose1 = Model64Layer.ArmPose.BLOCK;
 				}
 			}
 		}
-		
+
 		if ( entity.isDrinkingPotion() )
 		{
 			modelbiped$armpose1 = Model64Layer.ArmPose.BOW_AND_ARROW;
 		}
 
-//		if (entity.getPrimaryHand() == EnumHandSide.RIGHT)
+		// if (entity.getPrimaryHand() == EnumHandSide.RIGHT)
 		{
 			defaultModel.rightArmPose = modelbiped$armpose;
 			defaultModel.leftArmPose = modelbiped$armpose1;
 		}
-//		else
-//		{
-//			defaultModel.rightArmPose = modelbiped$armpose1;
-//			defaultModel.leftArmPose = modelbiped$armpose;
-//		}
+		// else
+		// {
+		// defaultModel.rightArmPose = modelbiped$armpose1;
+		// defaultModel.leftArmPose = modelbiped$armpose;
+		// }
 
 	}
-	
+
 	@Override
-	protected void preRenderCallback(EntityBanditLord entitylivingbaseIn, float partialTickTime)
+	protected void preRenderCallback( EntityBanditLord entitylivingbaseIn, float partialTickTime )
 	{
 		GlStateManager.scale(1.4F, 1.4F, 1.4F);
 	}
-	
+
 	@Override
-	protected ResourceLocation getEntityTexture(EntityBanditLord entity)
+	protected ResourceLocation getEntityTexture( EntityBanditLord entity )
 	{
 		return entity.getSkin();
 	}

@@ -28,26 +28,29 @@ import net.torocraft.toroquest.ToroQuest;
 import net.torocraft.toroquest.material.ArmorMaterials;
 
 @Mod.EventBusSubscriber
-public class ItemBanditArmor extends ItemArmor {
+public class ItemBanditArmor extends ItemArmor
+{
 
 	public static final String NAME = "bandit";
 
 	public static ItemBanditArmor helmetItem;
 
 	@SubscribeEvent
-	public static void init(final RegistryEvent.Register<Item> event)
+	public static void init( final RegistryEvent.Register<Item> event )
 	{
 		helmetItem = new ItemBanditArmor(NAME + "_helmet", 1, EntityEquipmentSlot.HEAD);
-		
+
 		helmetItem.setRegistryName(new ResourceLocation(ToroQuest.MODID, NAME + "_helmet"));
 		event.getRegistry().register(helmetItem);
 	}
-	
-	@SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
-    {
-    	tooltip.add(I18n.format("item.bandit_helmet.description"));
-    }
+
+	@SideOnly( Side.CLIENT )
+	public void addInformation( ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn )
+	{
+		tooltip.add(I18n.format("item.bandit_helmet.description0"));
+		tooltip.add("");
+		tooltip.add(I18n.format("item.bandit_helmet.description1"));
+	}
 
 	public static void registerRenders()
 	{
@@ -59,53 +62,56 @@ public class ItemBanditArmor extends ItemArmor {
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(helmetItem, 0, model("helmet"));
 	}
 
-	private static ModelResourceLocation model(String model)
+	private static ModelResourceLocation model( String model )
 	{
 		return new ModelResourceLocation(ToroQuest.MODID + ":" + NAME + "_" + model, "inventory");
 	}
 
-	public ItemBanditArmor(String unlocalizedName, int renderIndexIn, EntityEquipmentSlot equipmentSlotIn)
+	public ItemBanditArmor( String unlocalizedName, int renderIndexIn, EntityEquipmentSlot equipmentSlotIn )
 	{
 		super(ArmorMaterials.BANDIT, renderIndexIn, equipmentSlotIn);
 		this.setUnlocalizedName(unlocalizedName);
 		this.maxStackSize = 16;
 		setMaxDamage(0);
 	}
-	
-	@Override
-	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
-    {
-		ItemStack bandana = playerIn.getHeldItem(handIn);
-        EntityEquipmentSlot entityequipmentslot = EntityLiving.getSlotForItemStack(bandana);
-        ItemStack headSlot = playerIn.getItemStackFromSlot(entityequipmentslot);
 
-        if (headSlot.isEmpty())
-        {
-        	ItemStack newBandanaStack = bandana.copy();
-        	newBandanaStack.setCount(1);
-            playerIn.setItemStackToSlot(entityequipmentslot, newBandanaStack);
-            bandana.setCount(bandana.getCount()-1);
-            return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, bandana);
-        }
-        else
-        {
-            return new ActionResult<ItemStack>(EnumActionResult.FAIL, bandana);
-        }
+	@Override
+	public ActionResult<ItemStack> onItemRightClick( World worldIn, EntityPlayer playerIn, EnumHand handIn )
+	{
+		ItemStack bandana = playerIn.getHeldItem(handIn);
+		EntityEquipmentSlot entityequipmentslot = EntityLiving.getSlotForItemStack(bandana);
+		ItemStack headSlot = playerIn.getItemStackFromSlot(entityequipmentslot);
+
+		if ( headSlot.isEmpty() )
+		{
+			ItemStack newBandanaStack = bandana.copy();
+			newBandanaStack.setCount(1);
+			playerIn.setItemStackToSlot(entityequipmentslot, newBandanaStack);
+			bandana.setCount(bandana.getCount() - 1);
+			return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, bandana);
+		}
+		else
+		{
+			return new ActionResult<ItemStack>(EnumActionResult.FAIL, bandana);
+		}
 	}
-	
+
 	@Override
 	public boolean isDamageable()
-    {
-        return false;
-    }
-	
-	@Override
-	public boolean getIsRepairable(ItemStack toRepair, ItemStack repair)
-    {
+	{
 		return false;
-//        ItemStack mat = new ItemStack( Item.getByNameOrId("toroquest:bandit_helmet"), 1 );
-//        if (!mat.isEmpty() && net.minecraftforge.oredict.OreDictionary.itemMatches(mat,repair,false)) return true;
-//        return super.getIsRepairable(toRepair, repair);
-    }
+	}
+
+	@Override
+	public boolean getIsRepairable( ItemStack toRepair, ItemStack repair )
+	{
+		return false;
+		// ItemStack mat = new ItemStack( Item.getByNameOrId("toroquest:bandit_helmet"),
+		// 1 );
+		// if (!mat.isEmpty() &&
+		// net.minecraftforge.oredict.OreDictionary.itemMatches(mat,repair,false))
+		// return true;
+		// return super.getIsRepairable(toRepair, repair);
+	}
 
 }

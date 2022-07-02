@@ -12,7 +12,7 @@ import net.torocraft.toroquest.civilization.CivilizationType;
 import net.torocraft.toroquest.entities.EntityVillageLord;
 import net.torocraft.toroquest.entities.model.ModelGuard;
 
-@SideOnly(Side.CLIENT)
+@SideOnly( Side.CLIENT )
 public class RenderVillageLord extends RenderBiped<EntityVillageLord>
 {
 	private static final ResourceLocation DEFAULT = new ResourceLocation(ToroQuest.MODID + ":textures/entity/lord/lord_null.png");
@@ -22,13 +22,13 @@ public class RenderVillageLord extends RenderBiped<EntityVillageLord>
 	private static final ResourceLocation TEXTURES_WIND = new ResourceLocation(ToroQuest.MODID + ":textures/entity/lord/lord_wind.png");
 	private static final ResourceLocation TEXTURES_FIRE = new ResourceLocation(ToroQuest.MODID + ":textures/entity/lord/lord_fire.png");
 	private static final ResourceLocation TEXTURES_WATER = new ResourceLocation(ToroQuest.MODID + ":textures/entity/lord/lord_water.png");
-	
-	//private final ModelGuard defaultModel = (ModelGuard) mainModel;
 
-	public RenderVillageLord(RenderManager renderManagerIn)
+	// private final ModelGuard defaultModel = (ModelGuard) mainModel;
+
+	public RenderVillageLord( RenderManager renderManagerIn )
 	{
 		super(renderManagerIn, new ModelGuard(), 0.5F);
-        //this.addLayer(new LayerArrow(this));
+		// this.addLayer(new LayerArrow(this));
 
 		LayerBipedArmor layerbipedarmor = new LayerBipedArmor(this)
 		{
@@ -40,74 +40,75 @@ public class RenderVillageLord extends RenderBiped<EntityVillageLord>
 		};
 		this.addLayer(layerbipedarmor);
 	}
-	
-//	@Override
-//	public void doRender(EntityVillageLord entity, double x, double y, double z, float entityYaw, float partialTicks)
-//	{
-//		if ( ToroQuestConfiguration.reduceVillageLag )
-//		{
-//			boolean flag = false;
-//			for ( EntityPlayer player : entity.world.playerEntities )
-//			{
-//				if ( entity.canEntityBeSeen(player) )
-//				{
-//					flag = true;
-//					continue;
-//				}
-//			}
-//			if ( !flag )
-//			{
-//				return;
-//			}
-//		}
-//		super.doRender(entity, x, y, z, entityYaw, partialTicks);
-//	}
+
+	// @Override
+	// public void doRender(EntityVillageLord entity, double x, double y, double z,
+	// float entityYaw, float partialTicks)
+	// {
+	// if ( ToroQuestConfiguration.reduceVillageLag )
+	// {
+	// boolean flag = false;
+	// for ( EntityPlayer player : entity.world.playerEntities )
+	// {
+	// if ( entity.canEntityBeSeen(player) )
+	// {
+	// flag = true;
+	// continue;
+	// }
+	// }
+	// if ( !flag )
+	// {
+	// return;
+	// }
+	// }
+	// super.doRender(entity, x, y, z, entityYaw, partialTicks);
+	// }
 
 	/**
 	 * Returns the location of an entity's texture. Doesn't seem to be called
 	 * unless you call Render.bindEntityTexture.
 	 */
-	
+
 	@Override
-	protected ResourceLocation getEntityTexture(EntityVillageLord entity)
+	protected ResourceLocation getEntityTexture( EntityVillageLord entity )
 	{
 		CivilizationType civ = entity.getCivilization();
-		
+
 		if ( civ == null )
 		{
 			return DEFAULT;
 		}
-		
-		switch ( civ )
+
+		switch( civ )
 		{
-			case FIRE:
-			{
-				return TEXTURES_FIRE;
-			}
-			case EARTH:
-			{
-				return TEXTURES_EARTH;
-			}
-			case MOON:
-			{
-				return TEXTURES_MOON;
-			}
-			case SUN:
-			{
-				return TEXTURES_SUN;
-			}
-			case WIND:
-			{
-				return TEXTURES_WIND;
-			}
-			case WATER:
-			{
-				return TEXTURES_WATER;
-			}
-			default:
-			{
-				return DEFAULT;
-			}
+		case FIRE:
+		{
+			return TEXTURES_FIRE;
+		}
+		case EARTH:
+		{
+			return TEXTURES_EARTH;
+		}
+		case MOON:
+		{
+			return TEXTURES_MOON;
+		}
+		case SUN:
+		{
+			return TEXTURES_SUN;
+		}
+		case WIND:
+		{
+			return TEXTURES_WIND;
+		}
+		case WATER:
+		{
+			return TEXTURES_WATER;
+		}
+		default:
+		{
+			return DEFAULT;
+		}
 		}
 	}
 }

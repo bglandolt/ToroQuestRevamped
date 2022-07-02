@@ -10,7 +10,6 @@ import net.minecraft.util.math.MathHelper;
 // Exported for Minecraft version 1.7 - 1.12
 // Paste this class into your mod and generate all required imports
 
-
 public class ModelVampireLord extends ModelBase
 {
 	private final ModelRenderer head;
@@ -127,7 +126,7 @@ public class ModelVampireLord extends ModelBase
 		left_r3.cubeList.add(new ModelBox(left_r3, 36, 16, -7.9524F, -29.2268F, 2.3383F, 5, 2, 2, 0.0F, true));
 
 		bot_jaw = new ModelRenderer(this);
-		bot_jaw.setRotationPoint(-1.2F, 29.0F, -10.5F); //-2.2467F
+		bot_jaw.setRotationPoint(-1.2F, 29.0F, -10.5F); // -2.2467F
 		head.addChild(bot_jaw);
 		setRotationAngle(bot_jaw, 0.2182F, 0.0F, 0.0F);
 		bot_jaw.cubeList.add(new ModelBox(bot_jaw, 31, 4, -1.5F, -30.8939F, 2.6603F, 5, 5, 7, 0.0F, false));
@@ -346,7 +345,6 @@ public class ModelVampireLord extends ModelBase
 
 		right_arm = new ModelRenderer(this);
 		right_arm.setRotationPoint(-10.0F, -21.0F, 0.0F);
-		
 
 		cube_r1 = new ModelRenderer(this);
 		cube_r1.setRotationPoint(-0.9025F, 10.3158F, -1.2561F);
@@ -389,7 +387,7 @@ public class ModelVampireLord extends ModelBase
 	}
 
 	@Override
-	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
+	public void render( Entity entity, float f, float f1, float f2, float f3, float f4, float f5 )
 	{
 		head.render(f5);
 		body.render(f5);
@@ -399,49 +397,49 @@ public class ModelVampireLord extends ModelBase
 		left_arm.render(f5);
 	}
 
-	public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z)
+	public void setRotationAngle( ModelRenderer modelRenderer, float x, float y, float z )
 	{
 		modelRenderer.rotateAngleX = x;
 		modelRenderer.rotateAngleY = y;
 		modelRenderer.rotateAngleZ = z;
 	}
-	
-	public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
-    {
+
+	public void setRotationAngles( float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn )
+	{
 		float s = 0.08F * limbSwingAmount;
 		this.right_arm.rotateAngleX = -1.25F * limbSwingAmount;
 		this.right_arm.rotateAngleY = 0.2F * limbSwingAmount;
-        this.right_arm.rotateAngleZ = -0.2F * limbSwingAmount;
-		
-        this.left_arm.rotateAngleZ = 0.1F * limbSwingAmount;
-        this.left_arm.rotateAngleY = 0.1F * limbSwingAmount;
-        
-        this.right_wing_r1.rotateAngleZ = -0.5F * limbSwingAmount;
-        this.right_wing_r1.rotateAngleY = -s;
-        this.left_wing_r1.rotateAngleZ = 0.5F * limbSwingAmount;
-        this.left_wing_r1.rotateAngleY = s;
+		this.right_arm.rotateAngleZ = -0.2F * limbSwingAmount;
 
-        this.body.rotateAngleZ = 0.1F * limbSwingAmount;
-        this.body.rotateAngleX = s;
-        this.body.rotateAngleY = -s;
-        
-        this.body_r1.rotateAngleZ = -s + 0.08F;
-        this.body_r2.rotateAngleY = s;
-        this.body_r1.rotateAngleX = s - 0.08F;
+		this.left_arm.rotateAngleZ = 0.1F * limbSwingAmount;
+		this.left_arm.rotateAngleY = 0.1F * limbSwingAmount;
 
-        this.body_r2.rotateAngleZ = s * 0.5F + 0.08F;
-        this.body_r2.rotateAngleZ = -s;
-        this.body_r2.rotateAngleX = -s * 0.5F - 0.08F;
+		this.right_wing_r1.rotateAngleZ = -0.5F * limbSwingAmount;
+		this.right_wing_r1.rotateAngleY = -s;
+		this.left_wing_r1.rotateAngleZ = 0.5F * limbSwingAmount;
+		this.left_wing_r1.rotateAngleY = s;
 
-        this.head.rotateAngleZ = s - 0.08F;
-        this.head.rotateAngleY = -0.1F * limbSwingAmount;
-        this.bot_jaw.rotateAngleX = 0.15F * limbSwingAmount - 0.15F;
-        this.left_r15.rotateAngleZ = -0.05F * limbSwingAmount + 0.08F;
+		this.body.rotateAngleZ = 0.1F * limbSwingAmount;
+		this.body.rotateAngleX = s;
+		this.body.rotateAngleY = -s;
 
-        this.right_leg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * limbSwingAmount;
-        this.left_leg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * limbSwingAmount;
-        
-        this.head.rotateAngleY = netHeadYaw * 0.017453292F;
-        this.head.rotateAngleX = headPitch * 0.017453292F;
-    }
+		this.body_r1.rotateAngleZ = -s + 0.08F;
+		this.body_r2.rotateAngleY = s;
+		this.body_r1.rotateAngleX = s - 0.08F;
+
+		this.body_r2.rotateAngleZ = s * 0.5F + 0.08F;
+		this.body_r2.rotateAngleZ = -s;
+		this.body_r2.rotateAngleX = -s * 0.5F - 0.08F;
+
+		this.head.rotateAngleZ = s - 0.08F;
+		this.head.rotateAngleY = -0.1F * limbSwingAmount;
+		this.bot_jaw.rotateAngleX = 0.15F * limbSwingAmount - 0.15F;
+		this.left_r15.rotateAngleZ = -0.05F * limbSwingAmount + 0.08F;
+
+		this.right_leg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * limbSwingAmount;
+		this.left_leg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * limbSwingAmount;
+
+		this.head.rotateAngleY = netHeadYaw * 0.017453292F;
+		this.head.rotateAngleX = headPitch * 0.017453292F;
+	}
 }

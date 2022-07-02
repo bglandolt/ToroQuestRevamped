@@ -28,203 +28,212 @@ import net.torocraft.toroquest.entities.EntitySpiderLord;
 public class SpiderLairGenerator extends WorldGenerator
 {
 
-
 	@Override
-	public boolean generate(World world, Random rand, BlockPos pos)
+	public boolean generate( World world, Random rand, BlockPos pos )
 	{
-//		this.world = world;
-//		this.rand = rand;
-//
-//		this.origin = pos;
+		// this.world = world;
+		// this.rand = rand;
+		//
+		// this.origin = pos;
 		if ( pos == null )
 		{
 			return false;
 		}
 		this.createWebs(world, rand, pos);
-		//this.addToroSpawner( world, pos, getDefaultEnemies() );
+		// this.addToroSpawner( world, pos, getDefaultEnemies() );
 		this.addToroSpawner(world, pos);
 		return true;
 	}
-	
-	protected void createWebPatch(World world, BlockPos start)
+
+	protected void createWebPatch( World world, BlockPos start )
 	{
 		int radius = 17;
 		int x = start.getX();
 		int z = start.getZ();
-		for ( int xx = -radius/2; xx < radius/2; xx++ )
+		for ( int xx = -radius / 2; xx < radius / 2; xx++ )
 		{
-				for ( int zz = -radius/2; zz < radius/2; zz++ )
+			for ( int zz = -radius / 2; zz < radius / 2; zz++ )
+			{
+				// EQUATION: ( Math.sqrt(Math.pow(Math.abs(xx)+(radius-1)/4, 2) +
+				// Math.pow(Math.abs(zz)+(radius-1)/4, 2)) <=
+				// (Math.pow((radius-1),2)/Math.sqrt(2)) )
+				int distFromCenter = (int) (Math.pow(Math.abs(xx) + 4, 2) + Math.pow(Math.abs(zz) + 4, 2));
+				if ( world.rand.nextInt(distFromCenter) < 64 )
 				{
-					// EQUATION: ( Math.sqrt(Math.pow(Math.abs(xx)+(radius-1)/4, 2) + Math.pow(Math.abs(zz)+(radius-1)/4, 2)) <= (Math.pow((radius-1),2)/Math.sqrt(2)) )
-					int distFromCenter = (int)(Math.pow(Math.abs(xx)+4, 2) + Math.pow(Math.abs(zz)+4, 2));
-					if ( world.rand.nextInt(distFromCenter) < 64 )
-					{
-						if ( distFromCenter <= 181 )
-						{
-							BlockPos pos = new BlockPos(x+xx,0,z+zz);
-							pos = this.getSurfacePosition(world, pos);
-							if ( pos == null )
-							{
-								break;
-							}
-							pos = pos.up();
-							world.setBlockState(pos, Blocks.WEB.getDefaultState());
-						}
-					}
-					/*
 					if ( distFromCenter <= 181 )
 					{
-						BlockPos pos = new BlockPos(x+xx,0,z+zz);
-						pos = this.getSurfacePositionClearLeaves(world, pos);
+						BlockPos pos = new BlockPos(x + xx, 0, z + zz);
+						pos = this.getSurfacePosition(world, pos);
 						if ( pos == null )
 						{
 							break;
 						}
-						if ( world.rand.nextInt(distFromCenter) < 64 )
-						{
-							pos = pos.up();
-							world.setBlockState(pos, Blocks.WEB.getDefaultState());
-						}
+						pos = pos.up();
+						world.setBlockState(pos, Blocks.WEB.getDefaultState());
 					}
-					*/
 				}
+				/*
+				 * if ( distFromCenter <= 181 )
+				 * {
+				 * BlockPos pos = new BlockPos(x+xx,0,z+zz);
+				 * pos = this.getSurfacePositionClearLeaves(world, pos);
+				 * if ( pos == null )
+				 * {
+				 * break;
+				 * }
+				 * if ( world.rand.nextInt(distFromCenter) < 64 )
+				 * {
+				 * pos = pos.up();
+				 * world.setBlockState(pos, Blocks.WEB.getDefaultState());
+				 * }
+				 * }
+				 */
+			}
 		}
 	}
-	
-	protected void createWebs(World world, Random rand, BlockPos origin)
+
+	protected void createWebs( World world, Random rand, BlockPos origin )
 	{
 		double x = origin.getX();
-    	double z = origin.getZ();
-    	
-    	int radius = 64;
-    	
+		double z = origin.getZ();
+
+		int radius = 64;
+
 		for ( int webs = 0; webs < 64; webs++ )
 		{
-			int xx = (rand.nextInt(radius))*(rand.nextInt(2)*2-1);
-			int zz = (rand.nextInt(radius))*(rand.nextInt(2)*2-1);
-			BlockPos pos = new BlockPos(new BlockPos(x+xx,0,z+zz));
+			int xx = (rand.nextInt(radius)) * (rand.nextInt(2) * 2 - 1);
+			int zz = (rand.nextInt(radius)) * (rand.nextInt(2) * 2 - 1);
+			BlockPos pos = new BlockPos(new BlockPos(x + xx, 0, z + zz));
 			this.createWebPatch(world, pos);
 		}
 	}
-	
 
-	private BlockPos getSurfacePosition(World world, BlockPos start)
+	private BlockPos getSurfacePosition( World world, BlockPos start )
 	{
 		IBlockState blockState;
-		BlockPos search = new BlockPos(start.getX(), world.getActualHeight()/2, start.getZ());
+		BlockPos search = new BlockPos(start.getX(), world.getActualHeight() / 2, start.getZ());
 		while (search.getY() > 0)
 		{
 			search = search.down();
 			blockState = world.getBlockState(search);
-			if (isLiquid(blockState))
+			if ( isLiquid(blockState) )
 			{
 				break;
 			}
-			if ((blockState).isOpaqueCube())
+			if ( (blockState).isOpaqueCube() )
 			{
 				break;
 			}
 		}
 		return search;
 	}
-	
+
 	/*
-	private BlockPos getSurfacePositionClearLeaves(World world, BlockPos start)
-	{
-		IBlockState blockState;
-		BlockPos search = new BlockPos(start.getX(), world.getActualHeight()/2, start.getZ());
-		while (search.getY() > 0)
-		{
-			search = search.down();
-			blockState = world.getBlockState(search);
-			if (blockState.getBlock() instanceof BlockLeaves )
-			{
-				world.setBlockState(search, Blocks.AIR.getDefaultState());
-			}
-			else
-			{
-				if (isLiquid(blockState))
-				{
-					break;
-				}
-				if ((blockState).isOpaqueCube())
-				{
-					break;
-				}
-			}
-		}
-		return search;
-	}
-	*/
+	 * private BlockPos getSurfacePositionClearLeaves(World world, BlockPos start)
+	 * {
+	 * IBlockState blockState;
+	 * BlockPos search = new BlockPos(start.getX(), world.getActualHeight()/2,
+	 * start.getZ());
+	 * while (search.getY() > 0)
+	 * {
+	 * search = search.down();
+	 * blockState = world.getBlockState(search);
+	 * if (blockState.getBlock() instanceof BlockLeaves )
+	 * {
+	 * world.setBlockState(search, Blocks.AIR.getDefaultState());
+	 * }
+	 * else
+	 * {
+	 * if (isLiquid(blockState))
+	 * {
+	 * break;
+	 * }
+	 * if ((blockState).isOpaqueCube())
+	 * {
+	 * break;
+	 * }
+	 * }
+	 * }
+	 * return search;
+	 * }
+	 */
 
-	private boolean isLiquid(IBlockState blockState) {
+	private boolean isLiquid( IBlockState blockState )
+	{
 		return blockState.getBlock() == Blocks.WATER || blockState.getBlock() == Blocks.LAVA;
 	}
 
-//	private boolean isGroundBlock(IBlockState blockState) {
-//		Block b = blockState.getBlock();
-//		if ( b == null )
-//		{
-//			return false;
-//		}
-//		if ( b instanceof BlockGrass ||  b instanceof BlockDirt ||  b == Blocks.STONE ||  b instanceof BlockSand || b instanceof BlockSnow || b instanceof BlockClay || b instanceof BlockGravel || b instanceof BlockMycelium || b instanceof BlockSand || b instanceof BlockSandStone )
-//		{
-//			return blockState.isOpaqueCube();
-//		}
-//		return false;
-//	}
+	// private boolean isGroundBlock(IBlockState blockState) {
+	// Block b = blockState.getBlock();
+	// if ( b == null )
+	// {
+	// return false;
+	// }
+	// if ( b instanceof BlockGrass || b instanceof BlockDirt || b == Blocks.STONE
+	// || b instanceof BlockSand || b instanceof BlockSnow || b instanceof BlockClay
+	// || b instanceof BlockGravel || b instanceof BlockMycelium || b instanceof
+	// BlockSand || b instanceof BlockSandStone )
+	// {
+	// return blockState.isOpaqueCube();
+	// }
+	// return false;
+	// }
 
+	// private IBlockState randomChest()
+	// {
+	// int roll = rand.nextInt(4);
+	// switch (roll) {
+	// case 1:
+	// return Blocks.CHEST.getDefaultState().withProperty(BlockChest.FACING,
+	// EnumFacing.NORTH);
+	// case 2:
+	// return Blocks.CHEST.getDefaultState().withProperty(BlockChest.FACING,
+	// EnumFacing.SOUTH);
+	// case 3:
+	// return Blocks.CHEST.getDefaultState().withProperty(BlockChest.FACING,
+	// EnumFacing.EAST);
+	// default:
+	// return Blocks.CHEST.getDefaultState().withProperty(BlockChest.FACING,
+	// EnumFacing.WEST);
+	// }
+	// }
 
-//	private IBlockState randomChest()
-//	{
-//		int roll = rand.nextInt(4);
-//		switch (roll) {
-//		case 1:
-//			return Blocks.CHEST.getDefaultState().withProperty(BlockChest.FACING, EnumFacing.NORTH);
-//		case 2:
-//			return Blocks.CHEST.getDefaultState().withProperty(BlockChest.FACING, EnumFacing.SOUTH);
-//		case 3:
-//			return Blocks.CHEST.getDefaultState().withProperty(BlockChest.FACING, EnumFacing.EAST);
-//		default:
-//			return Blocks.CHEST.getDefaultState().withProperty(BlockChest.FACING, EnumFacing.WEST);
-//		}
-//	}
+	// protected void addLootToChest()
+	// {
+	// if (block == null)
+	// {
+	// return;
+	// }
+	// if (block.getBlock() == Blocks.CHEST)
+	// {
+	// TileEntity tileentity = world.getTileEntity(origin.add(x, y, z));
+	// if (tileentity instanceof TileEntityChest)
+	// {
+	// ((TileEntityChest)
+	// tileentity).setLootTable(LootTableList.CHESTS_END_CITY_TREASURE,
+	// world.rand.nextLong());
+	// }
+	// }
+	// }
+	//
+	// private boolean isLootChest() {
+	// return y == 1 && rand.nextInt(400) == 0;
+	// }
 
-//	protected void addLootToChest()
-//	{
-//		if (block == null)
-//		{
-//			return;
-//		}
-//		if (block.getBlock() == Blocks.CHEST)
-//		{
-//			TileEntity tileentity = world.getTileEntity(origin.add(x, y, z));
-//			if (tileentity instanceof TileEntityChest)
-//			{
-//				((TileEntityChest) tileentity).setLootTable(LootTableList.CHESTS_END_CITY_TREASURE, world.rand.nextLong());
-//			}
-//		}
-//	}
-//
-//	private boolean isLootChest() {
-//		return y == 1 && rand.nextInt(400) == 0;
-//	}
+	// protected void placeBlock()
+	// {
+	// if (block == null)
+	// {
+	// return;
+	// }
+	// setBlockAndNotifyAdequately(world, origin.add(x, y, z), block);
+	// }
 
-
-//	protected void placeBlock()
-//	{
-//		if (block == null)
-//		{
-//			return;
-//		}
-//		setBlockAndNotifyAdequately(world, origin.add(x, y, z), block);
-//	}
-	
-	private void addToroSpawner( World world, BlockPos blockpos)
+	private void addToroSpawner( World world, BlockPos blockpos )
 	{
 		world.setBlockState(blockpos, BlockToroSpawner.INSTANCE.getDefaultState());
 		TileEntity tileentity = world.getTileEntity(blockpos);
-		if (tileentity instanceof TileEntityToroSpawner)
+		if ( tileentity instanceof TileEntityToroSpawner )
 		{
 			TileEntityToroSpawner spawner = (TileEntityToroSpawner) tileentity;
 			spawner.setTriggerDistance(80);

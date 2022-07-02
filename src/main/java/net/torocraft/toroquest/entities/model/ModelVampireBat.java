@@ -7,8 +7,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-@SideOnly(Side.CLIENT)
-public class ModelVampireBat extends ModelBase {
+@SideOnly( Side.CLIENT )
+public class ModelVampireBat extends ModelBase
+{
 
 	private final ModelRenderer batHead;
 	private final ModelRenderer batBody;
@@ -17,7 +18,8 @@ public class ModelVampireBat extends ModelBase {
 	private final ModelRenderer batOuterRightWing;
 	private final ModelRenderer batOuterLeftWing;
 
-	public ModelVampireBat() {
+	public ModelVampireBat()
+	{
 		this.textureWidth = 64;
 		this.textureHeight = 64;
 		this.batHead = new ModelRenderer(this, 0, 0);
@@ -53,7 +55,8 @@ public class ModelVampireBat extends ModelBase {
 	/**
 	 * Sets the models various rotation angles then renders the model.
 	 */
-	public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+	public void render( Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale )
+	{
 		this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
 		this.batHead.render(scale);
 		this.batBody.render(scale);
@@ -65,7 +68,8 @@ public class ModelVampireBat extends ModelBase {
 	 * the time(so that arms and legs swing back and forth) and par2 represents
 	 * how "far" arms and legs can swing at most.
 	 */
-	public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
+	public void setRotationAngles( float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn )
+	{
 		batHead.rotateAngleX = headPitch * 0.017453292F;
 		batHead.rotateAngleY = netHeadYaw * 0.017453292F;
 		batHead.rotateAngleZ = 0.0F;
@@ -78,11 +82,13 @@ public class ModelVampireBat extends ModelBase {
 
 	}
 
-	protected void bodyLeanForward(float ageInTicks) {
+	protected void bodyLeanForward( float ageInTicks )
+	{
 		this.batBody.rotateAngleX = ((float) Math.PI / 4F) + MathHelper.cos(ageInTicks * 0.1F) * 0.15F;
 	}
 
-	protected void wingFlap(float ageInTicks) {
+	protected void wingFlap( float ageInTicks )
+	{
 		this.batRightWing.rotateAngleY = MathHelper.cos(ageInTicks * 1.3F) * (float) Math.PI * 0.25F;
 		this.batLeftWing.rotateAngleY = -this.batRightWing.rotateAngleY;
 		this.batOuterRightWing.rotateAngleY = this.batRightWing.rotateAngleY * 0.5F;

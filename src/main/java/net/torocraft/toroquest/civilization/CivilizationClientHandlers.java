@@ -4,22 +4,27 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.torocraft.toroquest.ToroQuest;
 
-public class CivilizationClientHandlers {
+@Mod.EventBusSubscriber( modid = ToroQuest.MODID )
+public class CivilizationClientHandlers
+{
 
 	private CivilizationOverlayHandler hud;
 
 	@SubscribeEvent
-	public void onPostRenderOverlay(RenderGameOverlayEvent.Pre event)
+	public void onPostRenderOverlay( RenderGameOverlayEvent.Pre event )
 	{
-		if (event.getType() != ElementType.HOTBAR)
+		if ( event.getType() != ElementType.HOTBAR )
 		{
 			return;
 		}
+
 		ScaledResolution resolution = event.getResolution();
 
-		if (hud == null)
+		if ( hud == null )
 		{
 			hud = new CivilizationOverlayHandler(Minecraft.getMinecraft());
 		}

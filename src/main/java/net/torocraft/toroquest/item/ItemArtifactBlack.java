@@ -30,7 +30,7 @@ public class ItemArtifactBlack extends Item
 	private static ResourceLocation REGISTRY_NAME = new ResourceLocation(ToroQuest.MODID, NAME);
 
 	@SubscribeEvent
-	public static void init(final RegistryEvent.Register<Item> event)
+	public static void init( final RegistryEvent.Register<Item> event )
 	{
 		INSTANCE = new ItemArtifactBlack();
 		INSTANCE.setRegistryName(REGISTRY_NAME);
@@ -51,12 +51,12 @@ public class ItemArtifactBlack extends Item
 		this.maxStackSize = 1;
 		this.setCreativeTab(CreativeTabs.MATERIALS);
 	}
-	
+
 	@Override
-    @SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
-    {
+	@SideOnly( Side.CLIENT )
+	public void addInformation( ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn )
+	{
 		tooltip.add("Give this artifact to a Village Lord of House " + ToroQuestConfiguration.blackName + " for a reward §7[put the item in donate box]§r.");
-    }
+	}
 
 }

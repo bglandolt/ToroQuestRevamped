@@ -14,7 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
-import net.torocraft.toroquest.civilization.CivilizationHandlers;
+import net.torocraft.toroquest.EventHandlers;
 import net.torocraft.toroquest.civilization.Province;
 import net.torocraft.toroquest.civilization.player.PlayerCivilizationCapabilityImpl;
 import net.torocraft.toroquest.civilization.quests.util.Quest;
@@ -27,7 +27,7 @@ public class QuestRecruit extends QuestBase implements Quest
 	public static QuestRecruit INSTANCE;
 	public static int ID;
 
-	public static void init(int id)
+	public static void init( int id )
 	{
 		INSTANCE = new QuestRecruit();
 		Quests.registerQuest(id, INSTANCE);
@@ -35,9 +35,9 @@ public class QuestRecruit extends QuestBase implements Quest
 		ID = id;
 	}
 
-	public void onRecruit(EntityPlayer player)
+	public void onRecruit( EntityPlayer player )
 	{
-		if (player == null)
+		if ( player == null )
 		{
 			return;
 		}
@@ -51,30 +51,30 @@ public class QuestRecruit extends QuestBase implements Quest
 
 		handleRecruitment(player, province);
 	}
-	
-	public void onRecruit(EntityPlayer player, Province province)
+
+	public void onRecruit( EntityPlayer player, Province province )
 	{
-		if (player == null)
+		if ( player == null )
 		{
 			return;
 		}
-		
+
 		handleRecruitment(player, province);
 	}
 
-	private void handleRecruitment(EntityPlayer player, Province province)
+	private void handleRecruitment( EntityPlayer player, Province province )
 	{
 		Set<QuestData> quests = PlayerCivilizationCapabilityImpl.get(player).getCurrentQuests();
 
 		DataWrapper quest = new DataWrapper();
-		for (QuestData data : quests)
+		for ( QuestData data : quests )
 		{
 			try
 			{
 				quest.setData(data);
 				quest.province = province;
-				
-				if (perform(quest))
+
+				if ( perform(quest) )
 				{
 					return;
 				}
@@ -85,17 +85,18 @@ public class QuestRecruit extends QuestBase implements Quest
 			}
 		}
 	}
-	
-	// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= QUEST STATUS =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-	
-	private boolean perform(DataWrapper quest)
+
+	// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= QUEST STATUS
+	// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+	private boolean perform( DataWrapper quest )
 	{
-		if (quest.getData().getPlayer().world.isRemote)
+		if ( quest.getData().getPlayer().world.isRemote )
 		{
 			return false;
 		}
 
-		if (!quest.isApplicable())
+		if ( !quest.isApplicable() )
 		{
 			return false;
 		}
@@ -103,9 +104,9 @@ public class QuestRecruit extends QuestBase implements Quest
 		if ( !quest.getData().getCompleted() )
 		{
 			quest.setCurrentAmount(quest.getCurrentAmount() + 1);
-			quest.getData().getPlayer().sendStatusMessage( new TextComponentString("Recruited " + MathHelper.clamp(quest.getCurrentAmount(), 0, quest.getTargetAmount())+"/"+quest.getTargetAmount()+" Guards"), true);
-			
-			if (quest.getCurrentAmount() >= quest.getTargetAmount())
+			quest.getData().getPlayer().sendStatusMessage(new TextComponentString("Recruited " + MathHelper.clamp(quest.getCurrentAmount(), 0, quest.getTargetAmount()) + "/" + quest.getTargetAmount() + " Guards"), true);
+
+			if ( quest.getCurrentAmount() >= quest.getTargetAmount() )
 			{
 				quest.getData().setCompleted(true);
 				chatCompletedQuest(quest.getData());
@@ -114,11 +115,11 @@ public class QuestRecruit extends QuestBase implements Quest
 		}
 		return false;
 	}
-	
+
 	// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 	@Override
-	public List<ItemStack> complete(QuestData quest, List<ItemStack> items)
+	public List<ItemStack> complete( QuestData quest, List<ItemStack> items )
 	{
 		Province province = loadProvince(quest.getPlayer().world, quest.getPlayer().getPosition());
 
@@ -126,7 +127,7 @@ public class QuestRecruit extends QuestBase implements Quest
 		{
 			return null;
 		}
-		
+
 		if ( !quest.getCompleted() )
 		{
 			if ( quest.getChatStack().equals("") )
@@ -138,30 +139,32 @@ public class QuestRecruit extends QuestBase implements Quest
 			return null;
 		}
 
-//		PlayerCivilizationCapability playerCiv = PlayerCivilizationCapabilityImpl.get(quest.getPlayer());
-//		int amount = new DataWrapper().setData(quest).getRewardRep();
-//		CivilizationHandlers.adjustPlayerRep(quest.getPlayer(), playerCiv.getInCivilization().civilization, amount);
-		
-		CivilizationHandlers.adjustPlayerRep(quest.getPlayer(), quest.getCiv(), getRewardRep(quest));
-		
-		if ( PlayerCivilizationCapabilityImpl.get(quest.getPlayer()).getReputation(quest.getCiv()) >= 3000 )
-		{
-			if (!quest.getPlayer().world.isRemote)
-	        {
-	            int i = getRewardRep(quest)*2;
+		// PlayerCivilizationCapability playerCiv =
+		// PlayerCivilizationCapabilityImpl.get(quest.getPlayer());
+		// int amount = new DataWrapper().setData(quest).getRewardRep();
+		// EventHandlers.adjustPlayerRep(quest.getPlayer(),
+		// playerCiv.getInCivilization().civilization, amount);
 
-	            while (i > 0)
-	            {
-	                int j = EntityXPOrb.getXPSplit(i);
-	                i -= j;
-	                quest.getPlayer().world.spawnEntity(new EntityXPOrb(quest.getPlayer().world, quest.getPlayer().posX+((rand.nextInt(2)*2-1)*2), quest.getPlayer().posY, quest.getPlayer().posZ+((rand.nextInt(2)*2-1)*2), j));
-	            }
-	        }
+		EventHandlers.adjustPlayerRep(quest.getPlayer(), quest.getCiv(), getRewardRep(quest));
+
+		if ( PlayerCivilizationCapabilityImpl.get(quest.getPlayer()).getReputation(quest.getCiv()) >= 2000 )
+		{
+			if ( !quest.getPlayer().world.isRemote )
+			{
+				int i = getRewardRep(quest) * 2;
+
+				while (i > 0)
+				{
+					int j = EntityXPOrb.getXPSplit(i);
+					i -= j;
+					quest.getPlayer().world.spawnEntity(new EntityXPOrb(quest.getPlayer().world, quest.getPlayer().posX + ((rand.nextInt(2) * 2 - 1) * 2), quest.getPlayer().posY, quest.getPlayer().posZ + ((rand.nextInt(2) * 2 - 1) * 2), j));
+				}
+			}
 		}
 
 		List<ItemStack> rewards = getRewardItems(quest);
-		
-		if (rewards != null)
+
+		if ( rewards != null )
 		{
 			items.addAll(rewards);
 		}
@@ -170,47 +173,50 @@ public class QuestRecruit extends QuestBase implements Quest
 		this.setData(quest);
 		return items;
 	}
-	
+
 	@Override
-	public List<ItemStack> accept(QuestData data, List<ItemStack> in)
+	public List<ItemStack> accept( QuestData data, List<ItemStack> in )
 	{
-		data.setChatStack("recruit.incomplete", data.getPlayer(), null);
-		int amount = getTargetAmount(data);
-		if ( amount <= 0 )
+		if ( ToroQuestConfiguration.recruitVillagers )
 		{
-			amount = 5;
+			data.setChatStack("recruit.accept", data.getPlayer(), null);
 		}
-		in.add(new ItemStack(Item.getByNameOrId("toroquest:recruitment_papers"),amount));
+		else
+		{
+			data.setChatStack("recruitNonVillagers.accept", data.getPlayer(), null);
+		}
+		int amount = getTargetAmount(data);
+		in.add(new ItemStack(Item.getByNameOrId("toroquest:recruitment_papers"), amount));
 		this.setData(data);
 		return in;
 	}
 
 	@Override
-	public List<ItemStack> reject(QuestData data, List<ItemStack> in)
+	public List<ItemStack> reject( QuestData data, List<ItemStack> in )
 	{
 		if ( data.getCompleted() )
 		{
 			return null;
 		}
-		
+
 		data.setChatStack("recruit.reject", data.getPlayer(), null);
 		this.setData(data);
 		data.getPlayer().closeScreen();
 		return in;
 	}
-	
+
 	// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-	
+
 	@Override
-	public String getTitle(QuestData data)
+	public String getTitle( QuestData data )
 	{
 		return "quests.recruit.title";
 	}
 
 	@Override
-	public String getDescription(QuestData data)
+	public String getDescription( QuestData data )
 	{
-		if (data == null)
+		if ( data == null )
 		{
 			return "";
 		}
@@ -218,16 +224,15 @@ public class QuestRecruit extends QuestBase implements Quest
 		StringBuilder s = new StringBuilder();
 		s.append("quests.recruit.description");
 		s.append("|").append(q.getTargetAmount());
-		s.append("|").append("guards");
 		s.append("|").append(getProvinceName(data.getPlayer(), data.getProvinceId()));
-		s.append("|").append(q.getCurrentAmount()  + "\n\n" );
-		s.append("|").append(listItems(getRewardItems(q.getData()))  + ",\n" );
+		s.append("|").append(q.getCurrentAmount() + "\n\n");
+		s.append("|").append(listItems(getRewardItems(q.getData())) + ",\n");
 		s.append("|").append(getRewardRep(data));
 		return s.toString();
 	}
 
 	@Override
-	public QuestData generateQuestFor(EntityPlayer player, Province province)
+	public QuestData generateQuestFor( EntityPlayer player, Province province )
 	{
 		Random rand = new Random();
 		DataWrapper q = new DataWrapper();
@@ -238,18 +243,32 @@ public class QuestRecruit extends QuestBase implements Quest
 		q.getData().setQuestType(ID);
 		q.getData().setCompleted(false);
 		int rep = PlayerCivilizationCapabilityImpl.get(player).getReputation(province.civilization);
-		int roll = rand.nextInt(3)+2;
-		if ( rep >= 250 )
+		int roll = rand.nextInt(2) + 2;
+
+		if ( rep >= 250 && rand.nextBoolean() )
 		{
 			roll++;
 		}
-		int em = roll*2+6;
-		if ( !ToroQuestConfiguration.recruitVillagers ) em *= 2.35;
-		q.setRewardRep(em*2);
-		if ( PlayerCivilizationCapabilityImpl.get(player).getReputation(province.civilization) >= 2000 )
+
+		int em = 0;
+
+		if ( !ToroQuestConfiguration.recruitVillagers )
+		{
+			em = roll * 4 + 4;
+		}
+		else
+		{
+			roll++;
+			em = roll * 2 + 4;
+		}
+
+		q.setRewardRep(em * 2);
+
+		if ( PlayerCivilizationCapabilityImpl.get(player).getReputation(province.civilization) >= 3000 )
 		{
 			em *= 2;
 		}
+
 		q.setCurrentAmount(0);
 		q.setTargetAmount(roll);
 		ItemStack emeralds = new ItemStack(Items.EMERALD, em);
@@ -270,7 +289,7 @@ public class QuestRecruit extends QuestBase implements Quest
 			return data;
 		}
 
-		public DataWrapper setData(QuestData data)
+		public DataWrapper setData( QuestData data )
 		{
 			this.data = data;
 			return this;
@@ -281,18 +300,17 @@ public class QuestRecruit extends QuestBase implements Quest
 			return province;
 		}
 
-		public void setProvinceHuntedIn(Province provinceHuntedIn)
+		public void setProvinceHuntedIn( Province provinceHuntedIn )
 		{
 			this.province = provinceHuntedIn;
 		}
-		
 
 		public Integer getTargetAmount()
 		{
 			return i(data.getiData().get("target"));
 		}
 
-		public void setTargetAmount(Integer targetAmount)
+		public void setTargetAmount( Integer targetAmount )
 		{
 			data.getiData().put("target", targetAmount);
 		}
@@ -302,7 +320,7 @@ public class QuestRecruit extends QuestBase implements Quest
 			return i(data.getiData().get("amount"));
 		}
 
-		public void setCurrentAmount(Integer currentAmount)
+		public void setCurrentAmount( Integer currentAmount )
 		{
 			data.getiData().put("amount", currentAmount);
 		}
@@ -312,12 +330,12 @@ public class QuestRecruit extends QuestBase implements Quest
 			return i(data.getiData().get("rep"));
 		}
 
-		public void setRewardRep(Integer rewardRep)
+		public void setRewardRep( Integer rewardRep )
 		{
 			data.getiData().put("rep", rewardRep);
 		}
 
-		private Integer i(Object o)
+		private Integer i( Object o )
 		{
 			try
 			{

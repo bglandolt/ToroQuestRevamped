@@ -13,56 +13,57 @@ public class EntityAIThrow extends EntityAIAttackMelee
 	protected boolean isPassive = false;
 	// protected int widthRange = 6;
 	protected int attackCooldown = 20;
-	
-    public EntityAIThrow(EntityCreature creature, double speedIn, boolean useLongMemory)
-    {
+
+	public EntityAIThrow( EntityCreature creature, double speedIn, boolean useLongMemory )
+	{
 		super(creature, speedIn, useLongMemory);
 	}
-    
-    public EntityAIThrow(EntityCreature creature, double speedIn, boolean useLongMemory, double strength)
-    {
+
+	public EntityAIThrow( EntityCreature creature, double speedIn, boolean useLongMemory, double strength )
+	{
 		super(creature, speedIn, useLongMemory);
 		this.strength = strength;
 	}
-    
-    public EntityAIThrow(EntityCreature creature, double speedIn, boolean useLongMemory, boolean passive)
-    {
+
+	public EntityAIThrow( EntityCreature creature, double speedIn, boolean useLongMemory, boolean passive )
+	{
 		super(creature, speedIn, useLongMemory);
 		this.isPassive = passive;
 	}
-    
-    public EntityAIThrow(EntityCreature creature, double speedIn, boolean useLongMemory, double strength, int attackCooldown)
-    {
+
+	public EntityAIThrow( EntityCreature creature, double speedIn, boolean useLongMemory, double strength, int attackCooldown )
+	{
 		super(creature, speedIn, useLongMemory);
 		this.strength = strength;
-		//this.widthRange = widthRange;
+		// this.widthRange = widthRange;
 		this.attackCooldown = 40;
 	}
 
-    @Override
-    protected double getAttackReachSqr(EntityLivingBase attackTarget)
-    {
-        return (double)(this.attacker.width * this.attacker.width + attackTarget.width * 3.0D + 3.0D);
-    }
-    
-    @Override
-	protected void checkAndPerformAttack(EntityLivingBase e, double range)
-    {
-    	if ( this.isPassive ) return;
-        double dist = this.getAttackReachSqr(e);
+	@Override
+	protected double getAttackReachSqr( EntityLivingBase attackTarget )
+	{
+		return (double) (this.attacker.width * this.attacker.width + attackTarget.width * 3.0D + 3.0D);
+	}
 
-        if (range <= dist && this.attackTick <= 0)
-        {
-            this.attackTick = this.attackCooldown;
-            this.attacker.swingArm(EnumHand.MAIN_HAND);
-            this.attacker.swingArm(EnumHand.OFF_HAND);
-            this.attacker.attackEntityAsMob(e);
+	@Override
+	protected void checkAndPerformAttack( EntityLivingBase e, double range )
+	{
+		if ( this.isPassive )
+			return;
+		double dist = this.getAttackReachSqr(e);
+
+		if ( range <= dist && this.attackTick <= 0 )
+		{
+			this.attackTick = this.attackCooldown;
+			this.attacker.swingArm(EnumHand.MAIN_HAND);
+			this.attacker.swingArm(EnumHand.OFF_HAND);
+			this.attacker.attackEntityAsMob(e);
 			if ( !this.attacker.world.isRemote )
 			{
-                Vec3d veloctiyVector = new Vec3d(e.posX - this.attacker.posX, 0, e.posZ - this.attacker.posZ);
-                e.addVelocity( (veloctiyVector.x) * strength,(0.2F + this.attacker.world.rand.nextFloat()) * strength,(veloctiyVector.z) * strength );
-                e.velocityChanged = true;
+				Vec3d veloctiyVector = new Vec3d(e.posX - this.attacker.posX, 0, e.posZ - this.attacker.posZ);
+				e.addVelocity((veloctiyVector.x) * strength, (0.2F + this.attacker.world.rand.nextFloat()) * strength, (veloctiyVector.z) * strength);
+				e.velocityChanged = true;
 			}
-        }
-    }
+		}
+	}
 }

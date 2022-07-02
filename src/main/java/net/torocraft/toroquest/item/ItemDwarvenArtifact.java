@@ -29,14 +29,15 @@ public class ItemDwarvenArtifact extends ItemTrophy
 	private static ResourceLocation REGISTRY_NAME = new ResourceLocation(ToroQuest.MODID, NAME);
 
 	@SubscribeEvent
-	public static void init(final RegistryEvent.Register<Item> event)
+	public static void init( final RegistryEvent.Register<Item> event )
 	{
 		INSTANCE = new ItemDwarvenArtifact();
 		INSTANCE.setRegistryName(REGISTRY_NAME);
 		event.getRegistry().register(INSTANCE);
 	}
 
-	public static void registerRenders() {
+	public static void registerRenders()
+	{
 		ModelResourceLocation model = new ModelResourceLocation(ToroQuest.MODID + ":" + NAME, "inventory");
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(INSTANCE, 0, model);
 		RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
@@ -47,14 +48,14 @@ public class ItemDwarvenArtifact extends ItemTrophy
 	{
 		setUnlocalizedName(NAME);
 		this.maxStackSize = 1;
-		this.setCreativeTab(CreativeTabs.MATERIALS);
+		this.setCreativeTab(CreativeTabs.MISC);
 	}
-	
+
 	@Override
-    @SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
-    {
+	@SideOnly( Side.CLIENT )
+	public void addInformation( ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn )
+	{
 		tooltip.add("Give this trophy to a Village Lord: Aquire the resilience of Dwarven metal, gaining resistance to all damage while in that province.\n\n§oA mysterious, whirling object crafted from an unknown material.");
-    }
+	}
 
 }
